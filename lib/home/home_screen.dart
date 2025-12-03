@@ -9,6 +9,7 @@ import '../state/state_repository.dart';
 import '../state/state_entry.dart';
 import '../state/state_entry_detail_screen.dart';
 import '../utils/date_format.dart';
+import '../export/state_entries_csv_exporter.dart';
 
 class HomeScreen extends StatelessWidget {
   final StateRepository repository;
@@ -45,6 +46,62 @@ class HomeScreen extends StatelessWidget {
             final entries = repository.getAll();
             final theme = Theme.of(context);
 
+            Future<void> exportCsv({
+              required bool last7Days,
+            }) async {
+              if (entries.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Нет записей для экспорта.'),
+                  ),
+                );
+                return;
+              }
+
+              List<StateEntry> filtered = entries;
+
+              if (last7Days) {
+                final now = DateTime.now();
+                final from = DateTime(now.year, now.month, now.day)
+                    .subtract(const Duration(days: 6));
+
+                bool isSameDay(DateTime a, DateTime b) {
+                  return a.year == b.year &&
+                      a.month == b.month &&
+                      a.day == b.day;
+                }
+
+                filtered = entries.where((e) {
+                  final d = e.date;
+                  return d.isAfter(from) || isSameDay(d, from);
+                }).toList();
+              }
+
+              if (filtered.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      last7Days
+                          ? 'За последние 7 дней нет записей для экспорта.'
+                          : 'Нет записей для экспорта.',
+                    ),
+                  ),
+                );
+                return;
+              }
+
+              await exportStateEntriesAsCsvFile(
+                entries: filtered,
+                fileName: 'Записи состояний',
+                subject: last7Days
+                    ? 'Записи состояний за последние 7 дней'
+                    : 'Все записи состояний',
+                text: last7Days
+                    ? 'Записи состояний за последние 7 дней (CSV).'
+                    : 'Все записи состояний (CSV).',
+              );
+            }
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -54,12 +111,38 @@ class HomeScreen extends StatelessWidget {
                     horizontal: AppSpacing.screenTitleHorizontal,
                     vertical: AppSpacing.screenTitleVertical,
                   ),
-                  child: Center(
-                    child: Text(
-                      'Моё состояние',
-                      style: AppTypography.screenTitle,
-                      textAlign: TextAlign.center,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(width: 48),
+                      Expanded(
+                        child: Text(
+                          'Моё состояние',
+                          style: AppTypography.screenTitle,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.download),
+                        onSelected: (value) {
+                          if (value == '7days') {
+                            exportCsv(last7Days: true);
+                          } else if (value == 'all') {
+                            exportCsv(last7Days: false);
+                          }
+                        },
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(
+                            value: '7days',
+                            child: Text('Экспорт за последние 7 дней'),
+                          ),
+                          PopupMenuItem(
+                            value: 'all',
+                            child: Text('Экспорт всех записей'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
@@ -176,7 +259,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                 ),

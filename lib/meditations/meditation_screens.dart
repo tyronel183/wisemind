@@ -294,7 +294,6 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
             ? widget.meditation.audioWithVoiceUrl
             : widget.meditation.audioWithoutVoiceUrl,
       );
-      _player.play();
     } catch (e) {
       debugPrint("Ошибка переключения аудио: $e");
       if (mounted) {
@@ -317,130 +316,108 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(meditation.title)),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.screenPadding,
-          vertical: AppSpacing.gapMedium,
-        ),
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: CachedNetworkImage(
-                imageUrl: meditation.imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (_, _) => Container(color: Colors.black12),
-                errorWidget: (_, _, _) => const Icon(Icons.self_improvement),
-              ),
-            ),
+      body: DefaultTabController(
+        length: 2,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.screenPadding,
+            vertical: AppSpacing.gapMedium,
           ),
-          const SizedBox(height: 16),
-          Text(
-            meditation.situation,
-            style: AppTypography.cardTitle,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            meditation.description,
-            style: AppTypography.body,
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              Chip(
-                avatar: const Icon(Icons.category, size: 16),
-                label: Text(meditation.category),
-              ),
-              Chip(
-                avatar: const Icon(Icons.psychology, size: 16),
-                label: Text(meditation.dbtSkill),
-              ),
-              Chip(
-                avatar: const Icon(Icons.timer, size: 16),
-                label: Text(meditation.duration),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-
-          if (_loadFailed) ...[
-            const SizedBox(height: 24),
+          children: [
             Text(
-              'Не удалось загрузить аудио медитации.\nПроверьте подключение к интернету и попробуйте ещё раз.',
-              textAlign: TextAlign.center,
-              style: AppTypography.bodySecondary,
+              meditation.situation,
+              style: AppTypography.cardTitle,
             ),
-          ] else ...[
-            // переключатель "с голосом / музыка"
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            const SizedBox(height: 6),
+            Text(
+              meditation.description,
+              style: AppTypography.body,
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
-                ChoiceChip(
-                  label: const Text("С голосом"),
-                  selected: _useVoice,
-                  onSelected: (v) => _switchAudio(true),
+                Chip(
+                  avatar: const Icon(Icons.psychology, size: 16),
+                  label: Text(meditation.dbtSkill),
                 ),
-                const SizedBox(width: 12),
-                ChoiceChip(
-                  label: const Text("Только музыка"),
-                  selected: !_useVoice,
-                  onSelected: (v) => _switchAudio(false),
+                Chip(
+                  avatar: const Icon(Icons.timer, size: 16),
+                  label: Text(meditation.duration),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            // прогресс
-            StreamBuilder<Duration>(
-              stream: _player.positionStream,
-              builder: (context, snapshot) {
-                final pos = snapshot.data ?? Duration.zero;
-                final total = _player.duration ?? Duration.zero;
+            const SizedBox(height: 32),
 
-                return Column(
-                  children: [
-                    Slider(
-                      min: 0,
-                      max: total.inMilliseconds.toDouble(),
-                      value: pos.inMilliseconds
-                          .clamp(0, total.inMilliseconds)
-                          .toDouble(),
-                      onChanged: (v) =>
-                          _player.seek(Duration(milliseconds: v.toInt())),
+            if (_loadFailed) ...[
+              const SizedBox(height: 24),
+              Text(
+                'Не удалось загрузить аудио медитации.\nПроверьте подключение к интернету и попробуйте ещё раз.',
+                textAlign: TextAlign.center,
+                style: AppTypography.bodySecondary,
+              ),
+            ] else ...[
+              TabBar(
+                onTap: (index) {
+                  _switchAudio(index == 0);
+                },
+                tabs: const [
+                  Tab(text: 'С голосом'),
+                  Tab(text: 'Только музыка'),
+                ],
+              ),
+              const SizedBox(height: 24),
+              // прогресс
+              StreamBuilder<Duration>(
+                stream: _player.positionStream,
+                builder: (context, snapshot) {
+                  final pos = snapshot.data ?? Duration.zero;
+                  final total = _player.duration ?? Duration.zero;
+
+                  return Column(
+                    children: [
+                      Slider(
+                        min: 0,
+                        max: total.inMilliseconds.toDouble(),
+                        value: pos.inMilliseconds
+                            .clamp(0, total.inMilliseconds)
+                            .toDouble(),
+                        onChanged: (v) =>
+                            _player.seek(Duration(milliseconds: v.toInt())),
+                      ),
+                      Text("${_fmt(pos)} / ${_fmt(total)}"),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              // play / pause
+              StreamBuilder<PlayerState>(
+                stream: _player.playerStateStream,
+                builder: (context, snapshot) {
+                  final playing = snapshot.data?.playing ?? false;
+                  return Center(
+                    child: FilledButton.icon(
+                      icon: Icon(playing ? Icons.pause : Icons.play_arrow),
+                      label: Text(playing ? "Пауза" : "Играть"),
+                      onPressed: () =>
+                          playing ? _player.pause() : _player.play(),
                     ),
-                    Text("${_fmt(pos)} / ${_fmt(total)}"),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-            // play / pause
-            StreamBuilder<PlayerState>(
-              stream: _player.playerStateStream,
-              builder: (context, snapshot) {
-                final playing = snapshot.data?.playing ?? false;
-                return Center(
-                  child: FilledButton.icon(
-                    icon: Icon(playing ? Icons.pause : Icons.play_arrow),
-                    label: Text(playing ? "Пауза" : "Играть"),
-                    onPressed: () =>
-                        playing ? _player.pause() : _player.play(),
-                  ),
-                );
-              },
-            ),
-          ],
+                  );
+                },
+              ),
+            ],
 
-          if (!meditation.isFree) ...[
-            const SizedBox(height: 20),
-            Text(
-              "Для доступа к этой медитации может потребоваться подписка.",
-              style: AppTypography.bodySecondary,
-            ),
+            if (!meditation.isFree) ...[
+              const SizedBox(height: 20),
+              Text(
+                "Для доступа к этой медитации может потребоваться подписка.",
+                style: AppTypography.bodySecondary,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
