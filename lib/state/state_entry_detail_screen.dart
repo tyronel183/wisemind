@@ -1,25 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'state_entry.dart';
 
 /// Детальный экран записи "Состояние дня"
-///
-/// Ожидается, что [entry] — это модель с полями:
-/// - DateTime date;
-/// - String? emotion;              // название / метка эмоции
-/// - String? emotionEmoji;         // опциональный emoji для эмоции
-/// - int? emotionIntensity;        // 0–100
-/// - double? sleepHours;           // часы сна
-/// - double? restHours;            // часы отдыха
-/// - double? activityHours;        // часы активности/движения
-/// - String? whatHelped;           // что помогло
-/// - String? whatMadeWorse;        // что ухудшило
-/// - String? observations;         // наблюдения
-/// - String? notes;                // свободные заметки
-///
-/// Если какие-то поля в твоей модели отличаются по названию —
-/// можешь либо адаптировать модель, либо поправить геттеры ниже.
 class StateEntryDetailScreen extends StatelessWidget {
   final StateEntry entry;
   final VoidCallback? onEdit;
@@ -42,13 +24,11 @@ class StateEntryDetailScreen extends StatelessWidget {
 
   DateTime get _date => entry.date;
 
-  String get _emotionEmoji => '';
+  // Используем настроение как эмодзи
+  String get _emotionEmoji => (_mood ?? '').trim();
 
-  // New getters for new questionnaire fields
   String? get _mood => _safeGet<String?>(() => entry.mood);
-
   String? get _grateful => _safeGet<String?>(() => entry.grateful);
-
   String? get _importantGoal => _safeGet<String?>(() => entry.importantGoal);
 
   double? get _sleepHours {
@@ -57,7 +37,6 @@ class StateEntryDetailScreen extends StatelessWidget {
   }
 
   int? get _restScore => _safeGet<int?>(() => entry.rest);
-
   int? get _activityScore => _safeGet<int?>(() => entry.physicalActivity);
 
   String? get _sleepDetails {
@@ -87,10 +66,10 @@ class StateEntryDetailScreen extends StatelessWidget {
 
     final buffer = StringBuffer();
     if (physical != null) {
-      buffer.writeln('Физический дискомфорт: $physical/5');
+      buffer.writeln('Физический: $physical/5');
     }
     if (emotional != null) {
-      buffer.writeln('Эмоциональный дистресс: $emotional/5');
+      buffer.writeln('Эмоциональный: $emotional/5');
     }
     return buffer.toString().trim();
   }
@@ -134,7 +113,7 @@ class StateEntryDetailScreen extends StatelessWidget {
 
     final buffer = StringBuffer();
     if (urges != null) {
-      buffer.writeln('Позывы: $urges/5');
+      buffer.writeln('Сила импульса: $urges/5');
     }
     if (action != null && action.trim().isNotEmpty) {
       buffer.writeln('Что произошло: ${action.trim()}');
@@ -163,10 +142,10 @@ class StateEntryDetailScreen extends StatelessWidget {
       buffer.writeln('Удовольствие: $pleasure/5');
     }
     if (water != null && water.trim().isNotEmpty) {
-      buffer.writeln('Вода: ${water.trim()}');
+      buffer.writeln('Количество выпитой жидкости: ${water.trim()} л');
     }
     if (food != null) {
-      buffer.writeln('Питание: $food/5');
+      buffer.writeln('Количество приемов пищи: $food');
     }
     return buffer.toString().trim();
   }
@@ -186,8 +165,6 @@ class StateEntryDetailScreen extends StatelessWidget {
   }
 
   String _formatDate(BuildContext context) {
-    final locale = Localizations.localeOf(context).languageCode;
-    // Очень простой формат, чтобы не тянуть intl
     final monthsRu = [
       'января',
       'февраля',
@@ -203,25 +180,8 @@ class StateEntryDetailScreen extends StatelessWidget {
       'декабря',
     ];
 
-    final monthsEn = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
     final day = _date.day.toString().padLeft(2, '0');
-    final monthName = locale == 'ru'
-        ? monthsRu[_date.month - 1]
-        : monthsEn[_date.month - 1];
+    final monthName = monthsRu[_date.month - 1];
     final year = _date.year.toString();
 
     return '$day $monthName $year';
@@ -233,195 +193,106 @@ class StateEntryDetailScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: colorScheme.onSurface),
-        title: Text(
-          'Состояние дня',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('Состояние дня'),
         centerTitle: true,
+        backgroundColor: colorScheme.surface,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFF5F7FF), Color(0xFFFFFFFF)],
-          ),
-        ),
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 36,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildHeroCard(context),
-                      const SizedBox(height: 20),
-                      _buildMetricsRow(context),
-                      const SizedBox(height: 16),
-                      _SectionCard(title: 'Как ты сегодня?', text: _mood),
-                      const SizedBox(height: 12),
-                      _SectionCard(
-                        title: 'За что благодарен себе',
-                        text: _grateful,
-                      ),
-                      const SizedBox(height: 12),
-                      _SectionCard(
-                        title: 'Что сделано для цели',
-                        text: _importantGoal,
-                      ),
-                      const SizedBox(height: 12),
-                      _SectionCard(
-                        title: 'Сон и ночной отдых',
-                        text: _sleepDetails,
-                      ),
-                      const SizedBox(height: 12),
-                      _SectionCard(
-                        title: 'Дискомфорт',
-                        text: _discomfortDetails,
-                      ),
-                      const SizedBox(height: 12),
-                      _SectionCard(
-                        title: 'Эмоциональное состояние',
-                        text: _emotionalStateDetails,
-                      ),
-                      const SizedBox(height: 12),
-                      _SectionCard(
-                        title: 'Проблемное поведение',
-                        text: _problemBehaviorDetails,
-                      ),
-                      const SizedBox(height: 12),
-                      _SectionCard(
-                        title: 'Забота о себе',
-                        text: _selfCareDetails,
-                      ),
-                      const SizedBox(height: 12),
-                      _SectionCard(title: 'Навыки', text: _skillsDetails),
-                      const SizedBox(height: 20),
-                      _buildActions(context),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildHeaderCard(context),
+            const SizedBox(height: 12),
+            _SectionCard(title: 'Примененные навыки', text: _skillsDetails),
+            const SizedBox(height: 12),
+            _buildMetricsRow(context),
+            const SizedBox(height: 16),
+            _SectionCard(
+              title: 'Что сделано для достижения цели',
+              text: _importantGoal,
+            ),
+            const SizedBox(height: 12),
+            _SectionCard(
+              title: 'Качество сна',
+              text: _sleepDetails,
+            ),
+            const SizedBox(height: 12),
+            _SectionCard(
+              title: 'Дискомфорт',
+              text: _discomfortDetails,
+            ),
+            const SizedBox(height: 12),
+            _SectionCard(
+              title: 'Эмоциональное состояние',
+              text: _emotionalStateDetails,
+            ),
+            const SizedBox(height: 12),
+            _SectionCard(
+              title: 'Проблемное поведение',
+              text: _problemBehaviorDetails,
+            ),
+            const SizedBox(height: 12),
+            _SectionCard(
+              title: 'Забота о себе',
+              text: _selfCareDetails,
+            ),
+            const SizedBox(height: 20),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeroCard(BuildContext context) {
+  Widget _buildHeaderCard(BuildContext context) {
     final theme = Theme.of(context);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Stack(
-        children: [
-          // Градиентный фон карты (light)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFE5E7FF),
-                  Color(0xFFFAF5FF),
-                  Color(0xFFE0FBFF),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 18,
-                  offset: Offset(0, 10),
-                ),
-              ],
-            ),
-          ),
-          // Стеклянный слой сверху
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: Container(color: Colors.white.withValues(alpha: 0.3)),
-            ),
-          ),
-          // Контент
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _formatDate(context),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.black.withValues(alpha: 0.75),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    if (_emotionEmoji.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12),
-                        child: Text(
-                          _emotionEmoji,
-                          style: const TextStyle(fontSize: 32),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                if (_mood != null && _mood!.trim().isNotEmpty) ...[
-                  Text(
-                    _mood!.trim(),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-                if (_grateful != null && _grateful!.trim().isNotEmpty) ...[
-                  Text(
-                    'За что благодарен себе',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: Colors.black.withValues(alpha: 0.6),
+                Expanded(
+                  child: Text(
+                    _formatDate(context),
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _grateful!.trim(),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.black.withValues(alpha: 0.8),
-                      height: 1.4,
+                ),
+                if (_emotionEmoji.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(
+                      _emotionEmoji,
+                      style: const TextStyle(fontSize: 28),
                     ),
                   ),
-                ],
               ],
             ),
-          ),
-        ],
+            if (_grateful != null && _grateful!.trim().isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                'За что себя благодарю',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                _grateful!.trim(),
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -437,7 +308,7 @@ class StateEntryDetailScreen extends StatelessWidget {
             icon: Icons.nights_stay_rounded,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: _MetricCard(
             label: 'Отдых',
@@ -446,7 +317,7 @@ class StateEntryDetailScreen extends StatelessWidget {
             icon: Icons.self_improvement_rounded,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: _MetricCard(
             label: 'Активность',
@@ -460,58 +331,7 @@ class StateEntryDetailScreen extends StatelessWidget {
   }
 
   Widget _buildActions(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            onPressed: () {
-              if (onEdit != null) {
-                onEdit!();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Редактирование пока не настроено'),
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: const Text('Редактировать'),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: OutlinedButton(
-            onPressed: () {
-              if (onDelete != null) {
-                onDelete!();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Удаление пока не настроено')),
-                );
-              }
-            },
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(color: colorScheme.error.withValues(alpha: 0.8)),
-              foregroundColor: colorScheme.error,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: const Text('Удалить'),
-          ),
-        ),
-      ],
-    );
+    return const SizedBox.shrink();
   }
 }
 
@@ -519,25 +339,22 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final String? text;
 
-  const _SectionCard({required this.title, this.text});
+  const _SectionCard({
+    required this.title,
+    this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final displayText = (text == null || text!.trim().isEmpty)
-        ? 'Нет записей'
-        : text!.trim();
-
+    final displayText =
+        (text == null || text!.trim().isEmpty) ? 'Нет записей' : text!.trim();
     final isEmpty = displayText == 'Нет записей';
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-        ),
+    return Card(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -546,15 +363,13 @@ class _SectionCard extends StatelessWidget {
               title,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Colors.black.withValues(alpha: 0.84),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               displayText,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.black.withValues(alpha: isEmpty ? 0.4 : 0.8),
-                height: 1.5,
+                color: isEmpty ? Colors.grey : null,
               ),
             ),
           ],
@@ -585,44 +400,26 @@ class _MetricCard extends StatelessWidget {
         ? '—'
         : value!.toStringAsFixed(value! % 1 == 0 ? 0 : 1);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
+    return Card(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFFFFFF), Color(0xFFF3F4FF)],
-          ),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 18, color: Colors.black.withValues(alpha: 0.6)),
+            Icon(icon, size: 18, color: Colors.grey[700]),
             const SizedBox(height: 8),
             Text(
-              displayValue,
+              '$displayValue $unit',
               style: theme.textTheme.titleLarge?.copyWith(
-                color: Colors.black87,
                 fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              unit,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: Colors.black.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.black.withValues(alpha: 0.7),
-              ),
+              style: theme.textTheme.bodySmall,
             ),
           ],
         ),

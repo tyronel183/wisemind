@@ -248,6 +248,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
   late AudioPlayer _player;
   bool _useVoice = true;
   bool _loadFailed = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -257,22 +258,33 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
   }
 
   Future<void> _init() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _loadFailed = false;
+    });
+
     try {
       await _player.setUrl(
         _useVoice
             ? widget.meditation.audioWithVoiceUrl
             : widget.meditation.audioWithoutVoiceUrl,
       );
+      if (!mounted) return;
       setState(() {
         _loadFailed = false;
       });
     } catch (e) {
       debugPrint("Ошибка загрузки аудио: $e");
-      if (mounted) {
-        setState(() {
-          _loadFailed = true;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _loadFailed = true;
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -283,11 +295,16 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
   }
 
   Future<void> _switchAudio(bool withVoice) async {
+    if (_isLoading) return; // игнорируем быстрые повторные тапы, пока идёт загрузка
+
     setState(() {
       _useVoice = withVoice;
       _loadFailed = false;
+      _isLoading = true;
     });
+
     await _player.stop();
+
     try {
       await _player.setUrl(
         withVoice
@@ -296,11 +313,15 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
       );
     } catch (e) {
       debugPrint("Ошибка переключения аудио: $e");
-      if (mounted) {
-        setState(() {
-          _loadFailed = true;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _loadFailed = true;
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -353,7 +374,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
             if (_loadFailed) ...[
               const SizedBox(height: 24),
               Text(
-                'Не удалось загрузить аудио медитации.\nПроверьте подключение к интернету и попробуйте ещё раз.',
+                'Не удалось загрузить аудио медитации.\nЧасто это связано с подключением к интернету. Попробуйте ещё раз или переключите вкладку.',
                 textAlign: TextAlign.center,
                 style: AppTypography.bodySecondary,
               ),
@@ -368,45 +389,51 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              // прогресс
-              StreamBuilder<Duration>(
-                stream: _player.positionStream,
-                builder: (context, snapshot) {
-                  final pos = snapshot.data ?? Duration.zero;
-                  final total = _player.duration ?? Duration.zero;
 
-                  return Column(
-                    children: [
-                      Slider(
-                        min: 0,
-                        max: total.inMilliseconds.toDouble(),
-                        value: pos.inMilliseconds
-                            .clamp(0, total.inMilliseconds)
-                            .toDouble(),
-                        onChanged: (v) =>
-                            _player.seek(Duration(milliseconds: v.toInt())),
+              if (_isLoading) ...[
+                const SizedBox(height: 16),
+                const Center(child: CircularProgressIndicator()),
+              ] else ...[
+                // прогресс
+                StreamBuilder<Duration>(
+                  stream: _player.positionStream,
+                  builder: (context, snapshot) {
+                    final pos = snapshot.data ?? Duration.zero;
+                    final total = _player.duration ?? Duration.zero;
+
+                    return Column(
+                      children: [
+                        Slider(
+                          min: 0,
+                          max: total.inMilliseconds.toDouble(),
+                          value: pos.inMilliseconds
+                              .clamp(0, total.inMilliseconds)
+                              .toDouble(),
+                          onChanged: (v) =>
+                              _player.seek(Duration(milliseconds: v.toInt())),
+                        ),
+                        Text("${_fmt(pos)} / ${_fmt(total)}"),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                // play / pause
+                StreamBuilder<PlayerState>(
+                  stream: _player.playerStateStream,
+                  builder: (context, snapshot) {
+                    final playing = snapshot.data?.playing ?? false;
+                    return Center(
+                      child: FilledButton.icon(
+                        icon: Icon(playing ? Icons.pause : Icons.play_arrow),
+                        label: Text(playing ? "Пауза" : "Играть"),
+                        onPressed: () =>
+                            playing ? _player.pause() : _player.play(),
                       ),
-                      Text("${_fmt(pos)} / ${_fmt(total)}"),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-              // play / pause
-              StreamBuilder<PlayerState>(
-                stream: _player.playerStateStream,
-                builder: (context, snapshot) {
-                  final playing = snapshot.data?.playing ?? false;
-                  return Center(
-                    child: FilledButton.icon(
-                      icon: Icon(playing ? Icons.pause : Icons.play_arrow),
-                      label: Text(playing ? "Пауза" : "Играть"),
-                      onPressed: () =>
-                          playing ? _player.pause() : _player.play(),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
+              ],
             ],
 
             if (!meditation.isFree) ...[
