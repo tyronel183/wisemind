@@ -170,11 +170,7 @@ class FactCheckListScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const FactCheckEditScreen(),
-            ),
-          );
+          _onCreateNewPressed(context);
         },
         icon: const Icon(Icons.add),
         label: const Text('Новая запись'),
@@ -182,6 +178,70 @@ class FactCheckListScreen extends StatelessWidget {
     );
   }
 }
+
+  void _onCreateNewPressed(BuildContext context) {
+    // TODO: заменить на реальную проверку подписки и экран paywall
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                'Полный доступ к «Проверке фактов»',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Этот рабочий лист доступен по подписке. '
+                'Оформите доступ, чтобы заполнять и сохранять записи, а также отслеживать динамику.',
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // TODO: здесь открыть настоящий экран paywall / экран подписки
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Оформить доступ'),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Закрыть'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
 class _FactCheckEmptyState extends StatelessWidget {
   const _FactCheckEmptyState();

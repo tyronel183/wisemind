@@ -13,6 +13,8 @@ import 'skills/skills_screens.dart';
 import 'state/state_entry.dart';
 import 'worksheets/chain_analysis.dart';
 import 'worksheets/fact_check.dart';
+import 'notifications/notification_service.dart';
+import 'navigation/app_navigator.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +50,7 @@ class WisemindApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: appNavigatorKey,
       title: 'Wisemind',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -57,8 +60,43 @@ class WisemindApp extends StatelessWidget {
           height: 64,
         ),
       ),
-      home: MainScaffold(repository: repository),
+      routes: {
+        '/': (context) => WisemindRoot(repository: repository),
+      },
     );
+  }
+}
+
+class WisemindRoot extends StatefulWidget {
+  const WisemindRoot({super.key, required this.repository});
+
+  final StateRepository repository;
+
+  @override
+  State<WisemindRoot> createState() => _WisemindRootState();
+}
+
+class _WisemindRootState extends State<WisemindRoot> {
+  @override
+  void initState() {
+    super.initState();
+    _initNotifications();
+  }
+
+  Future<void> _initNotifications() async {
+    try {
+      await NotificationService.instance.init();
+      await NotificationService.instance.scheduleDailyStateReminder(
+        const TimeOfDay(hour: 17, minute: 35),
+      );
+    } catch (e) {
+      debugPrint('Failed to initialize notifications: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MainScaffold(repository: widget.repository);
   }
 }
 
@@ -81,6 +119,12 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          NotificationService.instance.showTestNotification();
+        },
+        child: const Icon(Icons.notifications),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
