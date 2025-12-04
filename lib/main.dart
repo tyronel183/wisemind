@@ -87,7 +87,7 @@ class _WisemindRootState extends State<WisemindRoot> {
     try {
       await NotificationService.instance.init();
       await NotificationService.instance.scheduleDailyStateReminder(
-        const TimeOfDay(hour: 17, minute: 35),
+        const TimeOfDay(hour: 20, minute: 0),
       );
     } catch (e) {
       debugPrint('Failed to initialize notifications: $e');
