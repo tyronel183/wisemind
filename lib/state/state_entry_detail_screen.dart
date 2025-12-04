@@ -330,9 +330,6 @@ class StateEntryDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context) {
-    return const SizedBox.shrink();
-  }
 }
 
 class _SectionCard extends StatelessWidget {

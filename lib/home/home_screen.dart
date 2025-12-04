@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -10,6 +11,7 @@ import '../state/state_entry.dart';
 import '../state/state_entry_detail_screen.dart';
 import '../utils/date_format.dart';
 import '../export/state_entries_csv_exporter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 class HomeScreen extends StatelessWidget {
   final StateRepository repository;
@@ -122,23 +124,48 @@ class HomeScreen extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.download),
-                        onSelected: (value) {
-                          if (value == '7days') {
-                            exportCsv(last7Days: true);
-                          } else if (value == 'all') {
-                            exportCsv(last7Days: false);
-                          }
-                        },
-                        itemBuilder: (context) => const [
-                          PopupMenuItem(
-                            value: '7days',
-                            child: Text('Экспорт за последние 7 дней'),
-                          ),
-                          PopupMenuItem(
-                            value: 'all',
-                            child: Text('Экспорт всех записей'),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (kDebugMode)
+                            IconButton(
+                              icon: const Icon(Icons.payment),
+                              tooltip: 'Открыть paywall (debug)',
+                              onPressed: () async {
+                                try {
+                                  await RevenueCatUI.presentPaywall();
+                                } catch (e, stack) {
+                                  debugPrint('Error presenting paywall: $e');
+                                  debugPrint(stack.toString());
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Не удалось открыть экран подписки: $e'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          PopupMenuButton<String>(
+                            icon: const Icon(Icons.download),
+                            onSelected: (value) {
+                              if (value == '7days') {
+                                exportCsv(last7Days: true);
+                              } else if (value == 'all') {
+                                exportCsv(last7Days: false);
+                              }
+                            },
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(
+                                value: '7days',
+                                child: Text('Экспорт за последние 7 дней'),
+                              ),
+                              PopupMenuItem(
+                                value: 'all',
+                                child: Text('Экспорт всех записей'),
+                              ),
+                            ],
                           ),
                         ],
                       ),

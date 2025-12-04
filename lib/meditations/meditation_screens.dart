@@ -281,10 +281,11 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
         _loadFailed = true;
       });
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -318,10 +319,11 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
         _loadFailed = true;
       });
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

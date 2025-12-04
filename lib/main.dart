@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // 🆕 RevenueCat
-import 'package:purchases_flutter/purchases_flutter.dart';
-import 'revenuecat/revenuecat_constants.dart';
+import 'revenuecat/revenuecat_service.dart';
 
 import 'state/state_repository.dart';
 import 'home/home_screen.dart';
@@ -17,6 +16,8 @@ import 'worksheets/fact_check.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await RevenueCatService.instance.init();
 
   // Инициализация Hive
   await Hive.initFlutter();
@@ -32,20 +33,6 @@ Future<void> main() async {
 
   // Открываем бокс с дневниками состояний
   final Box box = await Hive.openBox('state_entries_box');
-
-  // 🆕 Инициализация RevenueCat
-  try {
-    final configuration = PurchasesConfiguration(
-      RevenueCatConstants.apiKey,
-    );
-
-    // Можно оставить лог в debug-режиме, чтобы видеть, что происходит
-    await Purchases.configure(configuration);
-    await Purchases.setLogLevel(LogLevel.debug);
-  } catch (e) {
-    // Если RevenueCat вдруг упадёт — приложение продолжит работать
-    debugPrint('Ошибка инициализации RevenueCat: $e');
-  }
 
   // Репозиторий для дневников состояний
   final StateRepository repository = StateRepository(box);
