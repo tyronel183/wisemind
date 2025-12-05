@@ -13,14 +13,22 @@ import '../utils/date_format.dart';
 import '../export/state_entries_csv_exporter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../settings/settings_screen.dart';
+import '../usage_guide/usage_guide_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final StateRepository repository;
 
   const HomeScreen({
     super.key,
     required this.repository,
   });
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _hasCompletedUsageGuide = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +43,7 @@ class HomeScreen extends StatelessWidget {
           );
 
           if (entry != null) {
-            await repository.save(entry);
+            await widget.repository.save(entry);
           }
         },
         icon: const Icon(Icons.add),
@@ -44,9 +52,9 @@ class HomeScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: ValueListenableBuilder(
-          valueListenable: repository.box.listenable(),
+          valueListenable: widget.repository.box.listenable(),
           builder: (context, box, _) {
-            final entries = repository.getAll();
+            final entries = widget.repository.getAll();
             final theme = Theme.of(context);
 
             Future<void> exportCsv({
@@ -183,6 +191,66 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (!_hasCompletedUsageGuide)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.screenTitleHorizontal,
+                    ),
+                    child: Card(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.gapMedium),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => UsageGuideScreen(
+                                onCompleted: () {
+                                  setState(() {
+                                    _hasCompletedUsageGuide = true;
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.all(AppSpacing.cardPaddingVertical),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.lightbulb_outline),
+                              const SizedBox(width: AppSpacing.gapSmall),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Как пользоваться приложением',
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Краткий гид на 2–3 минуты, чтобы выжать максимум пользы из Wisemind.',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 Expanded(
                   child: entries.isEmpty
                       ? Center(
@@ -277,10 +345,10 @@ class HomeScreen extends StatelessWidget {
                                             ),
                                           );
                                           if (updated != null) {
-                                            await repository.update(updated);
+                                            await widget.repository.update(updated);
                                           }
                                         } else if (value == 'delete') {
-                                          await repository.deleteById(entry.id);
+                                          await widget.repository.deleteById(entry.id);
                                         }
                                       },
                                       itemBuilder: (context) => const [

@@ -16,6 +16,8 @@ import 'worksheets/fact_check.dart';
 import 'notifications/notification_service.dart';
 import 'navigation/app_navigator.dart';
 
+import 'onboarding/onboarding_screen.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -36,16 +38,31 @@ Future<void> main() async {
   // Открываем бокс с дневниками состояний
   final Box box = await Hive.openBox('state_entries_box');
 
+  // Открываем бокс настроек приложения
+  final Box settingsBox = await Hive.openBox('app_settings');
+  final bool hasCompletedOnboarding =
+      settingsBox.get('hasCompletedOnboarding', defaultValue: false) as bool;
+
   // Репозиторий для дневников состояний
   final StateRepository repository = StateRepository(box);
 
-  runApp(WisemindApp(repository: repository));
+  runApp(
+    WisemindApp(
+      repository: repository,
+      hasCompletedOnboarding: hasCompletedOnboarding,
+    ),
+  );
 }
 
 class WisemindApp extends StatelessWidget {
   final StateRepository repository;
+  final bool hasCompletedOnboarding;
 
-  const WisemindApp({super.key, required this.repository});
+  const WisemindApp({
+    super.key,
+    required this.repository,
+    required this.hasCompletedOnboarding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,24 +75,37 @@ class WisemindApp extends StatelessWidget {
         colorSchemeSeed: Colors.deepPurple,
         navigationBarTheme: const NavigationBarThemeData(height: 64),
       ),
-      routes: {'/': (context) => WisemindRoot(repository: repository)},
+      routes: {
+        '/': (context) => WisemindRoot(
+              repository: repository,
+              hasCompletedOnboarding: hasCompletedOnboarding,
+            ),
+      },
     );
   }
 }
 
 class WisemindRoot extends StatefulWidget {
-  const WisemindRoot({super.key, required this.repository});
+  const WisemindRoot({
+    super.key,
+    required this.repository,
+    required this.hasCompletedOnboarding,
+  });
 
   final StateRepository repository;
+  final bool hasCompletedOnboarding;
 
   @override
   State<WisemindRoot> createState() => _WisemindRootState();
 }
 
 class _WisemindRootState extends State<WisemindRoot> {
+  late bool _hasCompletedOnboarding;
+
   @override
   void initState() {
     super.initState();
+    _hasCompletedOnboarding = widget.hasCompletedOnboarding;
     _initNotifications();
   }
 
@@ -90,8 +120,22 @@ class _WisemindRootState extends State<WisemindRoot> {
     }
   }
 
+  Future<void> _handleOnboardingFinished() async {
+    final settingsBox = Hive.box('app_settings');
+    await settingsBox.put('hasCompletedOnboarding', true);
+    setState(() {
+      _hasCompletedOnboarding = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_hasCompletedOnboarding) {
+      return OnboardingScreen(
+        onFinished: _handleOnboardingFinished,
+      );
+    }
+
     return MainScaffold(repository: widget.repository);
   }
 }

@@ -53,7 +53,7 @@ class AboutScreen extends StatelessWidget {
           ),
           const ListTile(
             title: Text('Контакты'),
-            subtitle: Text('support@wisemind.app'),
+            subtitle: Text('dbtenthusiast@gmail.com'),
           ),
         ],
       ),

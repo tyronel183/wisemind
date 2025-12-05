@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../notifications/notification_service.dart';
 import 'about_screen.dart';
-import 'settings_webview_screen.dart';
+import '../usage_guide/usage_guide_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -40,8 +40,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _launchMail() async {
     final uri = Uri(
       scheme: 'mailto',
-      path: 'support@wisemind.app', // TODO: поменять на реальный адрес
-      query: Uri.encodeQueryComponent('subject=Wisemind feedback'),
+      path: 'dbtenthusiast@gmail.com',
+      query: Uri.encodeQueryComponent('subject=Обратная связь по приложению Wisemind'),
     );
 
     if (await canLaunchUrl(uri)) {
@@ -72,7 +72,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Как пользоваться приложением'),
             subtitle: const Text('Краткий гид по Wisemind'),
             onTap: () {
-              // TODO: сюда потом повесим экран мини-гида
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const UsageGuideScreen(),
+                ),
+              );
             },
           ),
 
