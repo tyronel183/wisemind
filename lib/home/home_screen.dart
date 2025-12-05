@@ -12,6 +12,7 @@ import '../state/state_entry_detail_screen.dart';
 import '../utils/date_format.dart';
 import '../export/state_entries_csv_exporter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import '../settings/settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final StateRepository repository;
@@ -116,7 +117,17 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const SizedBox(width: 48),
+                      IconButton(
+                        icon: const Icon(Icons.settings),
+                        tooltip: 'Настройки',
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const SettingsScreen(),
+                            ),
+                          );
+                        },
+                      ),
                       Expanded(
                         child: Text(
                           'Моё состояние',

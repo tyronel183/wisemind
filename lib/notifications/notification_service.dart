@@ -177,4 +177,18 @@ class NotificationService {
       payload: 'test_notification',
     );
   }
+
+  /// Включение/выключение ежедневного напоминания о "Карте дня"
+  /// [enabled] - если true, планируем напоминание на [time],
+  /// если false — отменяем его.
+  Future<void> setDailyStateReminderEnabled({
+    required bool enabled,
+    required TimeOfDay time,
+  }) async {
+    if (enabled) {
+      await scheduleDailyStateReminder(time);
+    } else {
+      await cancelDailyStateReminder();
+    }
+  }
 }

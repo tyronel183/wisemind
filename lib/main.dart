@@ -56,13 +56,9 @@ class WisemindApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.deepPurple,
-        navigationBarTheme: const NavigationBarThemeData(
-          height: 64,
-        ),
+        navigationBarTheme: const NavigationBarThemeData(height: 64),
       ),
-      routes: {
-        '/': (context) => WisemindRoot(repository: repository),
-      },
+      routes: {'/': (context) => WisemindRoot(repository: repository)},
     );
   }
 }
@@ -103,10 +99,7 @@ class _WisemindRootState extends State<WisemindRoot> {
 class MainScaffold extends StatefulWidget {
   final StateRepository repository;
 
-  const MainScaffold({
-    super.key,
-    required this.repository,
-  });
+  const MainScaffold({super.key, required this.repository});
 
   @override
   State<MainScaffold> createState() => _MainScaffoldState();
@@ -119,12 +112,6 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          NotificationService.instance.showTestNotification();
-        },
-        child: const Icon(Icons.notifications),
-      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
