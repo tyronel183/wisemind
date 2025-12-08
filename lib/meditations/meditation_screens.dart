@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:wisemind/billing/billing_service.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
@@ -133,7 +134,22 @@ class _MeditationCard extends StatelessWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () {
+          onTap: () async {
+            // Бесплатные медитации (например, раздел "Осознанность") доступны сразу.
+            if (m.isFree) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MeditationPlayerScreen(meditation: m),
+                ),
+              );
+              return;
+            }
+
+            // Для остальных медитаций проверяем доступ через общий биллинговый слой.
+            final allowed =
+                await BillingService.ensureProOrShowPaywall(context);
+            if (!context.mounted || !allowed) return;
+
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => MeditationPlayerScreen(meditation: m),

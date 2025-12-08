@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:wisemind/billing/billing_service.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
@@ -232,7 +233,22 @@ class SkillsListScreen extends StatelessWidget {
                     title: skill.name,
                     subtitle: skill.shortDescription,
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
+                    onTap: () async {
+                      // Модуль "Осознанность" всегда доступен бесплатно.
+                      if (module == DbtModule.mindfulness) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => SkillOverviewScreen(skill: skill),
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Для остальных модулей проверяем доступ через общий биллинговый слой.
+                      final allowed =
+                          await BillingService.ensureProOrShowPaywall(context);
+                      if (!context.mounted || !allowed) return;
+
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => SkillOverviewScreen(skill: skill),

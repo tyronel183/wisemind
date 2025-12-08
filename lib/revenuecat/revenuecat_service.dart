@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
@@ -23,6 +24,15 @@ class RevenueCatService {
 
   /// Инициализация RevenueCat. Вызывать один раз при старте приложения.
   Future<void> init() async {
+    // TODO: для продакшена завести отдельный боевой API-ключ RevenueCat
+    //       и убрать этот ранний выход в kReleaseMode.
+    if (kReleaseMode) {
+      debugPrint(
+        '[RevenueCatService] init() пропущен в релизной сборке из-за тестового API-ключа.',
+      );
+      return;
+    }
+
     // В дев-режиме включаем подробный лог.
     await Purchases.setLogLevel(LogLevel.debug);
 

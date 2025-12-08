@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-// 🆕 RevenueCat
-import 'revenuecat/revenuecat_service.dart';
+// 🆕 Billing Service
+import 'billing/billing_service.dart';
 
 import 'state/state_repository.dart';
 import 'home/home_screen.dart';
@@ -21,7 +21,7 @@ import 'onboarding/onboarding_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await RevenueCatService.instance.init();
+  await BillingService.init();
 
   // Инициализация Hive
   await Hive.initFlutter();

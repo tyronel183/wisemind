@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wisemind/theme/app_theme.dart';
+import 'package:wisemind/billing/billing_service.dart';
 
 import 'pros_cons.dart';
 
@@ -144,67 +145,16 @@ class ProsConsListScreen extends StatelessWidget {
   }
 }
 
-void _onCreateProsConsPressed(BuildContext context) {
-  // TODO: заменить на реальную проверку подписки и экран paywall
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+Future<void> _onCreateProsConsPressed(BuildContext context) async {
+  // Проверяем доступ через общий биллинговый слой.
+  final allowed = await BillingService.ensureProOrShowPaywall(context);
+  if (!context.mounted || !allowed) return;
+
+  // Если доступ есть — открываем экран создания новой записи.
+  await Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => const ProsConsEditScreen(),
     ),
-    builder: (context) {
-      return Padding(
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 24,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Text(
-              'Полный доступ к «За и против»',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Этот рабочий лист доступен по подписке. '
-              'Оформите доступ, чтобы заполнять и сохранять записи, а также отслеживать динамику.',
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: здесь открыть настоящий экран paywall / экран подписки
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Оформить доступ'),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Закрыть'),
-            ),
-          ],
-        ),
-      );
-    },
   );
 }
 
