@@ -146,26 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (kDebugMode)
-                            IconButton(
-                              icon: const Icon(Icons.payment),
-                              tooltip: 'Открыть paywall (debug)',
-                              onPressed: () async {
-                                try {
-                                  await RevenueCatUI.presentPaywall();
-                                } catch (e, stack) {
-                                  debugPrint('Error presenting paywall: $e');
-                                  debugPrint(stack.toString());
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Не удалось открыть экран подписки: $e'),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
                           PopupMenuButton<String>(
                             icon: const Icon(Icons.download),
                             onSelected: (value) {
