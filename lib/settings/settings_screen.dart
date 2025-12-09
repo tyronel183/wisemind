@@ -46,18 +46,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _launchMail() async {
-    AmplitudeService.instance.logFeedbackEmailOpened();
+  AmplitudeService.instance.logFeedbackEmailOpened();
 
-    final uri = Uri(
-      scheme: 'mailto',
-      path: 'dbtenthusiast@gmail.com',
-      query: Uri.encodeQueryComponent('subject=Обратная связь по приложению Wisemind'),
-    );
+  final uri = Uri(
+    scheme: 'mailto',
+    path: 'dbtenthusiast@gmail.com',
+    queryParameters: {
+      'subject': 'Обратная связь по приложению Wisemind',
+    },
+  );
 
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+  try {
+    final launched = await launchUrl(uri);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось открыть почтовое приложение'),
+        ),
+      );
+    }
+  } catch (_) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось открыть почтовое приложение'),
+        ),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

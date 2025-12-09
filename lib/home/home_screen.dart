@@ -352,11 +352,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             await widget.repository.update(updated);
                                           }
                                         } else if (value == 'delete') {
-                                          AmplitudeService.instance
-                                              .logDeleteStateEntry();
+                                          AmplitudeService.instance.logDeleteStateEntry();
                                           await widget.repository.deleteById(entry.id);
-                                          AmplitudeService.instance
-                                              .logDeleteStateEntryConfirmed();
                                         }
                                       },
                                       itemBuilder: (context) => const [

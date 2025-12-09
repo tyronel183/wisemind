@@ -150,11 +150,6 @@ class _MeditationCard extends StatelessWidget {
           onTap: () async {
             // Бесплатные медитации (например, раздел "Осознанность") доступны сразу.
             if (m.isFree) {
-              AmplitudeService.instance.logEvent(
-                'meditation_viewed',
-                properties: {'meditation': m.title},
-              );
-
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => MeditationPlayerScreen(meditation: m),
@@ -167,11 +162,6 @@ class _MeditationCard extends StatelessWidget {
             final allowed =
                 await BillingService.ensureProOrShowPaywall(context);
             if (!context.mounted || !allowed) return;
-
-            AmplitudeService.instance.logEvent(
-              'meditation_viewed',
-              properties: {'meditation': m.title},
-            );
 
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -293,6 +283,12 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
   void initState() {
     super.initState();
     _player = AudioPlayer();
+
+    AmplitudeService.instance.logEvent(
+      'meditation_viewed',
+      properties: {'meditation': widget.meditation.title},
+    );
+
     _init();
   }
 
@@ -423,18 +419,6 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
               TabBar(
                 onTap: (index) {
                   // 0 — медитация с голосом, 1 — только фоновая музыка
-                  if (index == 0) {
-                    AmplitudeService.instance.logEvent(
-                      'meditation_with_voice',
-                      properties: {'meditation': meditation.title},
-                    );
-                  } else {
-                    AmplitudeService.instance.logEvent(
-                      'meditation_background',
-                      properties: {'meditation': meditation.title},
-                    );
-                  }
-
                   _switchAudio(index == 0);
                 },
                 tabs: const [
@@ -481,8 +465,21 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                       child: FilledButton.icon(
                         icon: Icon(playing ? Icons.pause : Icons.play_arrow),
                         label: Text(playing ? "Пауза" : "Играть"),
-                        onPressed: () =>
-                            playing ? _player.pause() : _player.play(),
+                        onPressed: () async {
+                          if (playing) {
+                            await _player.pause();
+                          } else {
+                            await _player.play();
+                            AmplitudeService.instance.logEvent(
+                              _useVoice
+                                  ? 'meditation_with_voice'
+                                  : 'meditation_background',
+                              properties: {
+                                'meditation': meditation.title,
+                              },
+                            );
+                          }
+                        },
                       ),
                     );
                   },
