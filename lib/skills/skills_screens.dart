@@ -5,13 +5,26 @@ import 'package:wisemind/billing/billing_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_card_tile.dart';
+import '../analytics/amplitude_service.dart';
 import 'dbt_skill.dart';
 import 'dbt_skills_loader.dart';
 
 /// Корневой экран вкладки "Навыки DBT":
 /// показывает интро DBT и 4 модуля
-class SkillsRootScreen extends StatelessWidget {
+class SkillsRootScreen extends StatefulWidget {
   const SkillsRootScreen({super.key});
+
+  @override
+  State<SkillsRootScreen> createState() => _SkillsRootScreenState();
+}
+
+class _SkillsRootScreenState extends State<SkillsRootScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Экран категорий навыков
+    AmplitudeService.instance.logEvent('skills_categories_screen');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +59,8 @@ class SkillsRootScreen extends StatelessWidget {
                   AppCardTile(
                     leading: const Icon(Icons.psychology_alt, size: 32),
                     title: 'Диалектическая поведенческая терапия',
-                    subtitle: 'Что такое DBT, из чего она состоит и как с ней работать в этом приложении.',
+                    subtitle:
+                        'Что такое DBT, из чего она состоит и как с ней работать в этом приложении.',
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.of(context).push(
@@ -66,7 +80,8 @@ class SkillsRootScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => SkillsListScreen(module: module),
+                            builder: (_) =>
+                                SkillsListScreen(module: module),
                           ),
                         );
                       },
@@ -145,13 +160,30 @@ class DbtIntroScreen extends StatelessWidget {
 }
 
 /// Экран списка навыков внутри одного раздела (модуля)
-class SkillsListScreen extends StatelessWidget {
+class SkillsListScreen extends StatefulWidget {
   final DbtModule module;
 
   const SkillsListScreen({super.key, required this.module});
 
   @override
+  State<SkillsListScreen> createState() => _SkillsListScreenState();
+}
+
+class _SkillsListScreenState extends State<SkillsListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Открыт список навыков конкретного модуля
+    AmplitudeService.instance.logEvent(
+      'skill_list',
+      properties: {'category': widget.module.title},
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final module = widget.module;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -238,7 +270,8 @@ class SkillsListScreen extends StatelessWidget {
                       if (module == DbtModule.mindfulness) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => SkillOverviewScreen(skill: skill),
+                            builder: (_) =>
+                                SkillOverviewScreen(skill: skill),
                           ),
                         );
                         return;
@@ -246,12 +279,14 @@ class SkillsListScreen extends StatelessWidget {
 
                       // Для остальных модулей проверяем доступ через общий биллинговый слой.
                       final allowed =
-                          await BillingService.ensureProOrShowPaywall(context);
+                          await BillingService.ensureProOrShowPaywall(
+                              context);
                       if (!context.mounted || !allowed) return;
 
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => SkillOverviewScreen(skill: skill),
+                          builder: (_) =>
+                              SkillOverviewScreen(skill: skill),
                         ),
                       );
                     },
@@ -266,13 +301,33 @@ class SkillsListScreen extends StatelessWidget {
 }
 
 /// Экран с общей информацией о навыке
-class SkillOverviewScreen extends StatelessWidget {
+class SkillOverviewScreen extends StatefulWidget {
   final DbtSkill skill;
 
   const SkillOverviewScreen({super.key, required this.skill});
 
   @override
+  State<SkillOverviewScreen> createState() => _SkillOverviewScreenState();
+}
+
+class _SkillOverviewScreenState extends State<SkillOverviewScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final categoryTitle = widget.skill.module.title;
+
+    AmplitudeService.instance.logEvent(
+      'skill_overview',
+      properties: {
+        'category': categoryTitle,
+        'skill': widget.skill.name,
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final skill = widget.skill;
     final meta = skill.section == null || skill.section!.isEmpty
         ? skill.module.title
         : '${skill.module.title} · ${skill.section}';
@@ -332,6 +387,7 @@ class SkillOverviewScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => FullSkillInfoScreen(
                       skillTitle: skill.name,
+                      categoryTitle: skill.module.title,
                       fullInfo: skill.fullInfo ??
                           'Здесь будет полное текстовое описание навыка «${skill.name}» '
                               'из твоих материалов. Пока это заглушка.',
@@ -377,6 +433,7 @@ class SkillOverviewScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => FullSkillPracticeScreen(
                       skillTitle: skill.name,
+                      categoryTitle: skill.module.title,
                       practiceTitle: 'Практика: ${skill.name}',
                       fullPractice: skill.fullPractice ??
                           'Здесь появится подробная практика по навыку «${skill.name}» '
@@ -396,15 +453,34 @@ class SkillOverviewScreen extends StatelessWidget {
 }
 
 /// Экран с полной информацией о навыке
-class FullSkillInfoScreen extends StatelessWidget {
+class FullSkillInfoScreen extends StatefulWidget {
   final String skillTitle;
+  final String categoryTitle;
   final String fullInfo;
 
   const FullSkillInfoScreen({
     super.key,
     required this.skillTitle,
+    required this.categoryTitle,
     required this.fullInfo,
   });
+
+  @override
+  State<FullSkillInfoScreen> createState() => _FullSkillInfoScreenState();
+}
+
+class _FullSkillInfoScreenState extends State<FullSkillInfoScreen> {
+  @override
+  void initState() {
+    super.initState();
+    AmplitudeService.instance.logEvent(
+      'skill_full_description',
+      properties: {
+        'category': widget.categoryTitle,
+        'skill': widget.skillTitle,
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -414,7 +490,7 @@ class FullSkillInfoScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          skillTitle,
+          widget.skillTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -434,7 +510,7 @@ class FullSkillInfoScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Html(
-                    data: fullInfo,
+                    data: widget.fullInfo,
                     style: {
                       'body': Style(
                         margin: Margins.zero,
@@ -465,9 +541,12 @@ class FullSkillInfoScreen extends StatelessWidget {
                       'hr': Style(
                         margin: Margins.symmetric(vertical: 12),
                         border: Border(
-                          bottom: BorderSide(color: Colors.black26, width: 1),
+                          bottom: BorderSide(
+                            color: Colors.black26,
+                            width: 1,
+                          ),
                         ),
-                     ),
+                      ),
                     },
                   ),
                 ],
@@ -481,17 +560,37 @@ class FullSkillInfoScreen extends StatelessWidget {
 }
 
 /// Экран с полной практикой по навыку
-class FullSkillPracticeScreen extends StatelessWidget {
+class FullSkillPracticeScreen extends StatefulWidget {
   final String skillTitle;
+  final String categoryTitle;
   final String practiceTitle;
   final String fullPractice;
 
   const FullSkillPracticeScreen({
     super.key,
     required this.skillTitle,
+    required this.categoryTitle,
     required this.practiceTitle,
     required this.fullPractice,
   });
+
+  @override
+  State<FullSkillPracticeScreen> createState() =>
+      _FullSkillPracticeScreenState();
+}
+
+class _FullSkillPracticeScreenState extends State<FullSkillPracticeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    AmplitudeService.instance.logEvent(
+      'skill_practice',
+      properties: {
+        'category': widget.categoryTitle,
+        'skill': widget.skillTitle,
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -501,7 +600,7 @@ class FullSkillPracticeScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          skillTitle,
+          widget.skillTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -516,12 +615,12 @@ class FullSkillPracticeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    practiceTitle,
+                    widget.practiceTitle,
                     style: AppTypography.screenTitle,
                   ),
                   const SizedBox(height: 12),
                   Html(
-                    data: fullPractice,
+                    data: widget.fullPractice,
                     style: {
                       'body': Style(
                         margin: Margins.zero,
@@ -552,7 +651,10 @@ class FullSkillPracticeScreen extends StatelessWidget {
                       'hr': Style(
                         margin: Margins.symmetric(vertical: 12),
                         border: Border(
-                          bottom: BorderSide(color: Colors.black26, width: 1),
+                          bottom: BorderSide(
+                            color: Colors.black26,
+                            width: 1,
+                          ),
                         ),
                       ),
                     },

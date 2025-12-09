@@ -4,11 +4,29 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wisemind/theme/app_theme.dart';
 import 'package:wisemind/billing/billing_service.dart';
 
+import '../analytics/amplitude_service.dart';
 import 'pros_cons.dart';
 
+const String kProsConsWorksheetName = 'За и против';
+
 /// Список записей "За и против"
-class ProsConsListScreen extends StatelessWidget {
+class ProsConsListScreen extends StatefulWidget {
   const ProsConsListScreen({super.key});
+
+  @override
+  State<ProsConsListScreen> createState() => _ProsConsListScreenState();
+}
+
+class _ProsConsListScreenState extends State<ProsConsListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Открыт список рабочего листа "За и против"
+    AmplitudeService.instance.logEvent(
+      'worksheet_history',
+      properties: {'worksheet': kProsConsWorksheetName},
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +90,13 @@ class ProsConsListScreen extends StatelessWidget {
                   trailing: PopupMenuButton<String>(
                     onSelected: (value) async {
                       if (value == 'edit') {
+                        // Открытие формы редактирования рабочего листа "За и против"
+                        AmplitudeService.instance.logEvent(
+                          'edit_worksheet_form',
+                          properties: {
+                            'worksheet': kProsConsWorksheetName,
+                          },
+                        );
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) =>
@@ -79,6 +104,14 @@ class ProsConsListScreen extends StatelessWidget {
                           ),
                         );
                       } else if (value == 'delete') {
+                        // Инициирована попытка удалить запись "За и против"
+                        AmplitudeService.instance.logEvent(
+                          'delete_worksheet',
+                          properties: {
+                            'worksheet': kProsConsWorksheetName,
+                          },
+                        );
+
                         final confirm = await showDialog<bool>(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -105,6 +138,14 @@ class ProsConsListScreen extends StatelessWidget {
                         );
 
                         if (confirm == true) {
+                          // Пользователь подтвердил удаление записи "За и против"
+                          AmplitudeService.instance.logEvent(
+                            'delete_worksheet_confirmed',
+                            properties: {
+                              'worksheet': kProsConsWorksheetName,
+                            },
+                          );
+
                           await entry.delete();
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +190,12 @@ Future<void> _onCreateProsConsPressed(BuildContext context) async {
   // Проверяем доступ через общий биллинговый слой.
   final allowed = await BillingService.ensureProOrShowPaywall(context);
   if (!context.mounted || !allowed) return;
+
+  // Открытие формы нового рабочего листа "За и против"
+  AmplitudeService.instance.logEvent(
+    'new_worksheet_form',
+    properties: {'worksheet': kProsConsWorksheetName},
+  );
 
   // Если доступ есть — открываем экран создания новой записи.
   await Navigator.of(context).push(
@@ -511,6 +558,12 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
 
       await box.add(entry);
 
+      // Новая запись рабочего листа "За и против" создана
+      AmplitudeService.instance.logEvent(
+        'worksheet_created',
+        properties: {'worksheet': kProsConsWorksheetName},
+      );
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -528,6 +581,12 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
         ..consResistImpulse = _consResistCtrl.text.trim();
 
       await e.save();
+
+      // Существующая запись рабочего листа "За и против" отредактирована
+      AmplitudeService.instance.logEvent(
+        'worksheet_edited',
+        properties: {'worksheet': kProsConsWorksheetName},
+      );
 
       if (mounted) {
         Navigator.of(context).pop();

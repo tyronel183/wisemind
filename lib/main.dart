@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:io' show Platform;
+
+import 'analytics/amplitude_service.dart';
 
 // 🆕 Billing Service
 import 'billing/billing_service.dart';
@@ -42,6 +45,31 @@ Future<void> main() async {
   final Box settingsBox = await Hive.openBox('app_settings');
   final bool hasCompletedOnboarding =
       settingsBox.get('hasCompletedOnboarding', defaultValue: false) as bool;
+
+  // Инициализация Amplitude с базовыми user properties
+  await AmplitudeService.instance.init(
+    apiKey: '184d3ba87a05255179cc9df84f22236b',
+    appVersion: '1.0.0', // TODO: заменить на фактическую версию из package_info_plus
+    initialUserProperties: {
+      'platform': Platform.isAndroid ? 'android' : 'ios',
+      'language': 'ru', // TODO: можно подтянуть из локали
+      'notifications_enabled': false, // будет обновляться из настроек
+      'onboarding_completed': hasCompletedOnboarding,
+      'usage_guide_completed': false,
+      'subscription_status': 'free',
+      'has_any_state_entries': box.isNotEmpty,
+      'has_any_worksheet_entries': Hive.box<ProsConsEntry>(kProsConsBoxName).isNotEmpty,
+      'country': null,
+    },
+  );
+
+  // Базовое событие запуска приложения
+  await AmplitudeService.instance.logEvent(
+    'app_opened',
+    properties: {
+      'source': 'unknown',
+    },
+  );
 
   // Репозиторий для дневников состояний
   final StateRepository repository = StateRepository(box);

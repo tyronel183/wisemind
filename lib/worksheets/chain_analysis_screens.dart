@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:wisemind/theme/app_theme.dart';
 
+import '../analytics/amplitude_service.dart';
 import 'chain_analysis.dart';
 
 const String kChainAnalysisBoxName = 'chain_analysis_entries';
@@ -115,8 +116,27 @@ Future<Box<ChainAnalysisEntry>> _openChainAnalysisBox() async {
 }
 
 /// Список записей "Анализ нежелательного поведения"
-class ChainAnalysisListScreen extends StatelessWidget {
+class ChainAnalysisListScreen extends StatefulWidget {
   const ChainAnalysisListScreen({super.key});
+
+  @override
+  State<ChainAnalysisListScreen> createState() => _ChainAnalysisListScreenState();
+}
+
+class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Логируем открытие истории рабочего листа
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AmplitudeService.instance.logEvent(
+        'worksheet_history',
+        properties: {
+          'worksheet': 'Анализ нежелательного поведения',
+        },
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,6 +225,14 @@ class ChainAnalysisListScreen extends StatelessWidget {
                       trailing: PopupMenuButton<String>(
                         onSelected: (value) async {
                           if (value == 'edit') {
+                            // Открытие формы редактирования
+                            AmplitudeService.instance.logEvent(
+                              'edit_worksheet_form',
+                              properties: {
+                                'worksheet': 'Анализ нежелательного поведения',
+                              },
+                            );
+
                             await Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => ChainAnalysisEditScreen(
@@ -213,6 +241,14 @@ class ChainAnalysisListScreen extends StatelessWidget {
                               ),
                             );
                           } else if (value == 'delete') {
+                            // Выбор удаления записи
+                            AmplitudeService.instance.logEvent(
+                              'delete_worksheet',
+                              properties: {
+                                'worksheet': 'Анализ нежелательного поведения',
+                              },
+                            );
+
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -239,6 +275,15 @@ class ChainAnalysisListScreen extends StatelessWidget {
                             );
 
                             if (confirm == true) {
+                              // Подтверждение удаления
+                              AmplitudeService.instance.logEvent(
+                                'delete_worksheet_confirmed',
+                                properties: {
+                                  'worksheet':
+                                      'Анализ нежелательного поведения',
+                                },
+                              );
+
                               await entry.delete();
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -274,6 +319,14 @@ class ChainAnalysisListScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
+          // Открытие формы новой записи
+          AmplitudeService.instance.logEvent(
+            'new_worksheet_form',
+            properties: {
+              'worksheet': 'Анализ нежелательного поведения',
+            },
+          );
+
           await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => const ChainAnalysisEditScreen(),
@@ -402,6 +455,14 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
       );
 
       await box.add(entry);
+
+      // Логируем создание новой записи рабочего листа
+      AmplitudeService.instance.logEvent(
+        'worksheet_created',
+        properties: {
+          'worksheet': 'Анализ нежелательного поведения',
+        },
+      );
     } else {
       final e = widget.existingEntry!;
 
@@ -424,6 +485,14 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
         ..fixPlan = _fixPlanCtrl.text.trim();
 
       await e.save();
+
+      // Логируем редактирование существующей записи рабочего листа
+      AmplitudeService.instance.logEvent(
+        'worksheet_edited',
+        properties: {
+          'worksheet': 'Анализ нежелательного поведения',
+        },
+      );
     }
 
     if (!mounted) return;

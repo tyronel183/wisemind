@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../notifications/notification_service.dart';
 import 'about_screen.dart';
 import '../usage_guide/usage_guide_screen.dart';
+import '../analytics/amplitude_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,12 +21,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     // TODO: сюда можно будет подтянуть состояние из Hive/SettingsRepository
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AmplitudeService.instance.logSettingsOpened();
+    });
   }
 
   Future<void> _onReminderToggle(bool value) async {
     setState(() {
       _remindersEnabled = value;
     });
+
+    // Логируем переключение напоминаний
+    AmplitudeService.instance
+        .logNotificationsToggled(state: value ? 'on' : 'off');
 
     // Здесь управляем пушами карты дня
     if (value) {
@@ -38,6 +46,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _launchMail() async {
+    AmplitudeService.instance.logFeedbackEmailOpened();
+
     final uri = Uri(
       scheme: 'mailto',
       path: 'dbtenthusiast@gmail.com',
@@ -72,9 +82,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Как пользоваться приложением'),
             subtitle: const Text('Краткий гид по Wisemind'),
             onTap: () {
+              AmplitudeService.instance.logSettingsGuideOpened();
+
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => const UsageGuideScreen(),
+                  builder: (_) => UsageGuideScreen(
+                    onCompleted: () {
+                      AmplitudeService.instance.logSettingsGuideCompleted();
+                    },
+                  ),
                 ),
               );
             },
@@ -93,6 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             title: const Text('О приложении'),
             onTap: () {
+              AmplitudeService.instance.logAboutAppOpened();
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const AboutScreen(),

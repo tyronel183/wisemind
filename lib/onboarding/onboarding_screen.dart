@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../analytics/amplitude_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onFinished;
@@ -16,6 +17,19 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final _controller = PageController();
   int _currentIndex = 0;
+  bool _onboardingStartedLogged = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Логируем начало онбординга один раз, когда экран впервые показан
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_onboardingStartedLogged) {
+        AmplitudeService.instance.logOnboardingStarted();
+        _onboardingStartedLogged = true;
+      }
+    });
+  }
 
   late final List<_OnboardingPageData> _pages = [
     _OnboardingPageData(
@@ -53,6 +67,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _onNext() {
     final isLast = _pages[_currentIndex].isLast;
     if (isLast) {
+      // Пользователь прошёл онбординг до конца
+      AmplitudeService.instance.logOnboardingCompleted();
       widget.onFinished();
       return;
     }
@@ -64,6 +80,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _onSkip() {
+    // steps_total = номер текущего экрана (0‑based) + 1
+    final stepsTotal = _currentIndex + 1;
+    AmplitudeService.instance.logOnboardingSkipped(stepsTotal: stepsTotal);
     widget.onFinished();
   }
 

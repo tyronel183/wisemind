@@ -8,8 +8,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:wisemind/theme/app_theme.dart';
 import 'package:wisemind/billing/billing_service.dart';
+import '../analytics/amplitude_service.dart';
 
 import 'fact_check.dart';
+
+const String kFactCheckWorksheetName = 'Проверка фактов';
 
 Future<Box<FactCheckEntry>> _openFactCheckBox() async {
   if (Hive.isBoxOpen(kFactCheckBoxName)) {
@@ -19,8 +22,23 @@ Future<Box<FactCheckEntry>> _openFactCheckBox() async {
 }
 
 /// Список записей "Проверка фактов"
-class FactCheckListScreen extends StatelessWidget {
+class FactCheckListScreen extends StatefulWidget {
   const FactCheckListScreen({super.key});
+
+  @override
+  State<FactCheckListScreen> createState() => _FactCheckListScreenState();
+}
+
+class _FactCheckListScreenState extends State<FactCheckListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Экран истории рабочего листа "Проверка фактов"
+    AmplitudeService.instance.logEvent(
+      'worksheet_history',
+      properties: {'worksheet': kFactCheckWorksheetName},
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +104,8 @@ class FactCheckListScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => FactCheckDetailScreen(entry: entry),
+                            builder: (_) =>
+                                FactCheckDetailScreen(entry: entry),
                           ),
                         );
                       },
@@ -102,6 +121,13 @@ class FactCheckListScreen extends StatelessWidget {
                       trailing: PopupMenuButton<String>(
                         onSelected: (value) async {
                           if (value == 'edit') {
+                            // Открытие формы редактирования рабочего листа
+                            AmplitudeService.instance.logEvent(
+                              'edit_worksheet_form',
+                              properties: {
+                                'worksheet': kFactCheckWorksheetName,
+                              },
+                            );
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) =>
@@ -109,6 +135,14 @@ class FactCheckListScreen extends StatelessWidget {
                               ),
                             );
                           } else if (value == 'delete') {
+                            // Инициирована попытка удалить рабочий лист
+                            AmplitudeService.instance.logEvent(
+                              'delete_worksheet',
+                              properties: {
+                                'worksheet': kFactCheckWorksheetName,
+                              },
+                            );
+
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -135,6 +169,13 @@ class FactCheckListScreen extends StatelessWidget {
                             );
 
                             if (confirm == true) {
+                              // Пользователь подтвердил удаление рабочего листа
+                              AmplitudeService.instance.logEvent(
+                                'delete_worksheet_confirmed',
+                                properties: {
+                                  'worksheet': kFactCheckWorksheetName,
+                                },
+                              );
                               await entry.delete();
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -183,6 +224,12 @@ Future<void> _onCreateNewPressed(BuildContext context) async {
   // Проверяем доступ через общий биллинговый слой.
   final allowed = await BillingService.ensureProOrShowPaywall(context);
   if (!context.mounted || !allowed) return;
+
+  // Открытие формы нового рабочего листа "Проверка фактов"
+  AmplitudeService.instance.logEvent(
+    'new_worksheet_form',
+    properties: {'worksheet': kFactCheckWorksheetName},
+  );
 
   // Если доступ есть — открываем экран создания новой записи.
   await Navigator.of(context).push(
@@ -683,6 +730,11 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
       );
 
       await box.add(entry);
+      // Новая запись рабочего листа "Проверка фактов" создана
+      AmplitudeService.instance.logEvent(
+        'worksheet_created',
+        properties: {'worksheet': kFactCheckWorksheetName},
+      );
 
       if (mounted) {
         Navigator.of(context).pop();
@@ -709,6 +761,11 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
         ..currentIntensity = currentIntensity;
 
       await e.save();
+      // Существующая запись рабочего листа "Проверка фактов" отредактирована
+      AmplitudeService.instance.logEvent(
+        'worksheet_edited',
+        properties: {'worksheet': kFactCheckWorksheetName},
+      );
 
       if (mounted) {
         Navigator.of(context).pop();

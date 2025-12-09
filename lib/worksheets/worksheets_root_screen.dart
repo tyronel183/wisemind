@@ -3,13 +3,27 @@ import 'package:wisemind/theme/app_theme.dart';
 import 'package:wisemind/theme/app_spacing.dart';
 import 'package:wisemind/theme/app_card_tile.dart';
 
+import '../analytics/amplitude_service.dart';
 import 'chain_analysis_screens.dart';
 import 'pros_cons_screens.dart';
 import 'fact_check_screens.dart';
 
-
-class WorksheetsRootScreen extends StatelessWidget {
+class WorksheetsRootScreen extends StatefulWidget {
   const WorksheetsRootScreen({super.key});
+
+  @override
+  State<WorksheetsRootScreen> createState() => _WorksheetsRootScreenState();
+}
+
+class _WorksheetsRootScreenState extends State<WorksheetsRootScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Логируем открытие экрана рабочих листов
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AmplitudeService.instance.logWorksheetsScreenOpened();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

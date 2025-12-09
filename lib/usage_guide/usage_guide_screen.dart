@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../analytics/amplitude_service.dart';
 
 class UsageGuideScreen extends StatefulWidget {
   final VoidCallback? onCompleted;
@@ -15,6 +16,15 @@ class UsageGuideScreen extends StatefulWidget {
 class _UsageGuideScreenState extends State<UsageGuideScreen> {
   final _controller = PageController();
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Логируем просмотр первого шага минигайда
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AmplitudeService.instance.logHomeGuideStepViewed(stepIndex: 1);
+    });
+  }
 
   final _pages = const [
     _GuidePageData(
@@ -61,6 +71,9 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
                 setState(() {
                   _currentPage = index;
                 });
+                // Логируем просмотр шага минигайда
+                AmplitudeService.instance
+                    .logHomeGuideStepViewed(stepIndex: index + 1);
               },
               itemBuilder: (context, index) {
                 final page = _pages[index];
@@ -110,6 +123,8 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
     if (page.isLast) {
       return ElevatedButton(
         onPressed: () async {
+          // Логируем завершение минигайда
+          AmplitudeService.instance.logHomeGuideCompleted();
           // Вызываем колбэк, если он передан
           widget.onCompleted?.call();
           // TODO: позже можно добавить переход на экран "Новая карта дня"

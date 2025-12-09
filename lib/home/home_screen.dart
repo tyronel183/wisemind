@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -11,9 +10,9 @@ import '../state/state_entry.dart';
 import '../state/state_entry_detail_screen.dart';
 import '../utils/date_format.dart';
 import '../export/state_entries_csv_exporter.dart';
-import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../settings/settings_screen.dart';
 import '../usage_guide/usage_guide_screen.dart';
+import '../analytics/amplitude_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final StateRepository repository;
@@ -31,10 +30,20 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _hasCompletedUsageGuide = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AmplitudeService.instance.logHomeScreenOpened();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
+          AmplitudeService.instance.logNewStateFormOpened();
+
           final entry = await Navigator.push<StateEntry>(
             context,
             MaterialPageRoute(
@@ -43,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
 
           if (entry != null) {
+            AmplitudeService.instance.logStateEntryCreated();
             await widget.repository.save(entry);
           }
         },
@@ -150,8 +160,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: const Icon(Icons.download),
                             onSelected: (value) {
                               if (value == '7days') {
+                                AmplitudeService.instance
+                                    .logStatesShare(period: 'week');
                                 exportCsv(last7Days: true);
                               } else if (value == 'all') {
+                                AmplitudeService.instance
+                                    .logStatesShare(period: 'all');
                                 exportCsv(last7Days: false);
                               }
                             },
@@ -184,6 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(12),
                         onTap: () async {
+                          AmplitudeService.instance.logHomeGuideOpened();
+
                           await Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => UsageGuideScreen(
@@ -290,6 +306,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ...entries.map((entry) {
                               return GestureDetector(
                                 onTap: () {
+                                  AmplitudeService.instance
+                                      .logStateEntryDetailsViewed();
+
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -315,6 +334,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     trailing: PopupMenuButton<String>(
                                       onSelected: (value) async {
                                         if (value == 'edit') {
+                                          AmplitudeService.instance
+                                              .logEditStateFormOpened();
+
                                           final updated =
                                               await Navigator.push<StateEntry>(
                                             context,
@@ -325,10 +347,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           );
                                           if (updated != null) {
+                                            AmplitudeService.instance
+                                                .logStateEntryEdited();
                                             await widget.repository.update(updated);
                                           }
                                         } else if (value == 'delete') {
+                                          AmplitudeService.instance
+                                              .logDeleteStateEntry();
                                           await widget.repository.deleteById(entry.id);
+                                          AmplitudeService.instance
+                                              .logDeleteStateEntryConfirmed();
                                         }
                                       },
                                       itemBuilder: (context) => const [

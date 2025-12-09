@@ -5,11 +5,24 @@ import 'package:wisemind/billing/billing_service.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
+import '../analytics/amplitude_service.dart';
 import 'meditation.dart';
 import 'meditation_repository.dart';
 
-class MeditationsScreen extends StatelessWidget {
+class MeditationsScreen extends StatefulWidget {
   const MeditationsScreen({super.key});
+
+  @override
+  State<MeditationsScreen> createState() => _MeditationsScreenState();
+}
+
+class _MeditationsScreenState extends State<MeditationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Экран со списком медитаций открыт
+    AmplitudeService.instance.logEvent('meditations_screen');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +150,11 @@ class _MeditationCard extends StatelessWidget {
           onTap: () async {
             // Бесплатные медитации (например, раздел "Осознанность") доступны сразу.
             if (m.isFree) {
+              AmplitudeService.instance.logEvent(
+                'meditation_viewed',
+                properties: {'meditation': m.title},
+              );
+
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => MeditationPlayerScreen(meditation: m),
@@ -149,6 +167,11 @@ class _MeditationCard extends StatelessWidget {
             final allowed =
                 await BillingService.ensureProOrShowPaywall(context);
             if (!context.mounted || !allowed) return;
+
+            AmplitudeService.instance.logEvent(
+              'meditation_viewed',
+              properties: {'meditation': m.title},
+            );
 
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -399,6 +422,19 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
             ] else ...[
               TabBar(
                 onTap: (index) {
+                  // 0 — медитация с голосом, 1 — только фоновая музыка
+                  if (index == 0) {
+                    AmplitudeService.instance.logEvent(
+                      'meditation_with_voice',
+                      properties: {'meditation': meditation.title},
+                    );
+                  } else {
+                    AmplitudeService.instance.logEvent(
+                      'meditation_background',
+                      properties: {'meditation': meditation.title},
+                    );
+                  }
+
                   _switchAudio(index == 0);
                 },
                 tabs: const [
