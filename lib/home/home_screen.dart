@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../theme/app_spacing.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_components.dart';
 import '../state/entry_form_screen.dart';
 import '../state/state_repository.dart';
 import '../state/state_entry.dart';
@@ -32,6 +33,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Читаем сохранённый флаг прохождения usage guide из настроек
+    final settingsBox = Hive.box('app_settings');
+    final hasCompletedUsageGuide =
+        settingsBox.get('hasCompletedUsageGuide', defaultValue: false) as bool;
+    _hasCompletedUsageGuide = hasCompletedUsageGuide;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       AmplitudeService.instance.logHomeScreenOpened();
     });
@@ -169,13 +176,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenTitleHorizontal,
                   ),
-                  child: Card(
+                  child: Container(
                     margin: const EdgeInsets.only(bottom: AppSpacing.gapMedium),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    decoration: AppDecorations.subtleCard,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.cardRadius),
                       onTap: () async {
                         AmplitudeService.instance.logHomeGuideOpened();
 
@@ -183,6 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                             builder: (_) => UsageGuideScreen(
                               onCompleted: () {
+                                final settingsBox = Hive.box('app_settings');
+                                settingsBox.put('hasCompletedUsageGuide', true);
                                 setState(() {
                                   _hasCompletedUsageGuide = true;
                                 });
@@ -252,11 +259,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         children: [
                           // Карточка с графиком
-                          Card(
+                          Container(
                             margin: const EdgeInsets.only(bottom: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            decoration: AppDecorations.card,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: AppSpacing.cardPaddingHorizontal,
@@ -295,20 +300,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 );
                               },
-                              child: Card(
+                              child: Container(
                                 margin: const EdgeInsets.only(bottom: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                                decoration: AppDecorations.card,
                                 child: ListTile(
                                   leading: Text(
                                     entry.mood ?? '',
                                     style: const TextStyle(fontSize: 26),
                                   ),
-                                  title: Text(formatDate(entry.date)),
+                                  title: Text(
+                                    formatDate(entry.date),
+                                    style: AppTypography.cardTitle,
+                                  ),
                                   subtitle: entry.grateful != null &&
                                           entry.grateful!.isNotEmpty
-                                      ? Text('Благодарю себя: ${entry.grateful}')
+                                      ? Text(
+                                          'Благодарю себя: ${entry.grateful}',
+                                          style: AppTypography.bodySecondary,
+                                        )
                                       : null,
                                   trailing: PopupMenuButton<String>(
                                     onSelected: (value) async {

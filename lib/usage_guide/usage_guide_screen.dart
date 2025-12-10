@@ -17,6 +17,15 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
   final _controller = PageController();
   int _currentPage = 0;
 
+  void _completeAndClose() {
+    // Логируем завершение минигайда
+    AmplitudeService.instance.logHomeGuideCompleted();
+    // Вызываем колбэк, если он передан
+    widget.onCompleted?.call();
+    // Закрываем экран
+    Navigator.of(context).pop();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +69,12 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Как пользоваться Wisemind'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: _completeAndClose,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -122,14 +137,7 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
   Widget _buildBottomButton(_GuidePageData page) {
     if (page.isLast) {
       return ElevatedButton(
-        onPressed: () async {
-          // Логируем завершение минигайда
-          AmplitudeService.instance.logHomeGuideCompleted();
-          // Вызываем колбэк, если он передан
-          widget.onCompleted?.call();
-          // TODO: позже можно добавить переход на экран "Новая карта дня"
-          Navigator.of(context).pop();
-        },
+        onPressed: _completeAndClose,
         child: const Text('Заполнить карту дня'),
       );
     }

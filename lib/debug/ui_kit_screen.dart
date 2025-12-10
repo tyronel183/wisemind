@@ -148,6 +148,40 @@ class UiKitScreen extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+
+          const Divider(),
+
+          // ==== КАРТОЧКИ НАВЫКОВ ====
+          Text('Карточки навыков', style: textTheme.titleMedium),
+          const SizedBox(height: 8),
+
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: AppSizes.padding,
+            crossAxisSpacing: AppSizes.padding,
+            childAspectRatio: 0.9,
+            children: const [
+              SkillCategoryCard(
+                title: 'Осознанность',
+                assetPath: 'assets/images/skills/mindfulness.png',
+              ),
+              SkillCategoryCard(
+                title: 'Устойчивость к стрессу',
+                assetPath: 'assets/images/skills/distress_tolerance.png',
+              ),
+              SkillCategoryCard(
+                title: 'Регуляция эмоций',
+                assetPath: 'assets/images/skills/emotion_regulation.png',
+              ),
+              SkillCategoryCard(
+                title: 'Межличностная эффективность',
+                assetPath: 'assets/images/skills/interpersonal_effectiveness.png',
+              ),
+            ],
+          ),
         ],
       ),
     );

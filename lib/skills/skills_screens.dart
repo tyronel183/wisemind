@@ -5,6 +5,7 @@ import 'package:wisemind/billing/billing_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_card_tile.dart';
+import '../theme/app_components.dart';
 import '../analytics/amplitude_service.dart';
 import 'dbt_skill.dart';
 import 'dbt_skills_loader.dart';
@@ -50,10 +51,7 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
             ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.screenPadding,
-                  vertical: AppSpacing.gapMedium,
-                ),
+                padding: const EdgeInsets.all(AppSizes.padding),
                 children: [
                   // Интро-карточка DBT
                   AppCardTile(
@@ -70,23 +68,32 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
                       );
                     },
                   ),
-                  // Модули DBT
-                  for (final module in modules) ...[
-                    AppCardTile(
-                      leading: Icon(module.icon, size: 32),
-                      title: module.title,
-                      subtitle: module.subtitle,
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                SkillsListScreen(module: module),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                  const SizedBox(height: AppSpacing.gapLarge),
+
+                  // Модули DBT — карточки с картинками 2 в ряд
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: AppSizes.padding,
+                    crossAxisSpacing: AppSizes.padding,
+                    childAspectRatio: 0.9,
+                    children: [
+                      for (final module in modules)
+                        SkillCategoryCard(
+                          title: module.title,
+                          assetPath: _assetPathForModule(module),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    SkillsListScreen(module: module),
+                              ),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -94,6 +101,23 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
         ),
       ),
     );
+  }
+
+  String? _assetPathForModule(DbtModule module) {
+    final title = module.title;
+
+    if (title == 'Осознанность') {
+      return 'assets/images/skills/mindfulness.png';
+    } else if (title == 'Устойчивость к стрессу') {
+      return 'assets/images/skills/distress_tolerance.png';
+    } else if (title == 'Регуляция эмоций') {
+      return 'assets/images/skills/emotion_regulation.png';
+    } else if (title == 'Межличностная эффективность') {
+      return 'assets/images/skills/interpersonal_effectiveness.png';
+    }
+
+    // Для модулей без своей картинки вернём null — SkillCategoryCard покажет заглушку.
+    return null;
   }
 }
 

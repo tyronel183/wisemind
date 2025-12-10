@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_theme.dart';
 
+
 /// Декорации и базовые UI-паттерны: карточки, чипы, теги и т.п.
 class AppDecorations {
   /// Базовая карточка (для большинства экранов)
@@ -115,6 +116,57 @@ class AppMediaCard extends StatelessWidget {
   }
 }
 
+/// Карточка категории навыка (для экрана навыков DBT)
+class SkillCategoryCard extends StatelessWidget {
+  const SkillCategoryCard({
+    super.key,
+    required this.title,
+    this.assetPath,
+    this.onTap,
+  });
+
+  /// Заголовок (например, "Осознанность")
+  final String title;
+
+  /// Путь до ассета (например, 'assets/images/skills/mindfulness.png')
+  final String? assetPath;
+
+  /// Обработчик нажатия
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Квадратная карта с изображением и тенью
+          AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              decoration: AppDecorations.card,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                child: assetPath != null
+                    ? Image.asset(
+                        assetPath!,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        color: AppColors.greyLight,
+                        child: const Icon(Icons.psychology_alt_outlined),
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Кастомный аппбар с лёгким градиентом и размытием (для медитаций и др. экранов)
 class FrostedGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
   const FrostedGradientAppBar({
@@ -172,7 +224,7 @@ class AppBottomNavBar extends StatelessWidget {
   final ValueChanged<int> onItemSelected;
 
   @override
-  Widget build(BuildContext context) {
+    Widget build(BuildContext context) {
     const items = <_BottomNavItemData>[
       _BottomNavItemData(
         icon: Icons.home_outlined,
@@ -203,12 +255,12 @@ class AppBottomNavBar extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.surface.withOpacity(0.95),
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: AppShadows.soft,
+              // Серая «дорожка», как под табами «С голосом / Только музыка»
+              color: AppColors.greyLight,
+              borderRadius: BorderRadius.circular(999),
             ),
+            padding: const EdgeInsets.all(4),
             child: Row(
               children: [
                 for (var i = 0; i < items.length; i++)
@@ -253,10 +305,10 @@ class _BottomNavItem extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    final Color activeColor = AppColors.primary;
-    final Color inactiveColor = AppColors.textSecondary;
+    @override
+    Widget build(BuildContext context) {
+      final Color activeColor = AppColors.primary;
+      final Color inactiveColor = AppColors.textSecondary;
 
     return InkWell(
       onTap: onTap,
@@ -266,7 +318,8 @@ class _BottomNavItem extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withOpacity(0.08) : Colors.transparent,
+          // Как таб «С голосом»: белый, если выбран; прозрачный, если нет
+          color: selected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
