@@ -5,6 +5,8 @@ import 'package:wisemind/billing/billing_service.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_card_tile.dart';
+import '../theme/app_components.dart';
 import '../analytics/amplitude_service.dart';
 import 'meditation.dart';
 import 'meditation_repository.dart';
@@ -70,36 +72,43 @@ class _MeditationsScreenState extends State<MeditationsScreen> {
       }
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Заголовок экрана
-            Padding(
+    // Если по каким‑то причинам ни один раздел не собрался (например,
+    // изменились категории в данных), показываем все медитации подряд,
+    // чтобы экран не был пустым.
+    if (listChildren.isEmpty) {
+      for (final m in meditations) {
+        listChildren.add(_MeditationCard(meditation: m));
+      }
+    }
+
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Заголовок экрана
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenTitleHorizontal,
+              vertical: AppSpacing.screenTitleVertical,
+            ),
+            child: Center(
+              child: Text(
+                'Медитации',
+                style: AppTypography.screenTitle,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView(
               padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenTitleHorizontal,
-                vertical: AppSpacing.screenTitleVertical,
+                horizontal: AppSpacing.screenPadding,
+                vertical: AppSpacing.gapMedium,
               ),
-              child: Center(
-                child: Text(
-                  'Медитации',
-                  style: AppTypography.screenTitle,
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              children: listChildren,
             ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.screenPadding,
-                  vertical: AppSpacing.gapMedium,
-                ),
-                children: listChildren,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -139,126 +148,46 @@ class _MeditationCard extends StatelessWidget {
       skillLabel = 'Эмпатия';
     }
 
+    final tags = <String>[skillLabel];
+    if (m.duration.isNotEmpty) {
+      tags.add(m.duration);
+    }
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+      padding: const EdgeInsets.only(bottom: AppSpacing.cardGap),
+      child: AppImageCardTile(
+        title: m.title,
+        subtitle: m.situation,
+        tags: tags,
+        image: CachedNetworkImage(
+          imageUrl: m.imageUrl,
+          fit: BoxFit.cover,
+          placeholder: (_, _) => Container(color: Colors.black12),
+          errorWidget: (_, _, _) =>
+              const Icon(Icons.self_improvement),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () async {
-            // Бесплатные медитации (например, раздел "Осознанность") доступны сразу.
-            if (m.isFree) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MeditationPlayerScreen(meditation: m),
-                ),
-              );
-              return;
-            }
-
-            // Для остальных медитаций проверяем доступ через общий биллинговый слой.
-            final allowed =
-                await BillingService.ensureProOrShowPaywall(context);
-            if (!context.mounted || !allowed) return;
-
+        onTap: () async {
+          // Бесплатные медитации (например, раздел "Осознанность") доступны сразу.
+          if (m.isFree) {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => MeditationPlayerScreen(meditation: m),
               ),
             );
-          },
-          child: Padding(
-            // небольшие отступы слева/справа/сверху/снизу внутри карточки
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.cardPaddingHorizontal,
-              vertical: AppSpacing.cardPaddingVertical,
-            ),
-            child: Row(
-              children: [
-                // картинка слева со скруглёнными углами
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    width: 96,
-                    height: 96,
-                    child: CachedNetworkImage(
-                      imageUrl: m.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, _) => Container(
-                        color: Colors.black12,
-                      ),
-                      errorWidget: (_, _, _) =>
-                          const Icon(Icons.self_improvement),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // текст справа
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          m.title,
-                          style: AppTypography.cardTitle,
-                        ),
-                        const SizedBox(height: AppSpacing.gapSmall),
-                        Text(
-                          m.situation,
-                          style: AppTypography.bodySecondary,
-                        ),
-                        const SizedBox(height: AppSpacing.gapMedium),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Wrap(
-                                spacing: 6,
-                                runSpacing: 4,
-                                children: [
-                                  _chip(context, skillLabel),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              m.duration,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+            return;
+          }
 
-  Widget _chip(BuildContext context, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: AppTypography.chipLabel.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-        ),
+          // Для остальных медитаций проверяем доступ через общий биллинговый слой.
+          final allowed =
+              await BillingService.ensureProOrShowPaywall(context);
+          if (!context.mounted || !allowed) return;
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => MeditationPlayerScreen(meditation: m),
+            ),
+          );
+        },
       ),
     );
   }
@@ -374,128 +303,235 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(meditation.title)),
-      body: DefaultTabController(
-        length: 2,
-        child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenPadding,
-            vertical: AppSpacing.gapMedium,
-          ),
-          children: [
-            Text(
-              meditation.situation,
-              style: AppTypography.cardTitle,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              meditation.description,
-              style: AppTypography.body,
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                Chip(
-                  avatar: const Icon(Icons.psychology, size: 16),
-                  label: Text(meditation.dbtSkill),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
+        children: [
+          // Заголовок + обложка медитации
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Обложка
+              SizedBox(
+                width: 96,
+                height: 96,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                  child: CachedNetworkImage(
+                    imageUrl: meditation.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (_, _) => Container(color: Colors.black12),
+                    errorWidget: (_, _, _) => const Icon(Icons.self_improvement),
+                  ),
                 ),
-                Chip(
-                  avatar: const Icon(Icons.timer, size: 16),
-                  label: Text(meditation.duration),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            if (_loadFailed) ...[
-              const SizedBox(height: 24),
-              Text(
-                'Не удалось загрузить аудио медитации.\nЧасто это связано с подключением к интернету. Попробуйте ещё раз или переключите вкладку.',
-                textAlign: TextAlign.center,
-                style: AppTypography.bodySecondary,
               ),
-            ] else ...[
-              TabBar(
-                onTap: (index) {
-                  // 0 — медитация с голосом, 1 — только фоновая музыка
-                  _switchAudio(index == 0);
-                },
-                tabs: const [
-                  Tab(text: 'С голосом'),
-                  Tab(text: 'Только музыка'),
+              const SizedBox(width: AppSpacing.gapMedium),
+              // Текстовая часть
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      meditation.situation,
+                      style: AppTypography.body,
+                    ),
+                    const SizedBox(height: AppSpacing.gapMedium),
+                    Builder(
+                      builder: (context) {
+                        String skillLabel = meditation.dbtSkill;
+                        if (skillLabel == 'Эмпатическое присутствие') {
+                          skillLabel = 'Эмпатия';
+                        }
+
+                        final tags = <String>[];
+                        if (meditation.duration.isNotEmpty) {
+                          tags.add(meditation.duration);
+                        }
+                        tags.add(skillLabel);
+
+                        return Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final tag in tags)
+                              Container(
+                                decoration: AppDecorations.filledChip,
+                                padding: AppChipStyles.padding,
+                                child: Text(
+                                  tag,
+                                  style: AppTypography.chipLabel,
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // Хинт перед началом практики
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.cardPadding),
+            decoration: BoxDecoration(
+              color: AppColors.greyLight,
+              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+            ),
+            child: const Text(
+              '🌿 Найдите спокойное место, где вас никто не потревожит, сядьте поудобнее и начните.',
+              style: AppTypography.bodySecondary,
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.gapXL),
+
+          if (_loadFailed) ...[
+            const SizedBox(height: AppSpacing.gapXL),
+            Text(
+              'Не удалось загрузить аудио медитации.\nЧасто это связано с подключением к интернету. Попробуйте ещё раз или переключите вкладку.',
+              textAlign: TextAlign.center,
+              style: AppTypography.bodySecondary,
+            ),
+          ] else ...[
+            // Переключатель режима аудио
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.greyLight,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              padding: const EdgeInsets.all(4),
+              child: Row(
+                children: [
+                  const SizedBox(width: AppSpacing.gapSmall),
+                  Expanded(
+                    child: FilledButton.tonal(
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            _useVoice ? Colors.white : Colors.transparent,
+                        foregroundColor:
+                            _useVoice ? AppColors.primary : AppColors.textSecondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onPressed: () {
+                        if (!_useVoice) {
+                          _switchAudio(true);
+                        }
+                      },
+                      child: const Text('С голосом'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.gapMedium),
+                  Expanded(
+                    child: FilledButton.tonal(
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            !_useVoice ? Colors.white : Colors.transparent,
+                        foregroundColor:
+                            !_useVoice ? AppColors.primary : AppColors.textSecondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_useVoice) {
+                          _switchAudio(false);
+                        }
+                      },
+                      child: const Text('Только музыка'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.gapSmall),
                 ],
               ),
-              const SizedBox(height: 24),
+            ),
 
-              if (_isLoading) ...[
-                const SizedBox(height: 16),
-                const Center(child: CircularProgressIndicator()),
-              ] else ...[
-                // прогресс
-                StreamBuilder<Duration>(
-                  stream: _player.positionStream,
-                  builder: (context, snapshot) {
-                    final pos = snapshot.data ?? Duration.zero;
-                    final total = _player.duration ?? Duration.zero;
+            const SizedBox(height: AppSpacing.gapXL),
 
-                    return Column(
-                      children: [
-                        Slider(
-                          min: 0,
-                          max: total.inMilliseconds.toDouble(),
-                          value: pos.inMilliseconds
-                              .clamp(0, total.inMilliseconds)
-                              .toDouble(),
-                          onChanged: (v) =>
-                              _player.seek(Duration(milliseconds: v.toInt())),
-                        ),
-                        Text("${_fmt(pos)} / ${_fmt(total)}"),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                // play / pause
-                StreamBuilder<PlayerState>(
-                  stream: _player.playerStateStream,
-                  builder: (context, snapshot) {
-                    final playing = snapshot.data?.playing ?? false;
-                    return Center(
-                      child: FilledButton.icon(
-                        icon: Icon(playing ? Icons.pause : Icons.play_arrow),
-                        label: Text(playing ? "Пауза" : "Играть"),
-                        onPressed: () async {
-                          if (playing) {
-                            await _player.pause();
-                          } else {
-                            await _player.play();
-                            AmplitudeService.instance.logEvent(
-                              _useVoice
-                                  ? 'meditation_with_voice'
-                                  : 'meditation_background',
-                              properties: {
-                                'meditation': meditation.title,
-                              },
-                            );
-                          }
-                        },
+            if (_isLoading) ...[
+              const SizedBox(height: AppSpacing.gapLarge),
+              const Center(child: CircularProgressIndicator()),
+            ] else ...[
+              // прогресс
+              StreamBuilder<Duration>(
+                stream: _player.positionStream,
+                builder: (context, snapshot) {
+                  final pos = snapshot.data ?? Duration.zero;
+                  final total = _player.duration ?? Duration.zero;
+
+                  return Column(
+                    children: [
+                      Slider(
+                        min: 0,
+                        max: total.inMilliseconds.toDouble(),
+                        value: pos.inMilliseconds
+                            .clamp(0, total.inMilliseconds)
+                            .toDouble(),
+                        onChanged: (v) =>
+                            _player.seek(Duration(milliseconds: v.toInt())),
                       ),
-                    );
-                  },
-                ),
-              ],
-            ],
-
-            if (!meditation.isFree) ...[
-              const SizedBox(height: 20),
-              Text(
-                "Для доступа к этой медитации может потребоваться подписка.",
-                style: AppTypography.bodySecondary,
+                      Text("${_fmt(pos)} / ${_fmt(total)}"),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: AppSpacing.gapLarge),
+              // play / pause
+              StreamBuilder<PlayerState>(
+                stream: _player.playerStateStream,
+                builder: (context, snapshot) {
+                  final playing = snapshot.data?.playing ?? false;
+                  return Center(
+                    child: FilledButton.icon(
+                      icon: Icon(playing ? Icons.pause : Icons.play_arrow),
+                      label: Text(playing ? "Пауза" : "Начать"),
+                      onPressed: () async {
+                        if (playing) {
+                          await _player.pause();
+                        } else {
+                          await _player.play();
+                          AmplitudeService.instance.logEvent(
+                            _useVoice
+                                ? 'meditation_with_voice'
+                                : 'meditation_background',
+                            properties: {
+                              'meditation': meditation.title,
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  );
+                },
               ),
             ],
           ],
-        ),
+
+          if (!meditation.isFree) ...[
+            const SizedBox(height: AppSpacing.gapLarge),
+            Text(
+              "Для доступа к этой медитации может потребоваться подписка.",
+              style: AppTypography.bodySecondary,
+            ),
+          ],
+        ],
       ),
     );
   }

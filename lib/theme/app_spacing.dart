@@ -6,8 +6,8 @@ class AppSpacing {
 
   // Заголовок раздела
   static const double sectionTitleHorizontal = 16;
-  static const double sectionTitleTop = 16;
-  static const double sectionTitleBottom = 12; // как ты хотел
+  static const double sectionTitleTop = 0;
+  static const double sectionTitleBottom = 12;
 
   // Паддинги
   static const double cardPaddingHorizontal = 12;
@@ -17,4 +17,11 @@ class AppSpacing {
   // Вертикальные расстояния
   static const double gapSmall = 4;
   static const double gapMedium = 8;
+  static const double gapLarge = 16;   // ← новое
+  static const double gapXL = 24;      // ← новое
+
+  static const double cardPadding = 16;
+
+  // Расстояние между карточками
+  static const double cardGap = 0;
 }

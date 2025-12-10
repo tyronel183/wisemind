@@ -6,6 +6,7 @@ import '../notifications/notification_service.dart';
 import 'about_screen.dart';
 import '../usage_guide/usage_guide_screen.dart';
 import '../analytics/amplitude_service.dart';
+import '../debug/ui_kit_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -130,6 +131,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const AboutScreen(),
+                ),
+              );
+            },
+          ),
+
+          const Divider(),
+
+          // UI Kit (debug)
+          ListTile(
+            title: const Text('UI Kit (debug)'),
+            subtitle: const Text('Экран дизайн-системы'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const UiKitScreen(),
                 ),
               );
             },

@@ -18,6 +18,7 @@ import 'worksheets/chain_analysis.dart';
 import 'worksheets/fact_check.dart';
 import 'notifications/notification_service.dart';
 import 'navigation/app_navigator.dart';
+import 'theme/app_theme.dart';
 
 import 'onboarding/onboarding_screen.dart';
 
@@ -98,11 +99,7 @@ class WisemindApp extends StatelessWidget {
       navigatorKey: appNavigatorKey,
       title: 'Wisemind',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.deepPurple,
-        navigationBarTheme: const NavigationBarThemeData(height: 64),
-      ),
+      theme: AppTheme.lightTheme,
       routes: {
         '/': (context) => WisemindRoot(
               repository: repository,

@@ -18,25 +18,26 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Основные
-  static const Color primary = Color(0xFF8E70FF);       // мягкий фиолетовый
-  static const Color primaryDark = Color(0xFF6C4DDB);
-  static const Color secondary = Color(0xFFE4C7FF);     // пастельный розово‑фиолетовый
-  static const Color accent = Color(0xFFDA7BFF);        // чуть ярче
+  static const Color primary = Color(0xFF613DC7);       // фирменный фиолетовый Wisemind
+  static const Color primaryDark = Color(0xFF4524A5);
+  static const Color secondary = Color(0xFFFFB347);     // тёплый акцент
+  static const Color accent = Color(0xFFE48CFF);        // яркий вспомогательный акцент
 
   // Фон
-  static const Color background = Color(0xFFF8F5FF);    // очень светлый пастельно‑фиолетовый
+  static const Color background = Color(0xFFF9F6FF);    // мягкий пастельный фон, как было раньше
+  static const Color appBarBackground = Color(0xFFF1EBFF); // чуть темнее фона для аппбара
   static const Color surface = Colors.white;
 
   // Текстовые
-  static const Color textPrimary = Color(0xFF2E2B36);
-  static const Color textSecondary = Color(0xFF6F6A7C);
+  static const Color textPrimary = Color(0xFF1F2430);
+  static const Color textSecondary = Color(0xFF666A7A);
 
   // Границы
-  static const Color border = Color(0xFFE5E1F0);
+  static const Color border = Color(0xFFD0CCE8);
 
-  // Успокаивающие серые
-  static const Color greyLight = Color(0xFFF3F1F8);
-  static const Color grey = Color(0xFFB9B4C8);
+  // Успокаивающие серые / служебные
+  static const Color greyLight = Color(0xFFECE8FF);
+  static const Color grey = Color(0xFF8B8FA0);
 }
 
 /// ======== ТИПОГРАФИКА (НОРМАЛИЗОВАННАЯ) ========
@@ -44,38 +45,51 @@ class AppColors {
 /// Используем эти стили через Theme.textTheme или напрямую.
 
 class AppTypography {
-  /// Заголовок экрана (title 1)
+  /// Крупный заголовок (онбординг, промо-экраны)
+  static const TextStyle displayTitle = TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.w700,
+    height: 1.25,
+    color: AppColors.textPrimary,
+  );
+
+  /// Заголовок экрана
   static const TextStyle screenTitle = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    color: AppColors.textPrimary,
+  );
+
+  /// Заголовок раздела внутри экрана
+  static const TextStyle sectionTitle = TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.w600,
+    height: 1.3,
     color: AppColors.textPrimary,
   );
 
-  /// Заголовок раздела внутри экрана (title 2)
-  static const TextStyle sectionTitle = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-  );
-
-  /// Заголовок карточки (title 3)
+  /// Заголовок карточки
   static const TextStyle cardTitle = TextStyle(
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: FontWeight.w600,
+    height: 1.3,
     color: AppColors.textPrimary,
   );
 
   /// Основной текст / описание
   static const TextStyle body = TextStyle(
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: FontWeight.w400,
+    height: 1.5,
     color: AppColors.textPrimary,
   );
 
   /// Вторичный текст / подписи / вспомогательное
   static const TextStyle bodySecondary = TextStyle(
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: FontWeight.w400,
+    height: 1.45,
     color: AppColors.textSecondary,
   );
 
@@ -83,6 +97,7 @@ class AppTypography {
   static const TextStyle chipLabel = TextStyle(
     fontSize: 11,
     fontWeight: FontWeight.w500,
+    height: 1.4,
     color: AppColors.textSecondary,
   );
 }
@@ -93,31 +108,31 @@ class AppTypography {
 
 class AppTextStyles {
   static const TextStyle h1 = TextStyle(
-    fontSize: 26,
-    fontWeight: FontWeight.w600,
+    fontSize: 28,
+    fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
   );
 
   static const TextStyle h2 = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+  );
+
+  static const TextStyle h3 = TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle h3 = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-  );
-
   static const TextStyle body = TextStyle(
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
   );
 
   static const TextStyle bodySecondary = TextStyle(
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
   );
@@ -178,12 +193,17 @@ class AppTheme {
 
     appBarTheme: const AppBarTheme(
       elevation: 0,
-      backgroundColor: AppColors.background,
+      scrolledUnderElevation: 0,
+      backgroundColor: AppColors.appBarBackground,
+      surfaceTintColor: Colors.transparent,
       foregroundColor: AppColors.textPrimary,
       centerTitle: true,
     ),
 
     textTheme: const TextTheme(
+      // Крупные заголовки (онбординг, промо-блоки)
+      displaySmall: AppTypography.displayTitle,
+
       // Заголовок экрана
       headlineSmall: AppTypography.screenTitle,
 
@@ -217,6 +237,20 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        side: const BorderSide(color: AppColors.primary, width: 1.2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
         ),

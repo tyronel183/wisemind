@@ -39,345 +39,323 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          AmplitudeService.instance.logNewStateFormOpened();
+    return SafeArea(
+      child: ValueListenableBuilder(
+        valueListenable: widget.repository.box.listenable(),
+        builder: (context, box, _) {
+          final entries = widget.repository.getAll();
+          final theme = Theme.of(context);
 
-          final entry = await Navigator.push<StateEntry>(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const EntryFormScreen(),
-            ),
-          );
-
-          if (entry != null) {
-            AmplitudeService.instance.logStateEntryCreated();
-            await widget.repository.save(entry);
-          }
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Новая запись'),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: SafeArea(
-        child: ValueListenableBuilder(
-          valueListenable: widget.repository.box.listenable(),
-          builder: (context, box, _) {
-            final entries = widget.repository.getAll();
-            final theme = Theme.of(context);
-
-            Future<void> exportCsv({
-              required bool last7Days,
-            }) async {
-              if (entries.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Нет записей для экспорта.'),
-                  ),
-                );
-                return;
-              }
-
-              List<StateEntry> filtered = entries;
-
-              if (last7Days) {
-                final now = DateTime.now();
-                final from = DateTime(now.year, now.month, now.day)
-                    .subtract(const Duration(days: 6));
-
-                bool isSameDay(DateTime a, DateTime b) {
-                  return a.year == b.year &&
-                      a.month == b.month &&
-                      a.day == b.day;
-                }
-
-                filtered = entries.where((e) {
-                  final d = e.date;
-                  return d.isAfter(from) || isSameDay(d, from);
-                }).toList();
-              }
-
-              if (filtered.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      last7Days
-                          ? 'За последние 7 дней нет записей для экспорта.'
-                          : 'Нет записей для экспорта.',
-                    ),
-                  ),
-                );
-                return;
-              }
-
-              await exportStateEntriesAsCsvFile(
-                entries: filtered,
-                fileName: 'Записи состояний',
-                subject: last7Days
-                    ? 'Записи состояний за последние 7 дней'
-                    : 'Все записи состояний',
-                text: last7Days
-                    ? 'Записи состояний за последние 7 дней (CSV).'
-                    : 'Все записи состояний (CSV).',
+          Future<void> exportCsv({
+            required bool last7Days,
+          }) async {
+            if (entries.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Нет записей для экспорта.'),
+                ),
               );
+              return;
             }
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Заголовок экрана
+            List<StateEntry> filtered = entries;
+
+            if (last7Days) {
+              final now = DateTime.now();
+              final from = DateTime(now.year, now.month, now.day)
+                  .subtract(const Duration(days: 6));
+
+              bool isSameDay(DateTime a, DateTime b) {
+                return a.year == b.year &&
+                    a.month == b.month &&
+                    a.day == b.day;
+              }
+
+              filtered = entries.where((e) {
+                final d = e.date;
+                return d.isAfter(from) || isSameDay(d, from);
+              }).toList();
+            }
+
+            if (filtered.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    last7Days
+                        ? 'За последние 7 дней нет записей для экспорта.'
+                        : 'Нет записей для экспорта.',
+                  ),
+                ),
+              );
+              return;
+            }
+
+            await exportStateEntriesAsCsvFile(
+              entries: filtered,
+              fileName: 'Записи состояний',
+              subject: last7Days
+                  ? 'Записи состояний за последние 7 дней'
+                  : 'Все записи состояний',
+              text: last7Days
+                  ? 'Записи состояний за последние 7 дней (CSV).'
+                  : 'Все записи состояний (CSV).',
+            );
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Заголовок экрана
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.screenTitleHorizontal,
+                  vertical: AppSpacing.screenTitleVertical,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.settings),
+                      tooltip: 'Настройки',
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Моё состояние',
+                        style: AppTypography.screenTitle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        PopupMenuButton<String>(
+                          icon: const Icon(Icons.download),
+                          onSelected: (value) {
+                            if (value == '7days') {
+                              AmplitudeService.instance
+                                  .logStatesShare(period: 'week');
+                              exportCsv(last7Days: true);
+                            } else if (value == 'all') {
+                              AmplitudeService.instance
+                                  .logStatesShare(period: 'all');
+                              exportCsv(last7Days: false);
+                            }
+                          },
+                          itemBuilder: (context) => const [
+                            PopupMenuItem(
+                              value: '7days',
+                              child: Text('Экспорт за последние 7 дней'),
+                            ),
+                            PopupMenuItem(
+                              value: 'all',
+                              child: Text('Экспорт всех записей'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              if (!_hasCompletedUsageGuide)
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenTitleHorizontal,
-                    vertical: AppSpacing.screenTitleVertical,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.settings),
-                        tooltip: 'Настройки',
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const SettingsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Моё состояние',
-                          style: AppTypography.screenTitle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          PopupMenuButton<String>(
-                            icon: const Icon(Icons.download),
-                            onSelected: (value) {
-                              if (value == '7days') {
-                                AmplitudeService.instance
-                                    .logStatesShare(period: 'week');
-                                exportCsv(last7Days: true);
-                              } else if (value == 'all') {
-                                AmplitudeService.instance
-                                    .logStatesShare(period: 'all');
-                                exportCsv(last7Days: false);
-                              }
-                            },
-                            itemBuilder: (context) => const [
-                              PopupMenuItem(
-                                value: '7days',
-                                child: Text('Экспорт за последние 7 дней'),
-                              ),
-                              PopupMenuItem(
-                                value: 'all',
-                                child: Text('Экспорт всех записей'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                if (!_hasCompletedUsageGuide)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.screenTitleHorizontal,
+                  child: Card(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.gapMedium),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Card(
-                      margin: const EdgeInsets.only(bottom: AppSpacing.gapMedium),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () async {
-                          AmplitudeService.instance.logHomeGuideOpened();
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () async {
+                        AmplitudeService.instance.logHomeGuideOpened();
 
-                          await Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => UsageGuideScreen(
-                                onCompleted: () {
-                                  setState(() {
-                                    _hasCompletedUsageGuide = true;
-                                  });
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.all(AppSpacing.cardPaddingVertical),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.lightbulb_outline),
-                              const SizedBox(width: AppSpacing.gapSmall),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Как пользоваться приложением',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Краткий гид на 2–3 минуты, чтобы выжать максимум пользы из Wisemind.',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurface
-                                            .withValues(alpha: 0.7),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                Expanded(
-                  child: entries.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.screenPadding,
-                            ),
-                            child: Text(
-                              '🔍 Здесь пока нет ваших записей.\n'
-                              'Нажмите «+ Новая запись», чтобы добавить первую.',
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.7,
-                                ),
-                              ),
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => UsageGuideScreen(
+                              onCompleted: () {
+                                setState(() {
+                                  _hasCompletedUsageGuide = true;
+                                });
+                              },
                             ),
                           ),
-                        )
-                      : ListView(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.screenPadding,
-                            vertical: AppSpacing.gapMedium,
-                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.all(AppSpacing.cardPaddingVertical),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            // Карточка с графиком
-                            Card(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.cardPaddingHorizontal,
-                                  vertical: AppSpacing.cardPaddingVertical,
-                                ),
-                                child: SizedBox(
-                                  height: 220,
-                                  child: _MoodRestActivityChart(entries: entries),
-                                ),
-                              ),
-                            ),
-
-                            // Заголовок списка записей
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: AppSpacing.sectionTitleTop,
-                                bottom: AppSpacing.sectionTitleBottom,
-                              ),
-                              child: Text(
-                                'Записи состояний',
-                                style: AppTypography.sectionTitle,
-                              ),
-                            ),
-
-                            // Карточки записей
-                            ...entries.map((entry) {
-                              return GestureDetector(
-                                onTap: () {
-                                  AmplitudeService.instance
-                                      .logStateEntryDetailsViewed();
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => StateEntryDetailScreen(entry: entry),
-                                    ),
-                                  );
-                                },
-                                child: Card(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: ListTile(
-                                    leading: Text(
-                                      entry.mood ?? '',
-                                      style: const TextStyle(fontSize: 26),
-                                    ),
-                                    title: Text(formatDate(entry.date)),
-                                    subtitle: entry.grateful != null &&
-                                            entry.grateful!.isNotEmpty
-                                        ? Text('Благодарю себя: ${entry.grateful}')
-                                        : null,
-                                    trailing: PopupMenuButton<String>(
-                                      onSelected: (value) async {
-                                        if (value == 'edit') {
-                                          AmplitudeService.instance
-                                              .logEditStateFormOpened();
-
-                                          final updated =
-                                              await Navigator.push<StateEntry>(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => EntryFormScreen(
-                                                existing: entry,
-                                              ),
-                                            ),
-                                          );
-                                          if (updated != null) {
-                                            AmplitudeService.instance
-                                                .logStateEntryEdited();
-                                            await widget.repository.update(updated);
-                                          }
-                                        } else if (value == 'delete') {
-                                          AmplitudeService.instance.logDeleteStateEntry();
-                                          await widget.repository.deleteById(entry.id);
-                                        }
-                                      },
-                                      itemBuilder: (context) => const [
-                                        PopupMenuItem(
-                                          value: 'edit',
-                                          child: Text('Редактировать'),
-                                        ),
-                                        PopupMenuItem(
-                                          value: 'delete',
-                                          child: Text('Удалить'),
-                                        ),
-                                      ],
+                            const Icon(Icons.lightbulb_outline),
+                            const SizedBox(width: AppSpacing.gapSmall),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Как пользоваться приложением',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ),
-                              );
-                            }),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Краткий гид на 2–3 минуты, чтобы выжать максимум пользы из Wisemind.',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
+                      ),
+                    ),
+                  ),
                 ),
-              ],
-            );
-          },
-        ),
+              Expanded(
+                child: entries.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.screenPadding,
+                          ),
+                          child: Text(
+                            '🔍 Здесь пока нет ваших записей.\n'
+                            'Нажмите «+ Новая запись», чтобы добавить первую.',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : ListView(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.screenPadding,
+                          vertical: AppSpacing.gapMedium,
+                        ),
+                        children: [
+                          // Карточка с графиком
+                          Card(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.cardPaddingHorizontal,
+                                vertical: AppSpacing.cardPaddingVertical,
+                              ),
+                              child: SizedBox(
+                                height: 220,
+                                child: _MoodRestActivityChart(entries: entries),
+                              ),
+                            ),
+                          ),
+
+                          // Заголовок списка записей
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: AppSpacing.sectionTitleTop,
+                              bottom: AppSpacing.sectionTitleBottom,
+                            ),
+                            child: Text(
+                              'Записи состояний',
+                              style: AppTypography.sectionTitle,
+                            ),
+                          ),
+
+                          // Карточки записей
+                          ...entries.map((entry) {
+                            return GestureDetector(
+                              onTap: () {
+                                AmplitudeService.instance
+                                    .logStateEntryDetailsViewed();
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => StateEntryDetailScreen(entry: entry),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: ListTile(
+                                  leading: Text(
+                                    entry.mood ?? '',
+                                    style: const TextStyle(fontSize: 26),
+                                  ),
+                                  title: Text(formatDate(entry.date)),
+                                  subtitle: entry.grateful != null &&
+                                          entry.grateful!.isNotEmpty
+                                      ? Text('Благодарю себя: ${entry.grateful}')
+                                      : null,
+                                  trailing: PopupMenuButton<String>(
+                                    onSelected: (value) async {
+                                      if (value == 'edit') {
+                                        AmplitudeService.instance
+                                            .logEditStateFormOpened();
+
+                                        final updated =
+                                            await Navigator.push<StateEntry>(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => EntryFormScreen(
+                                              existing: entry,
+                                            ),
+                                          ),
+                                        );
+                                        if (updated != null) {
+                                          AmplitudeService.instance
+                                              .logStateEntryEdited();
+                                          await widget.repository.update(updated);
+                                        }
+                                      } else if (value == 'delete') {
+                                        AmplitudeService.instance.logDeleteStateEntry();
+                                        await widget.repository.deleteById(entry.id);
+                                      }
+                                    },
+                                    itemBuilder: (context) => const [
+                                      PopupMenuItem(
+                                        value: 'edit',
+                                        child: Text('Редактировать'),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: Text('Удалить'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
