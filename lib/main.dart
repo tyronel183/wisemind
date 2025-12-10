@@ -14,11 +14,13 @@ import 'worksheets/worksheets_root_screen.dart';
 import 'worksheets/pros_cons.dart';
 import 'skills/skills_screens.dart';
 import 'state/state_entry.dart';
+import 'state/entry_form_screen.dart';
 import 'worksheets/chain_analysis.dart';
 import 'worksheets/fact_check.dart';
 import 'notifications/notification_service.dart';
 import 'navigation/app_navigator.dart';
 import 'theme/app_theme.dart';
+import 'theme/app_components.dart';
 
 import 'onboarding/onboarding_screen.dart';
 
@@ -181,37 +183,37 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildBody(),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: _onNewEntryPressed,
+              icon: const Icon(Icons.add),
+              label: const Text('Новая запись'),
+            )
+          : null,
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: _currentIndex,
+        onItemSelected: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Состояние',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.assignment_outlined),
-            selectedIcon: Icon(Icons.assignment),
-            label: 'Упражнения',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.self_improvement_outlined),
-            selectedIcon: Icon(Icons.self_improvement),
-            label: 'Медитации',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.psychology_alt_outlined),
-            selectedIcon: Icon(Icons.psychology_alt),
-            label: 'Навыки DBT',
-          ),
-        ],
       ),
     );
+  }
+
+  // ВОТ ЭТОТ МЕТОД — ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ
+  Future<void> _onNewEntryPressed() async {
+    final newEntry = await Navigator.of(context).push<StateEntry>(
+      MaterialPageRoute(
+        builder: (context) => const EntryFormScreen(),
+      ),
+    );
+
+    if (newEntry != null) {
+      // кладём запись в тот же бокс, который слушает HomeScreen
+      await widget.repository.box.put(newEntry.id, newEntry);
+    }
   }
 
   Widget _buildBody() {
