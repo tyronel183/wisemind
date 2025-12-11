@@ -7,6 +7,8 @@ import 'about_screen.dart';
 import '../usage_guide/usage_guide_screen.dart';
 import '../analytics/amplitude_service.dart';
 import '../debug/ui_kit_screen.dart';
+import '../theme/app_card_tile.dart';
+import '../theme/app_spacing.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -84,6 +86,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text('Настройки'),
       ),
       body: ListView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
         children: [
           // Напоминания
           SwitchListTile(
@@ -93,12 +99,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: _onReminderToggle,
           ),
 
-          const Divider(),
-
           // Как пользоваться приложением
-          ListTile(
-            title: const Text('Как пользоваться приложением'),
-            subtitle: const Text('Краткий гид по Wisemind'),
+          AppCardTile(
+            leading: const Icon(Icons.menu_book_outlined),
+            title: 'Как пользоваться приложением',
+            subtitle: 'Краткий гид по Wisemind',
+            trailing: const Icon(Icons.chevron_right),
             onTap: () {
               AmplitudeService.instance.logSettingsGuideOpened();
 
@@ -115,17 +121,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
 
           // Написать нам
-          ListTile(
-            title: const Text('Написать нам'),
-            subtitle: const Text('Почта для вопросов и предложений'),
+          AppCardTile(
+            leading: const Icon(Icons.mail_outline),
+            title: 'Написать нам',
+            subtitle: 'Почта для вопросов и предложений',
+            trailing: const Icon(Icons.chevron_right),
             onTap: _launchMail,
           ),
 
-          const Divider(),
-
           // О приложении
-          ListTile(
-            title: const Text('О приложении'),
+          AppCardTile(
+            leading: const Icon(Icons.info_outline),
+            title: 'О приложении',
+            trailing: const Icon(Icons.chevron_right),
             onTap: () {
               AmplitudeService.instance.logAboutAppOpened();
               Navigator.of(context).push(
@@ -136,12 +144,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
 
-          const Divider(),
-
           // UI Kit (debug)
-          ListTile(
-            title: const Text('UI Kit (debug)'),
-            subtitle: const Text('Экран дизайн-системы'),
+          AppCardTile(
+            leading: const Icon(Icons.palette_outlined),
+            title: 'UI Kit (debug)',
+            subtitle: 'Экран дизайн-системы',
+            trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(

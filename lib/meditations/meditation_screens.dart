@@ -148,10 +148,12 @@ class _MeditationCard extends StatelessWidget {
       skillLabel = 'Эмпатия';
     }
 
-    final tags = <String>[skillLabel];
+    // Сначала длительность, потом навык
+    final tags = <String>[];
     if (m.duration.isNotEmpty) {
       tags.add(m.duration);
     }
+    tags.add(skillLabel);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.cardGap),
@@ -327,48 +329,53 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.gapMedium),
+              const SizedBox(width: AppSpacing.screenPadding),
               // Текстовая часть
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      meditation.situation,
-                      style: AppTypography.body,
-                    ),
-                    const SizedBox(height: AppSpacing.gapMedium),
-                    Builder(
-                      builder: (context) {
-                        String skillLabel = meditation.dbtSkill;
-                        if (skillLabel == 'Эмпатическое присутствие') {
-                          skillLabel = 'Эмпатия';
-                        }
+                child: SizedBox(
+                  height: 96, // такая же высота, как у обложки
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Верх — описание ситуации
+                      Text(
+                        meditation.situation,
+                        style: AppTypography.body,
+                      ),
+                      // Низ — чипы
+                      Builder(
+                        builder: (context) {
+                          String skillLabel = meditation.dbtSkill;
+                          if (skillLabel == 'Эмпатическое присутствие') {
+                            skillLabel = 'Эмпатия';
+                          }
 
-                        final tags = <String>[];
-                        if (meditation.duration.isNotEmpty) {
-                          tags.add(meditation.duration);
-                        }
-                        tags.add(skillLabel);
+                          final tags = <String>[];
+                          if (meditation.duration.isNotEmpty) {
+                            tags.add(meditation.duration);
+                          }
+                          tags.add(skillLabel);
 
-                        return Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final tag in tags)
-                              Container(
-                                decoration: AppDecorations.filledChip,
-                                padding: AppChipStyles.padding,
-                                child: Text(
-                                  tag,
-                                  style: AppTypography.chipLabel,
+                          return Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final tag in tags)
+                                Container(
+                                  decoration: AppDecorations.filledChip,
+                                  padding: AppChipStyles.padding,
+                                  child: Text(
+                                    tag,
+                                    style: AppTypography.chipLabel,
+                                  ),
                                 ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -416,6 +423,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                             _useVoice ? Colors.white : Colors.transparent,
                         foregroundColor:
                             _useVoice ? AppColors.primary : AppColors.textSecondary,
+                        overlayColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(999),
                         ),
@@ -441,6 +449,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                             !_useVoice ? Colors.white : Colors.transparent,
                         foregroundColor:
                             !_useVoice ? AppColors.primary : AppColors.textSecondary,
+                        overlayColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(999),
                         ),

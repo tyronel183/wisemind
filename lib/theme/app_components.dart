@@ -116,6 +116,115 @@ class AppMediaCard extends StatelessWidget {
   }
 }
 
+/// Карточка с изображением слева и чипами, прижатыми к нижнему краю
+/// (например, для списка медитаций)
+class AppImageCardWithBottomChips extends StatelessWidget {
+  const AppImageCardWithBottomChips({
+    super.key,
+    required this.title,
+    this.subtitle,
+    required this.image,
+    this.tags = const [],
+    this.onTap,
+  });
+
+  /// Заголовок (например, название медитации)
+  final String title;
+
+  /// Подзаголовок / описание (ситуация и т.п.)
+  final String? subtitle;
+
+  /// Обложка слева (обычно NetworkImage / CachedNetworkImage)
+  final Widget image;
+
+  /// Чипы внизу (например, ["10 мин", "Осознанность"])
+  final List<String> tags;
+
+  /// Обработчик нажатия
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: AppDecorations.card,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSizes.padding),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Обложка слева фиксированного размера
+              SizedBox(
+                width: 96,
+                height: 96,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                  child: image,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Справа — текст + чипы, прижатые к низу
+              Expanded(
+                child: SizedBox(
+                  height: 96, // та же высота, что у обложки
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: tags.isNotEmpty
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.center,
+                    children: [
+                      // Верх: заголовок + подзаголовок
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: AppTypography.cardTitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (subtitle != null && subtitle!.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              subtitle!,
+                              style: AppTypography.bodySecondary,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ],
+                      ),
+                      // Низ: чипы
+                      if (tags.isNotEmpty)
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final tag in tags)
+                              Container(
+                                decoration: AppDecorations.filledChip,
+                                padding: AppChipStyles.padding,
+                                child: Text(
+                                  tag,
+                                  style: AppTypography.chipLabel,
+                                ),
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Карточка категории навыка (для экрана навыков DBT)
 class SkillCategoryCard extends StatelessWidget {
   const SkillCategoryCard({
@@ -250,30 +359,23 @@ class AppBottomNavBar extends StatelessWidget {
 
     return SafeArea(
       minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-          child: Container(
-            decoration: BoxDecoration(
-              // Серая «дорожка», как под табами «С голосом / Только музыка»
-              color: AppColors.greyLight,
-              borderRadius: BorderRadius.circular(999),
-            ),
-            padding: const EdgeInsets.all(4),
-            child: Row(
-              children: [
-                for (var i = 0; i < items.length; i++)
-                  Expanded(
-                    child: _BottomNavItem(
-                      data: items[i],
-                      selected: i == currentIndex,
-                      onTap: () => onItemSelected(i),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.greyLight,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        child: Row(
+          children: [
+            for (var i = 0; i < items.length; i++)
+              Expanded(
+                child: _BottomNavItem(
+                  data: items[i],
+                  selected: i == currentIndex,
+                  onTap: () => onItemSelected(i),
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -310,17 +412,16 @@ class _BottomNavItem extends StatelessWidget {
       final Color activeColor = AppColors.primary;
       final Color inactiveColor = AppColors.textSecondary;
 
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           // Как таб «С голосом»: белый, если выбран; прозрачный, если нет
           color: selected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(999),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -333,6 +434,9 @@ class _BottomNavItem extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               data.label,
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
               style: AppTypography.chipLabel.copyWith(
                 color: selected ? activeColor : inactiveColor,
               ),

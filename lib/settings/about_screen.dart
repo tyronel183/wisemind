@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 
 import 'settings_webview_screen.dart';
+import '../theme/app_card_tile.dart';
+import '../theme/app_spacing.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -18,44 +20,68 @@ class AboutScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('О приложении'),
       ),
-      body: ListView(
-        children: [
-          ListTile(
-            title: const Text('Политика конфиденциальности'),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SettingsWebViewScreen(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
+        child: Column(
+          children: [
+            // Основной контент — карточки с политиками
+            Expanded(
+              child: ListView(
+                children: [
+                  AppCardTile(
                     title: 'Политика конфиденциальности',
-                    url: privacyUrl,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SettingsWebViewScreen(
+                            title: 'Политика конфиденциальности',
+                            url: privacyUrl,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('Политика обработки персональных данных'),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SettingsWebViewScreen(
+                  const SizedBox(height: AppSpacing.gapMedium),
+                  AppCardTile(
                     title: 'Политика обработки персональных данных',
-                    url: personalDataUrl,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SettingsWebViewScreen(
+                            title: 'Политика обработки персональных данных',
+                            url: personalDataUrl,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
-              );
-            },
-          ),
-          const Divider(),
-          const ListTile(
-            title: Text('Версия'),
-            subtitle: Text('1.0.0'), // TODO: потом подтянуть из package_info_plus
-          ),
-          const ListTile(
-            title: Text('Контакты'),
-            subtitle: Text('dbtenthusiast@gmail.com'),
-          ),
-        ],
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.gapLarge),
+            // Версия приложения — по центру внизу экрана
+            Builder(
+              builder: (context) {
+                final baseStyle = Theme.of(context).textTheme.bodySmall;
+                final style = baseStyle?.copyWith(
+                      color: baseStyle.color?.withOpacity(0.7),
+                    ) ??
+                    const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    );
+                return Text(
+                  'Версия 1.0.0',
+                  textAlign: TextAlign.center,
+                  style: style,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
