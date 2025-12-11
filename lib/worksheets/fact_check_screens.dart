@@ -98,108 +98,122 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
                       ? 'Без эмоции'
                       : entry.emotions.join(', ');
 
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                FactCheckDetailScreen(entry: entry),
-                          ),
-                        );
-                      },
-                      title: Text(
-                        _formatDate(entry.date),
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                  return Container(
+                    decoration: AppDecorations.card,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.cardPaddingHorizontal,
+                        vertical: AppSpacing.cardPaddingVertical,
                       ),
-                      subtitle: Text(
-                        emotionsText,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: PopupMenuButton<String>(
-                        onSelected: (value) async {
-                          if (value == 'edit') {
-                            // Открытие формы редактирования рабочего листа
-                            AmplitudeService.instance.logEvent(
-                              'edit_worksheet_form',
-                              properties: {
-                                'worksheet': kFactCheckWorksheetName,
-                              },
-                            );
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    FactCheckEditScreen(entry: entry),
-                              ),
-                            );
-                          } else if (value == 'delete') {
-                            // Инициирована попытка удалить рабочий лист
-                            AmplitudeService.instance.logEvent(
-                              'delete_worksheet',
-                              properties: {
-                                'worksheet': kFactCheckWorksheetName,
-                              },
-                            );
-
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Удалить запись?'),
-                                content: const Text(
-                                  'Эту запись нельзя будет восстановить.',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: const Text('Отмена'),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => FactCheckDetailScreen(entry: entry),
                                   ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: const Text(
-                                      'Удалить',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
+                                );
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _formatDate(entry.date),
+                                    style: AppTypography.cardTitle,
+                                  ),
+                                  const SizedBox(height: AppSpacing.gapSmall),
+                                  Text(
+                                    emotionsText,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTypography.bodySecondary,
                                   ),
                                 ],
                               ),
-                            );
-
-                            if (confirm == true) {
-                              // Пользователь подтвердил удаление рабочего листа
-                              AmplitudeService.instance.logEvent(
-                                'delete_worksheet_confirmed',
-                                properties: {
-                                  'worksheet': kFactCheckWorksheetName,
-                                },
-                              );
-                              await entry.delete();
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Запись удалена'),
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            onSelected: (value) async {
+                              if (value == 'edit') {
+                                AmplitudeService.instance.logEvent(
+                                  'edit_worksheet_form',
+                                  properties: {
+                                    'worksheet': kFactCheckWorksheetName,
+                                  },
+                                );
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => FactCheckEditScreen(entry: entry),
                                   ),
                                 );
+                              } else if (value == 'delete') {
+                                AmplitudeService.instance.logEvent(
+                                  'delete_worksheet',
+                                  properties: {
+                                    'worksheet': kFactCheckWorksheetName,
+                                  },
+                                );
+
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Удалить запись?'),
+                                    content: const Text(
+                                      'Эту запись нельзя будет восстановить.',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: const Text('Отмена'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: const Text(
+                                          'Удалить',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+
+                                if (confirm == true) {
+                                  AmplitudeService.instance.logEvent(
+                                    'delete_worksheet_confirmed',
+                                    properties: {
+                                      'worksheet': kFactCheckWorksheetName,
+                                    },
+                                  );
+                                  await entry.delete();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Запись удалена'),
+                                      ),
+                                    );
+                                  }
+                                }
                               }
-                            }
-                          }
-                        },
-                        itemBuilder: (context) => const [
-                          PopupMenuItem(
-                            value: 'edit',
-                            child: Text('Редактировать'),
-                          ),
-                          PopupMenuItem(
-                            value: 'delete',
-                            child: Text(
-                              'Удалить',
-                              style: TextStyle(color: Colors.red),
-                            ),
+                            },
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Text('Редактировать'),
+                              ),
+                              PopupMenuItem(
+                                value: 'delete',
+                                child: Text(
+                                  'Удалить',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

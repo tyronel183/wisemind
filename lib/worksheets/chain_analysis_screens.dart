@@ -194,34 +194,34 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
               return ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: entries.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final entry = entries[index];
-
-                  // В заголовке карточки показываем дату,
-                  // в подзаголовке — проблемное поведение (если оно заполнено)
                   final title = _formatDate(entry.date);
-
                   final subtitle = entry.problematicBehavior.isNotEmpty
                       ? entry.problematicBehavior
                       : 'Без названия';
-
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                  return Container(
+                    decoration: AppDecorations.card,
                     child: ListTile(
-                      title: Text(title),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.cardPaddingHorizontal,
+                        vertical: AppSpacing.cardPaddingVertical,
+                      ),
+                      title: Text(
+                        title,
+                        style: AppTypography.cardTitle,
+                      ),
                       subtitle: Text(
                         subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodySecondary,
                       ),
                       onTap: () async {
                         await Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) =>
-                                ChainAnalysisDetailScreen(entry: entry),
+                            builder: (_) => ChainAnalysisDetailScreen(entry: entry),
                           ),
                         );
                       },
@@ -235,7 +235,6 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                                 'worksheet': 'Анализ нежелательного поведения',
                               },
                             );
-
                             await Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => ChainAnalysisEditScreen(
@@ -251,7 +250,6 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                                 'worksheet': 'Анализ нежелательного поведения',
                               },
                             );
-
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -261,13 +259,11 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                                 ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
+                                    onPressed: () => Navigator.of(context).pop(false),
                                     child: const Text('Отмена'),
                                   ),
                                   TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
+                                    onPressed: () => Navigator.of(context).pop(true),
                                     child: const Text(
                                       'Удалить',
                                       style: TextStyle(color: Colors.red),
@@ -276,17 +272,14 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                                 ],
                               ),
                             );
-
                             if (confirm == true) {
                               // Подтверждение удаления
                               AmplitudeService.instance.logEvent(
                                 'delete_worksheet_confirmed',
                                 properties: {
-                                  'worksheet':
-                                      'Анализ нежелательного поведения',
+                                  'worksheet': 'Анализ нежелательного поведения',
                                 },
                               );
-
                               await entry.delete();
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(

@@ -2,7 +2,7 @@ name: wisemind
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+3
+version: 1.0.0+4
 
 environment:
   sdk: ^3.10.0
@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter  
 
   cupertino_icons: ^1.0.8
   hive: ^2.2.3
@@ -49,3 +51,4 @@ flutter:
     - assets/data/dbt_skills.json
     - assets/images/skills/
     - assets/images/onboarding/
+    - assets/images/usage_guide/

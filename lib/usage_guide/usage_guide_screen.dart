@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../analytics/amplitude_service.dart';
+import '../theme/app_theme.dart';
+import '../theme/app_spacing.dart';
 
 class UsageGuideScreen extends StatefulWidget {
   final VoidCallback? onCompleted;
@@ -39,27 +41,55 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
     _GuidePageData(
       title: 'Как Wisemind действительно помогает',
       body:
-          'Это не магическое решение и не очередной трекер привычек. В бесплатной версии уже есть всё, чтобы начать менять своё поведение: отмечать состояние, разбирать сложные ситуации и пробовать реагировать и поступать по-новому. Но изменения требуют усилий: приложение не сделает работу за вас, но оно сильно поможет вам пройти путь шаг за шагом.',
+          'Wisemind не про магию и не про «трекать всё подряд».\n\n'
+          'В бесплатной версии уже есть всё, чтобы начать менять поведение: '
+          'отмечать состояние, разбирать сложные ситуации и пробовать реагировать по‑новому.\n\n'
+          'Но изменения требуют усилий: приложение не сделает работу за вас, '
+          'оно помогает идти вперёд шаг за шагом.',
     ),
     _GuidePageData(
       title: 'Шаг 1. Замечать, что с вами происходит',
       body:
-          'Менять поведение невозможно, если вы не замечаете, что с вами происходит. Поэтому первый блок навыков — «Осознанность» — открыт бесплатно. Здесь вы учитесь обращать внимание на тело, мысли и обстановку, чтобы вовремя увидеть момент, когда обычно начинается срыв, переходящий в проблемное поведение.',
+          'Менять поведение невозможно, если вы не замечаете, что с вами происходит.\n\n'
+          'Поэтому первый блок навыков — «Осознанность» — открыт бесплатно. '
+          'С его помощью вы учитесь обращать внимание на:\n'
+          '• тело и ощущения\n'
+          '• мысли и эмоции\n'
+          '• обстановку вокруг\n\n'
+          'Так легче вовремя заметить момент, когда обычно начинается срыв.',
     ),
     _GuidePageData(
       title: 'Шаг 2. Определить своё проблемное поведение',
       body:
-          'Сначала честно назовите, что именно для вас является проблемой: алкоголь, ссоры с близкими, переедание, курение, импульсивные покупки и так далее. Затем каждый вечер заполняйте «Карту дня». Со временем вы увидите связи: недосып, стресс, отсутствие отдыха и другие факторы, которые подталкивают вас к срывам и проблемному поведению.',
+          'Сначала честно назовите, что именно для вас проблема: алкоголь, '
+          'ссоры с близкими, переедание, курение, импульсивные покупки и так далее.\n\n'
+          'Затем каждый вечер заполняйте «Карту дня». Со временем вы увидите связи между '
+          'недосыпом, стрессом, отсутствием отдыха и другими факторами, которые подталкивают '
+          'к срывам и привычному проблемному поведению.',
     ),
     _GuidePageData(
       title: 'Шаг 3. Разбирать срывы и тренировать навыки',
       body:
-          'Срывы неизбежны — это не провал, а материал для работы. Используйте рабочие листы, чтобы разобрать по шагам, что произошло до, во время и после эпизода. Навыки DBT разделены на 4 блока: осознанность, устойчивость к стрессу, регулирование эмоций, межличностная эффективность. Осваивайте их постепенно, мы рекомендуем по одному навыку в неделю — и оставляйте в своём арсенале те, что лучше всего работают именно для вас.',
+          'Срывы неизбежны — это не провал, а материал для работы.\n\n'
+          'Используйте рабочие листы, чтобы по шагам разобрать, что произошло до, во время '
+          'и после эпизода. Навыки DBT разделены на 4 блока:\n'
+          '• осознанность\n'
+          '• устойчивость к стрессу\n'
+          '• регулирование эмоций\n'
+          '• межличностная эффективность\n\n'
+          'Осваивайте их постепенно, мы рекомендуем по одному навыку в неделю — '
+          'и оставляйте в арсенале то, что лучше всего работает именно для вас.',
     ),
     _GuidePageData(
       title: 'Поехали?',
       body:
-          'По мере развития Wisemind мы будем добавлять новые инструменты, практики и медитации, чтобы поддерживать вас на пути изменений. А пока сделайте первый шаг — заполните первую запись в разделе «Моё состояние сегодня». Мы зададим вам простые вопросы о сне, самочувствии и эмоциях, а дальше вы сможете возвращаться к этому каждый день. Так формируется привычка, которая со временем меняет ваше поведение.',
+          'Мы будем добавлять новые инструменты, практики и медитации, '
+          'чтобы поддерживать вас на пути изменений.\n\n'
+          'А сейчас сделайте первый шаг — заполните первую запись в разделе '
+          '«Моё состояние».\n\n'
+          'Вы ответите на простые вопросы о сне, самочувствии и эмоциях. '
+          'Если возвращаться к этому каждый день, постепенно формируется привычка, '
+          'которая со временем меняет поведение.',
       isLast: true,
     ),
   ];
@@ -80,22 +110,46 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
                 setState(() {
                   _currentPage = index;
                 });
-                // Логируем просмотр шага минигайда
                 AmplitudeService.instance
                     .logHomeGuideStepViewed(stepIndex: index + 1);
               },
               itemBuilder: (context, index) {
                 final page = _pages[index];
+                final imagePath =
+                    'assets/images/usage_guide/slide_${index + 1}.png';
+
                 return Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(AppSpacing.screenPadding),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(page.title, style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: 16),
-                      Text(page.body),
-                      const Spacer(),
-                      _buildBottomButton(page),
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.cardRadius),
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        page.title,
+                        textAlign: TextAlign.left,
+                        style: AppTypography.screenTitle,
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Text(
+                            page.body,
+                            textAlign: TextAlign.left,
+                            style: AppTypography.bodySecondary,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -104,6 +158,13 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
           ),
           const SizedBox(height: 8),
           _buildDots(),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenPadding,
+            ),
+            child: _buildBottomButton(_pages[_currentPage]),
+          ),
           const SizedBox(height: 16),
         ],
       ),
@@ -115,35 +176,45 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         _pages.length,
-        (index) => Container(
-          width: 8,
-          height: 8,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: index == _currentPage ? Colors.blueGrey : Colors.grey.shade400,
-          ),
-        ),
+        (index) {
+          final isActive = index == _currentPage;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            height: 6,
+            width: isActive ? 18 : 6,
+            decoration: BoxDecoration(
+              color: isActive ? AppColors.primary : AppColors.border,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildBottomButton(_GuidePageData page) {
     if (page.isLast) {
-      return ElevatedButton(
-        onPressed: _completeAndClose,
-        child: const Text('Заполнить карту дня'),
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: _completeAndClose,
+          child: const Text('Заполнить карту дня'),
+        ),
       );
     }
 
-    return FilledButton(
-      onPressed: () {
-        _controller.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      },
-      child: const Text('Далее'),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          _controller.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        },
+        child: const Text('Далее'),
+      ),
     );
   }
 }

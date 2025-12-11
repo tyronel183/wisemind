@@ -21,9 +21,10 @@ import 'worksheets/fact_check.dart';
 import 'notifications/notification_service.dart';
 import 'navigation/app_navigator.dart';
 import 'theme/app_theme.dart';
-import 'theme/app_components.dart';
 
 import 'onboarding/onboarding_screen.dart';
+
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,6 +113,15 @@ class WisemindApp extends StatelessWidget {
       title: 'Wisemind',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ru'),
+      ],
       routes: {
         '/': (context) => WisemindRoot(
               repository: repository,
@@ -201,13 +211,36 @@ class _MainScaffoldState extends State<MainScaffold> {
               label: const Text('Новая запись'),
             )
           : null,
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onItemSelected: (index) {
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Состояние',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.article_outlined),
+            activeIcon: Icon(Icons.article),
+            label: 'Упражнения',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.self_improvement_outlined),
+            activeIcon: Icon(Icons.self_improvement),
+            label: 'Медитации',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book_outlined),
+            activeIcon: Icon(Icons.menu_book),
+            label: 'Навыки',
+          ),
+        ],
       ),
     );
   }

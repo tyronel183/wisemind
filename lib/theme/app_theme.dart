@@ -47,7 +47,7 @@ class AppColors {
 class AppTypography {
   /// Крупный заголовок (онбординг, промо-экраны)
   static const TextStyle displayTitle = TextStyle(
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: FontWeight.w700,
     height: 1.25,
     color: AppColors.textPrimary,
@@ -55,7 +55,7 @@ class AppTypography {
 
   /// Заголовок экрана
   static const TextStyle screenTitle = TextStyle(
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: FontWeight.w600,
     height: 1.3,
     color: AppColors.textPrimary,
@@ -63,7 +63,7 @@ class AppTypography {
 
   /// Заголовок раздела внутри экрана
   static const TextStyle sectionTitle = TextStyle(
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: FontWeight.w600,
     height: 1.3,
     color: AppColors.textPrimary,
@@ -71,7 +71,7 @@ class AppTypography {
 
   /// Заголовок карточки
   static const TextStyle cardTitle = TextStyle(
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: FontWeight.w600,
     height: 1.3,
     color: AppColors.textPrimary,
@@ -79,7 +79,7 @@ class AppTypography {
 
   /// Основной текст / описание
   static const TextStyle body = TextStyle(
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: FontWeight.w400,
     height: 1.5,
     color: AppColors.textPrimary,
@@ -87,7 +87,7 @@ class AppTypography {
 
   /// Вторичный текст / подписи / вспомогательное
   static const TextStyle bodySecondary = TextStyle(
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: FontWeight.w400,
     height: 1.45,
     color: AppColors.textSecondary,
@@ -108,31 +108,31 @@ class AppTypography {
 
 class AppTextStyles {
   static const TextStyle h1 = TextStyle(
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
   );
 
   static const TextStyle h2 = TextStyle(
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
   );
 
   static const TextStyle h3 = TextStyle(
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
 
   static const TextStyle body = TextStyle(
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
   );
 
   static const TextStyle bodySecondary = TextStyle(
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
   );
