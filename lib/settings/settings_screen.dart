@@ -18,12 +18,11 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _remindersEnabled = true; // TODO: потом подружить с реальным хранилищем
+  bool _remindersEnabled = true;
 
   @override
   void initState() {
     super.initState();
-    // TODO: сюда можно будет подтянуть состояние из Hive/SettingsRepository
     WidgetsBinding.instance.addPostFrameCallback((_) {
       AmplitudeService.instance.logSettingsOpened();
     });

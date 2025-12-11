@@ -10,7 +10,6 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: вынести URL-ы в константы при желании
     const privacyUrl =
         'https://tyronel183.github.io/wisemind-legal/privacy-policy.html';
     const personalDataUrl =
@@ -67,7 +66,7 @@ class AboutScreen extends StatelessWidget {
               builder: (context) {
                 final baseStyle = Theme.of(context).textTheme.bodySmall;
                 final style = baseStyle?.copyWith(
-                      color: baseStyle.color?.withOpacity(0.7),
+                      color: baseStyle.color?.withValues(alpha: 0.7),
                     ) ??
                     const TextStyle(
                       fontSize: 12,

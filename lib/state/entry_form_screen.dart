@@ -715,7 +715,7 @@ class _EmojiChoiceChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final Color bg = selected
-        ? theme.colorScheme.primary.withOpacity(0.12)
+        ? theme.colorScheme.primary.withValues(alpha: 0.12)
         : Colors.transparent;
     final Color borderColor =
         selected ? theme.colorScheme.primary : Colors.grey.shade300;

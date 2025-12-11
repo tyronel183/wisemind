@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:io' show Platform;
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'analytics/amplitude_service.dart';
 
@@ -27,6 +28,14 @@ import 'onboarding/onboarding_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Версия приложения из package_info_plus
+  final packageInfo = await PackageInfo.fromPlatform();
+  final String appVersion = packageInfo.version;
+
+  // Язык из системной локали
+  final locale = WidgetsBinding.instance.platformDispatcher.locale;
+  final String languageCode = locale.languageCode;
+
   await BillingService.init();
 
   // Инициализация Hive
@@ -52,16 +61,17 @@ Future<void> main() async {
   // Инициализация Amplitude с базовыми user properties
   await AmplitudeService.instance.init(
     apiKey: '184d3ba87a05255179cc9df84f22236b',
-    appVersion: '1.0.0', // TODO: заменить на фактическую версию из package_info_plus
+    appVersion: appVersion,
     initialUserProperties: {
       'platform': Platform.isAndroid ? 'android' : 'ios',
-      'language': 'ru', // TODO: можно подтянуть из локали
+      'language': languageCode,
       'notifications_enabled': false, // будет обновляться из настроек
       'onboarding_completed': hasCompletedOnboarding,
       'usage_guide_completed': false,
       'subscription_status': 'free',
       'has_any_state_entries': box.isNotEmpty,
-      'has_any_worksheet_entries': Hive.box<ProsConsEntry>(kProsConsBoxName).isNotEmpty,
+      'has_any_worksheet_entries':
+          Hive.box<ProsConsEntry>(kProsConsBoxName).isNotEmpty,
       'country': null,
     },
   );
@@ -202,7 +212,6 @@ class _MainScaffoldState extends State<MainScaffold> {
     );
   }
 
-  // ВОТ ЭТОТ МЕТОД — ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ
   Future<void> _onNewEntryPressed() async {
     final newEntry = await Navigator.of(context).push<StateEntry>(
       MaterialPageRoute(
@@ -213,6 +222,14 @@ class _MainScaffoldState extends State<MainScaffold> {
     if (newEntry != null) {
       // кладём запись в тот же бокс, который слушает HomeScreen
       await widget.repository.box.put(newEntry.id, newEntry);
+      await AmplitudeService.instance.logEvent(
+        'state_entry_created',
+        properties: {
+          'date': newEntry.date.toIso8601String(),
+          'has_goal': newEntry.importantGoal != null,
+          'has_skills': newEntry.skillsUsed.isNotEmpty,
+        },
+      );
     }
   }
 

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_theme.dart';
@@ -132,7 +131,7 @@ class AppTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint ?? hintText,
             hintStyle: AppTypography.bodySecondary.copyWith(
-              color: AppColors.textSecondary.withOpacity(0.8),
+              color: AppColors.textSecondary.withValues(alpha: 0.8),
             ),
             filled: true,
             fillColor: AppColors.greyLight,
@@ -266,8 +265,6 @@ class AppMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     Widget row = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

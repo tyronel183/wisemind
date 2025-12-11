@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:amplitude_flutter/amplitude.dart';
 import 'package:amplitude_flutter/configuration.dart';
 import 'package:amplitude_flutter/events/base_event.dart';
+import 'package:amplitude_flutter/events/identify.dart';
 
 /// Централизованный сервис для работы с Amplitude.
 ///
@@ -47,13 +48,21 @@ class AmplitudeService {
       amplitude.setUserId(userId);
     }
 
-    // TODO: когда определимся с Identify в этой версии SDK —
-    // сюда вернём установку user properties (app_version и прочие).
+    // Устанавливаем стартовые user properties (например, platform, app_version и др.)
     if (appVersion != null || (initialUserProperties != null && initialUserProperties.isNotEmpty)) {
-      debugPrint(
-        '[AmplitudeService] TODO: user properties (app_version и др.) '
-        'пока не отправляются. Надо допилить Identify под текущий SDK.',
-      );
+      final identify = Identify();
+
+      if (appVersion != null) {
+        identify.set('app_version', appVersion);
+      }
+
+      if (initialUserProperties != null && initialUserProperties.isNotEmpty) {
+        initialUserProperties.forEach((key, value) {
+          identify.set(key, value);
+        });
+      }
+
+      amplitude.identify(identify);
     }
 
     _amplitude = amplitude;
@@ -62,12 +71,20 @@ class AmplitudeService {
     debugPrint('[AmplitudeService] Initialized');
   }
 
-  /// Временно — заглушка. Чтобы не падать, просто логируем, что вызвали.
+  /// Обновить user properties через Identify (например, при смене языка,
+  /// статуса подписки, включении уведомлений и т.п.).
   Future<void> setUserProperties(Map<String, dynamic> properties) async {
     if (properties.isEmpty) return;
 
-    // TODO: реализовать через Identify, когда разберёмся с версией SDK.
-    debugPrint('[AmplitudeService] setUserProperties called but not implemented yet: $properties');
+    final amplitude = _ensureInstance();
+    if (amplitude == null) return;
+
+    final identify = Identify();
+    properties.forEach((key, value) {
+      identify.set(key, value);
+    });
+
+    amplitude.identify(identify);
   }
 
   /// Установить/сменить userId (когда появится авторизация).
