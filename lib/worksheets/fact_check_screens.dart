@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:wisemind/theme/app_theme.dart';
+import '../theme/app_components.dart';
+import '../theme/app_spacing.dart';
 import 'package:wisemind/billing/billing_service.dart';
 import '../analytics/amplitude_service.dart';
 
@@ -274,31 +276,80 @@ class FactCheckDetailScreen extends StatelessWidget {
         title: const Text('Просмотр записи'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
         children: [
-          _detailRow('Дата', _formatDate(entry.date)),
-          _detailRow('Эмоции', emotionsText),
-          _detailRow(
-            'Интенсивность эмоции (0–100)',
-            entry.initialIntensity.toString(),
+          const SizedBox(height: AppSpacing.gapMedium),
+
+          // ОБЩАЯ ИНФОРМАЦИЯ
+          FormSectionCard(
+            title: 'Общая информация',
+            children: [
+              _detailRow('Дата', _formatDate(entry.date)),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow('Эмоции', emotionsText),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                'Интенсивность эмоции (0–100)',
+                entry.initialIntensity.toString(),
+              ),
+            ],
           ),
-          _detailRow('Побуждающее событие', entry.promptingEvent),
-          _detailRow('Проверьте факты (крайности)', entry.factsExtremes),
-          _detailRow('Моя интерпретация фактов', entry.myInterpretation),
-          _detailRow(
-              'Другие интерпретации фактов', entry.alternativeInterpretations),
-          _detailRow('Для меня это угроза?', entry.perceivedThreat),
-          _detailRow('Другие исходы ситуации', entry.alternativeOutcomes),
-          _detailRow('Это катастрофа?', entry.catastropheThoughts),
-          _detailRow('Как совладаю с последствиями?', entry.copingPlan),
-          _detailRow(
-            'Мои эмоции соответствуют фактам? (0–5)',
-            entry.emotionMatchScore.toString(),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ПРОВЕРКА ФАКТОВ
+          FormSectionCard(
+            title: 'Проверка фактов',
+            children: [
+              _detailRow('Побуждающее событие', entry.promptingEvent),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow('Проверьте факты (крайности)', entry.factsExtremes),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow('Моя интерпретация фактов', entry.myInterpretation),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                'Другие интерпретации фактов',
+                entry.alternativeInterpretations,
+              ),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow('Для меня это угроза?', entry.perceivedThreat),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                'Другие исходы ситуации',
+                entry.alternativeOutcomes,
+              ),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow('Это катастрофа?', entry.catastropheThoughts),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                'Как совладаю с последствиями?',
+                entry.copingPlan,
+              ),
+            ],
           ),
-          _detailRow(
-            'Текущая интенсивность эмоций (0–100)',
-            entry.currentIntensity.toString(),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ПОСЛЕ ПРОВЕРКИ ФАКТОВ
+          FormSectionCard(
+            title: 'После проверки фактов',
+            children: [
+              _detailRow(
+                'Мои эмоции соответствуют фактам? (0–5)',
+                entry.emotionMatchScore.toString(),
+              ),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                'Текущая интенсивность эмоций (0–100)',
+                entry.currentIntensity.toString(),
+              ),
+            ],
           ),
+
+          const SizedBox(height: AppSpacing.gapXL),
         ],
       ),
     );
@@ -306,25 +357,21 @@ class FactCheckDetailScreen extends StatelessWidget {
 
   Widget _detailRow(String title, String value) {
     if (value.trim().isEmpty) value = '—';
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: AppTypography.bodySecondary.copyWith(
+            fontWeight: FontWeight.w600,
           ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 15),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: AppTypography.body,
+        ),
+      ],
     );
   }
 }
@@ -431,275 +478,283 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
         children: [
-          // Пилюля "Пример..."
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-              onPressed: () {
+          const SizedBox(height: AppSpacing.gapMedium),
+
+          // Пилюля с примером заполнения рабочего листа
+          Container(
+            decoration: AppDecorations.subtleCard,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+              onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const FactCheckExampleScreen(),
                   ),
                 );
               },
-              icon: const Icon(Icons.description_outlined),
-              label: const Text(
-                'Пример заполненного листа "Проверка фактов"',
-                textAlign: TextAlign.center,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                child: Row(
+                  children: [
+                    const Icon(Icons.description_outlined),
+                    const SizedBox(width: AppSpacing.gapMedium),
+                    const Expanded(
+                      child: Text(
+                        'Пример заполненного листа "Проверка фактов"',
+                        style: AppTypography.body,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 24),
 
-          // мета + заголовок
-          Text(
-            'Регуляция эмоций',
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(color: Colors.grey[700]),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Проверка фактов',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ОБЩАЯ ИНФОРМАЦИЯ
+          FormSectionCard(
+            title: 'Общая информация',
+            children: [
+              Text(
+                'Регуляция эмоций',
+                style: AppTypography.bodySecondary,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Проверка фактов',
+                style: AppTypography.sectionTitle,
+              ),
+              const SizedBox(height: AppSpacing.gapLarge),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text(
+                  'Дата',
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
-          ),
-          const SizedBox(height: 24),
-
-          // дата
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text(
-              'Дата',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(_formatDate(_date)),
-            trailing: const Icon(Icons.calendar_today),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _date,
-                firstDate: DateTime(2020),
-                lastDate: DateTime(2100),
-              );
-              if (picked != null) {
-                setState(() {
-                  _date = picked;
-                });
-              }
-            },
-          ),
-          const Divider(height: 32),
-
-          // эмоции
-          const Text(
-            'Эмоция',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _emotionOptions.map((emotion) {
-              final selected = _selectedEmotions.contains(emotion);
-              return FilterChip(
-                label: Text(emotion),
-                selected: selected,
-                onSelected: (value) {
-                  setState(() {
-                    if (value) {
-                      _selectedEmotions.add(emotion);
-                    } else {
-                      _selectedEmotions.remove(emotion);
-                    }
-                  });
+                subtitle: Text(_formatDate(_date)),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _date,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _date = picked;
+                    });
+                  }
                 },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 16),
-
-          _field(
-            label: 'Интенсивность эмоции (0–100)',
-            hint: 'От 0 до 100',
-            controller: _initialIntensityCtrl,
-            keyboardType: TextInputType.number,
+              ),
+            ],
           ),
 
-          _field(
-            label: 'Побуждающее событие',
-            hint:
-                'Что произошло и привело вас к этой эмоции? Кто кому что сделал? К чему это привело? '
-                'Является ли это проблемой для вас? Будьте максимально конкретны.',
-            controller: _promptingEventCtrl,
-            maxLines: 4,
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ЭМОЦИЯ И ИНТЕНСИВНОСТЬ
+          FormSectionCard(
+            title: 'Эмоция и интенсивность',
+            children: [
+              const Text(
+                'Эмоция',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _emotionOptions.map((emotion) {
+                  final selected = _selectedEmotions.contains(emotion);
+                  return AppPillChoice(
+                    label: emotion,
+                    selected: selected,
+                    onTap: () {
+                      setState(() {
+                        if (selected) {
+                          _selectedEmotions.remove(emotion);
+                        } else {
+                          _selectedEmotions.add(emotion);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _initialIntensityCtrl,
+                label: 'Интенсивность эмоции (0–100)',
+                hint: 'От 0 до 100',
+                keyboardType: TextInputType.number,
+              ),
+            ],
           ),
 
-          _field(
-            label: 'Проверьте факты!',
-            hint: 'Выясните, нет ли крайностей и оценочности в ваших суждениях.',
-            controller: _factsExtremesCtrl,
-            maxLines: 3,
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ПРОВЕРКА ФАКТОВ
+          FormSectionCard(
+            title: 'Проверка фактов',
+            children: [
+              AppTextField(
+                controller: _promptingEventCtrl,
+                label: 'Побуждающее событие',
+                hint:
+                    'Что произошло и привело вас к этой эмоции? Кто кому что сделал? К чему это привело? Является ли это проблемой для вас? Будьте максимально конкретны.',
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _factsExtremesCtrl,
+                label: 'Проверьте факты!',
+                hint:
+                    'Выясните, нет ли крайностей и оценочности в ваших суждениях.',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _myInterpretationCtrl,
+                label: 'Моя интерпретация фактов',
+                hint:
+                    'Что я допускаю (предполагаю)? Добавляю ли я какую-то свою интерпретацию в описание произошедших событий?',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _altInterpretationsCtrl,
+                label: 'Проверьте факты! (другие интерпретации)',
+                hint:
+                    'Напишите как можно больше других интерпретаций этих фактов.',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _perceivedThreatCtrl,
+                label: 'Для меня это угроза?',
+                hint:
+                    'В чем в данном случае состоит эта угроза? Чем это событие или ситуация угрожают мне? Какие тревожные события или последствия я ожидаю?',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _altOutcomesCtrl,
+                label: 'Проверьте факты! (другие исходы ситуации)',
+                hint:
+                    'Напишите как можно больше других исходов этой ситуации, учитывая факты.',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _catastropheCtrl,
+                label: 'Это катастрофа?',
+                hint:
+                    'Опишите подробно наиболее плохие последствия, которые только могут произойти.',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _copingCtrl,
+                label: 'Как совладаю с последствиями?',
+                hint: 'Опишите способы, как справитесь с этим.',
+                maxLines: 3,
+              ),
+            ],
           ),
 
-          _field(
-            label: 'Моя интерпретация фактов',
-            hint:
-                'Что я допускаю (предполагаю)? Добавляю ли я какую-то свою интерпретацию в описание произошедших событий?',
-            controller: _myInterpretationCtrl,
-            maxLines: 3,
+          const SizedBox(height: AppSpacing.gapXL),
+
+          FormSectionCard(
+            title: 'После проверки фактов',
+            children: [
+              const Text(
+                'Мои эмоции соответствуют фактам? (0–5)',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: List.generate(6, (index) {
+                  final selected = _emotionMatchScore == index;
+                  return AppPillChoice(
+                    label: index.toString(),
+                    selected: selected,
+                    onTap: () {
+                      setState(() {
+                        _emotionMatchScore = index;
+                      });
+                    },
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _currentIntensityCtrl,
+                label: 'Текущая интенсивность эмоций (0–100)',
+                hint: 'От 0 до 100',
+                keyboardType: TextInputType.number,
+              ),
+            ],
           ),
 
-          _field(
-            label: 'Проверьте факты! (другие интерпретации)',
-            hint: 'Напишите как можно больше других интерпретаций этих фактов.',
-            controller: _altInterpretationsCtrl,
-            maxLines: 3,
-          ),
+          const SizedBox(height: AppSpacing.gapXL),
 
-          _field(
-            label: 'Для меня это угроза?',
-            hint:
-                'В чем в данном случае состоит эта угроза? Чем это событие или ситуация угрожают мне? '
-                'Какие тревожные события или последствия я ожидаю от этой ситуации?',
-            controller: _perceivedThreatCtrl,
-            maxLines: 3,
-          ),
-
-          _field(
-            label: 'Проверьте факты! (другие исходы ситуации)',
-            hint:
-                'Напишите как можно больше других исходов этой ситуации, учитывая факты.',
-            controller: _altOutcomesCtrl,
-            maxLines: 3,
-          ),
-
-          _field(
-            label: 'Это катастрофа?',
-            hint:
-                'Опишите подробно наиболее плохие последствия, которые только могут произойти.',
-            controller: _catastropheCtrl,
-            maxLines: 3,
-          ),
-
-          _field(
-            label: 'Как совладаю с последствиями?',
-            hint: 'Опишите способы, как справитесь с этим.',
-            controller: _copingCtrl,
-            maxLines: 3,
-          ),
-
-          const SizedBox(height: 16),
-
-          const Text(
-            'Мои эмоции соответствуют фактам? (0–5)',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: List.generate(6, (index) {
-              final selected = _emotionMatchScore == index;
-              return ChoiceChip(
-                label: Text(index.toString()),
-                selected: selected,
-                onSelected: (_) {
-                  setState(() {
-                    _emotionMatchScore = index;
-                  });
-                },
-              );
-            }),
-          ),
-
-          const SizedBox(height: 16),
-
-          _field(
-            label: 'Текущая интенсивность эмоций (0–100)',
-            hint: 'От 0 до 100',
-            controller: _currentIntensityCtrl,
-            keyboardType: TextInputType.number,
-          ),
-
-          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Theme.of(context).colorScheme.primary,
-                foregroundColor:
-                    Theme.of(context).colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(
+                  Theme.of(context).colorScheme.primary,
+                ),
+                foregroundColor: WidgetStateProperty.all(Colors.white),
+                padding: WidgetStateProperty.all(
+                  const EdgeInsets.symmetric(vertical: 16),
+                ),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                elevation: WidgetStateProperty.all(0),
+                overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                  (states) {
+                    if (states.contains(WidgetState.pressed)) {
+                      return Colors.white.withValues(alpha: 0.15);
+                    }
+                    return null;
+                  },
+                ),
+                animationDuration: const Duration(milliseconds: 120),
               ),
               onPressed: _save,
-              icon: const Icon(Icons.check),
-              label: Text(
+              child: Text(
                 isEditing ? 'Сохранить изменения' : 'Сохранить',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
+
+          const SizedBox(height: AppSpacing.gapXL),
         ],
       ),
     );
   }
 
-  Widget _field({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    int maxLines = 2,
-    int? maxLength,
-    TextInputType? keyboardType,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 4),
-          TextField(
-            controller: controller,
-            maxLines: maxLines,
-            maxLength: maxLength,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              hintText: hint,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Future<void> _save() async {
     final box = await _openFactCheckBox();

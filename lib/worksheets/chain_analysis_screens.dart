@@ -3,6 +3,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:wisemind/theme/app_theme.dart';
 
+import '../theme/app_components.dart';
+import '../theme/app_spacing.dart';
+
 import '../analytics/amplitude_service.dart';
 import 'chain_analysis.dart';
 
@@ -429,7 +432,16 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    // Проблемное поведение — обязательное поле
+    final problematic = _problematicBehaviorController.text.trim();
+    if (problematic.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Опиши проблемное поведение')),
+        );
+      }
+      return;
+    }
 
     final box = await _openChainAnalysisBox();
     final isNew = widget.existingEntry == null;
@@ -438,7 +450,7 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
       final entry = ChainAnalysisEntry(
         email: 'local@user', // пока заглушка, до авторизации
         date: _date,
-        problematicBehavior: _problematicBehaviorController.text.trim(),
+        problematicBehavior: problematic,
         promptingEvent: _promptingEventController.text.trim(),
         environment: _environmentController.text.trim(),
         chainLinks: _chainLinksController.text.trim(),
@@ -468,8 +480,7 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
       e
         ..date = _date
-        ..problematicBehavior =
-            _problematicBehaviorController.text.trim()
+        ..problematicBehavior = problematic
         ..promptingEvent = _promptingEventController.text.trim()
         ..environment = _environmentController.text.trim()
         ..chainLinks = _chainLinksController.text.trim()
@@ -522,205 +533,180 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenPadding,
+              vertical: AppSpacing.gapMedium,
+            ),
             children: [
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                  ),
-                  onPressed: () {
+              const SizedBox(height: AppSpacing.gapMedium),
+
+              // Кнопка с примером заполнения
+              Container(
+                decoration: AppDecorations.subtleCard,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                  onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => const ChainAnalysisExampleScreen(),
                       ),
                     );
                   },
-                  icon: const Icon(Icons.description_outlined),
-                  label: const Text(
-                    'Пример заполненного листа "Анализ нежелательного поведения"',
-                    textAlign: TextAlign.center,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.description_outlined,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            'Пример заполненного листа\n"Анализ нежелательного поведения"',
+                            style: AppTypography.bodySecondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Осознанность',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'Анализ нежелательного поведения',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 16),
 
-              // Дата
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Дата'),
-                subtitle: Text(_formatDate(_date)),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: _pickDate,
-              ),
-              const Divider(height: 24),
+              const SizedBox(height: AppSpacing.gapLarge),
 
-              // Проблемное поведение (обязательное, 140 символов)
-              TextFormField(
-                controller: _problematicBehaviorController,
-                maxLength: 140,
-                decoration: const InputDecoration(
-                  labelText: 'Проблемное поведение',
-                  hintText: 'Например: бытовой алкоголизм, селфхарм, грызу ногти и так далее',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Опиши проблемное поведение';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+              // Блок: заголовок рабочего листа + дата
+              FormSectionCard(
+                title: 'Общая информация',
+                children: [
+                  Text(
+                    'Осознанность',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Анализ нежелательного поведения',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
-              // Что именно происходило (цепочка)
-              TextFormField(
-                controller: _chainLinksController,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Что именно происходило (цепочка)',
-                  hintText:
-                      'Перечислите конкретное поведение и события в окружении, которые происходили',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Дата'),
+                    subtitle: Text(_formatDate(_date)),
+                    trailing: const Icon(Icons.calendar_today),
+                    onTap: _pickDate,
+                  ),
+                  const SizedBox(height: 16),
 
-              // Побуждающее событие
-              TextFormField(
-                controller: _promptingEventController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Побуждающее событие',
-                  hintText:
-                      'Вспомните, что случилось непосредственно перед тем, как побуждение или мысль пришли в вашу голову',
-                  border: OutlineInputBorder(),
-                ),
+                  AppTextField(
+                    controller: _problematicBehaviorController,
+                    label: 'Проблемное поведение',
+                    hint: 'Например: накричал на коллегу, сорвался на переедание',
+                    maxLines: 2,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
 
-              // Уязвимости (environment)
-              TextFormField(
-                controller: _environmentController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Уязвимости',
-                  hintText:
-                      'Что во мне или в моем окружении сделало меня уязвимой(-ым). Например, усталость, напряжение от работы, зубная боль и так далее',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.gapLarge),
 
-              // Последствия для окружения
-              TextFormField(
-                controller: _consequencesForOthersController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Последствия для окружения',
-                  hintText: 'Каковы были последствия для тех, кто вас окружал в процессе проблемного поведения или после него',
-                  border: OutlineInputBorder(),
-                ),
+              // Блок: цепочка
+              FormSectionCard(
+                title: 'Цепочка событий',
+                children: [
+                  AppTextField(
+                    controller: _chainLinksController,
+                    label: 'Что именно происходило (цепочка)',
+                    hint: 'Мысли, эмоции, телесные реакции и действия по шагам',
+                    maxLines: 4,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _promptingEventController,
+                    label: 'Побуждающее событие',
+                    hint: 'Что конкретно стало триггером эпизода?',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _environmentController,
+                    label: 'Уязвимости',
+                    hint: 'Например: недосып, голод, стрессовая неделя, болезнь',
+                    maxLines: 3,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
 
-              // Последствия для меня
-              TextFormField(
-                controller: _consequencesForMeController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Последствия для меня',
-                  hintText:
-                      'Чем проблемное поведение было чревато для вас',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.gapLarge),
 
-              // Как можно было по-другому (адаптивное поведение)
-              TextFormField(
-                controller: _adaptiveBehaviourCtrl,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Как можно было по-другому?',
-                  hintText:
-                      'Перечислите новые, более адаптивные виды поведения, которыми следует заменить неэффективное',
-                  border: OutlineInputBorder(),
-                ),
+              FormSectionCard(
+                title: 'Последствия',
+                children: [
+                  AppTextField(
+                    controller: _consequencesForOthersController,
+                    label: 'Последствия для окружения',
+                    hint: 'Как это повлияло на других людей?',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _consequencesForMeController,
+                    label: 'Последствия для меня',
+                    hint: 'Что стало со мной после эпизода — чувства, мысли, состояние',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _damageCtrl,
+                    label: 'Нанесённый вред',
+                    hint: 'Что испортилось или было потеряно из‑за этого поведения?',
+                    maxLines: 3,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
 
-              // Ущерб
-              TextFormField(
-                controller: _damageCtrl,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Нанесённый вред',
-                  hintText:
-                      'Какой вред нанесён? Отношения, репутация, деньги, здоровье…',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.gapLarge),
 
-              // Как снизить уязвимость
-              TextFormField(
-                controller: _decreaseVulnerabilityCtrl,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Как снизить уязвимость в будущем?',
-                  hintText:
-                      'Что планируете сделать, чтобы было меньше факторов, влияющих на проявление проблемного поведения',
-                  border: OutlineInputBorder(),
-                ),
+              FormSectionCard(
+                title: 'План изменений',
+                children: [
+                  AppTextField(
+                    controller: _adaptiveBehaviourCtrl,
+                    label: 'Как можно было по-другому?',
+                    hint: 'Какое более здоровое поведение могло бы быть на этом месте?',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _decreaseVulnerabilityCtrl,
+                    label: 'Как снизить уязвимость в будущем?',
+                    hint: 'Что в режиме и привычках можно укрепить, чтобы было легче?',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _preventEventCtrl,
+                    label: 'Как предотвратить побуждающее событие?',
+                    hint: 'Что можно сделать, чтобы подобная ситуация не повторялась?',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _fixPlanCtrl,
+                    label: 'План исправления',
+                    hint: 'Конкретные шаги по исправлению последствий и отношений',
+                    maxLines: 3,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
 
-              // Как предотвратить событие
-              TextFormField(
-                controller: _preventEventCtrl,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Как предотвратить побуждающее событие?',
-                  hintText:
-                      'Что планируете сделать, чтобы избежать или предотвратить побуждающее событие, вызвавшее проблемное поведение',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // План исправления
-              TextFormField(
-                controller: _fixPlanCtrl,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'План исправления',
-                  hintText:
-                      'Что вы можете сделать сейчас, чтобы уменьшить ущерб и восстановить отношения?',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.gapXL),
 
               SizedBox(
                 width: double.infinity,
@@ -802,20 +788,78 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
         title: const Text('Детали анализа'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
         children: [
-          _detailRow('Дата', _formatDate(entry.date)),
-          _detailRow('Проблемное поведение', entry.problematicBehavior),
-          _detailRow('Что именно происходило (цепочка)', entry.chainLinks),
-          _detailRow('Побуждающее событие', entry.promptingEvent),
-          _detailRow('Уязвимости', entry.environment),
-          _detailRow('Последствия для окружения', entry.consequencesForOthers),
-          _detailRow('Последствия для меня', entry.consequencesForMe),
-          _detailRow('Как можно было по-другому?', entry.adaptiveBehaviour),
-          _detailRow('Нанесённый вред', entry.damage),
-          _detailRow('Как снизить уязвимость в будущем?', entry.decreaseVulnerability),
-          _detailRow('Как предотвратить побуждающее событие?', entry.preventEvent),
-          _detailRow('План исправления', entry.fixPlan),
+          const SizedBox(height: AppSpacing.gapMedium),
+
+          // ОБЩАЯ ИНФОРМАЦИЯ
+          FormSectionCard(
+            title: 'Общая информация',
+            children: [
+              const Text(
+                'Осознанность',
+                style: AppTypography.bodySecondary,
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Анализ нежелательного поведения',
+                style: AppTypography.cardTitle,
+              ),
+              const SizedBox(height: 16),
+              _detailRow('Дата', _formatDate(entry.date)),
+              const SizedBox(height: 16),
+              _detailRow('Проблемное поведение', entry.problematicBehavior),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ЦЕПОЧКА СОБЫТИЙ
+          FormSectionCard(
+            title: 'Цепочка событий',
+            children: [
+              _detailRow('Что именно происходило (цепочка)', entry.chainLinks),
+              const SizedBox(height: 16),
+              _detailRow('Побуждающее событие', entry.promptingEvent),
+              const SizedBox(height: 16),
+              _detailRow('Уязвимости', entry.environment),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ПОСЛЕДСТВИЯ
+          FormSectionCard(
+            title: 'Последствия',
+            children: [
+              _detailRow('Последствия для окружения', entry.consequencesForOthers),
+              const SizedBox(height: 16),
+              _detailRow('Последствия для меня', entry.consequencesForMe),
+              const SizedBox(height: 16),
+              _detailRow('Нанесённый вред', entry.damage),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ПЛАН ИЗМЕНЕНИЙ
+          FormSectionCard(
+            title: 'План изменений',
+            children: [
+              _detailRow('Как можно было по-другому?', entry.adaptiveBehaviour),
+              const SizedBox(height: 16),
+              _detailRow('Как снизить уязвимость в будущем?', entry.decreaseVulnerability),
+              const SizedBox(height: 16),
+              _detailRow('Как предотвратить побуждающее событие?', entry.preventEvent),
+              const SizedBox(height: 16),
+              _detailRow('План исправления', entry.fixPlan),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
         ],
       ),
     );
@@ -823,21 +867,21 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
 }
 
 Widget _detailRow(String title, String? value) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+  final text = (value == null || value.trim().isEmpty) ? '—' : value.trim();
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: AppTypography.bodySecondary.copyWith(
+          fontWeight: FontWeight.w600,
         ),
-        if (value != null && value.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(value),
-          ),
-      ],
-    ),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        text,
+        style: AppTypography.body,
+      ),
+    ],
   );
 }

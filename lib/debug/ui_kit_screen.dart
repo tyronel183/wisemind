@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_components.dart';
+import '../theme/app_spacing.dart';
 
 class UiKitScreen extends StatelessWidget {
   const UiKitScreen({super.key});
@@ -148,37 +149,50 @@ class UiKitScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
 
+          const SizedBox(height: AppSpacing.gapXL),
           const Divider(),
 
-          // ==== КАРТОЧКИ НАВЫКОВ ====
-          Text('Карточки навыков', style: textTheme.titleMedium),
-          const SizedBox(height: 8),
+          // ==== ФОРМЕННЫЕ КОМПОНЕНТЫ ====
+          Text('Форма / поля / выбор', style: textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.gapLarge),
 
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: AppSizes.padding,
-            crossAxisSpacing: AppSizes.padding,
-            childAspectRatio: 0.9,
-            children: const [
-              SkillCategoryCard(
-                title: 'Осознанность',
-                assetPath: 'assets/images/skills/mindfulness.png',
+          FormSectionCard(
+            title: 'Секция формы',
+            subtitle: 'Пример оформления блока анкеты в стиле Wisemind',
+            children: [
+              AppTextField(
+                controller: TextEditingController(),
+                label: 'За что я себя сегодня благодарю?',
+                maxLength: 140,
+                maxLines: 2,
               ),
-              SkillCategoryCard(
-                title: 'Устойчивость к стрессу',
-                assetPath: 'assets/images/skills/distress_tolerance.png',
+              const SizedBox(height: AppSpacing.gapLarge),
+              AppSelectField(
+                label: 'Сколько спали (часы)?',
+                valueLabel: '7,5 ч',
+                onTap: () {
+                  // В UI Kit это просто демо без реального bottom sheet
+                },
               ),
-              SkillCategoryCard(
-                title: 'Регуляция эмоций',
-                assetPath: 'assets/images/skills/emotion_regulation.png',
+              const SizedBox(height: AppSpacing.gapLarge),
+              Text(
+                'Шкала от 0 до 5',
+                style: textTheme.bodyMedium,
               ),
-              SkillCategoryCard(
-                title: 'Межличностная эффективность',
-                assetPath: 'assets/images/skills/interpersonal_effectiveness.png',
+              const SizedBox(height: AppSpacing.gapMedium),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (var i = 0; i < 6; i++)
+                    AppPillChoice(
+                      label: i.toString(),
+                      selected: i == 3, // просто пример выбранного значения
+                      onTap: () {
+                        // демо, здесь логика выбора не нужна
+                      },
+                    ),
+                ],
               ),
             ],
           ),

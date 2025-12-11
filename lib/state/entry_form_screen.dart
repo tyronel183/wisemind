@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import '../utils/date_format.dart';
 import 'state_entry.dart';
+import '../theme/app_components.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_theme.dart';
 
 const List<String> kAllSkills = [
+  'Карта дня',
+  'Анализ проблемного поведения',
   'Мудрый разум',
   'Наблюдение',
   'Описание',
@@ -82,7 +87,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
   List<String> get _wakeOptions {
     final List<String> result = ['Раньше 4:00'];
-    final start = TimeOfDay(hour: 4, minute: 0);
+    final start = const TimeOfDay(hour: 4, minute: 0);
     for (int i = 0; i <= 18; i++) {
       final minutes = start.hour * 60 + start.minute + i * 30;
       final h = minutes ~/ 60;
@@ -231,222 +236,241 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
         title: Text(isEdit ? 'Редактировать запись' : 'Новая запись'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
         children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Дата'),
-            subtitle: Text(formatDate(_date)),
-            trailing: IconButton(
-              icon: const Icon(Icons.calendar_today),
-              onPressed: _pickDate,
-            ),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.gapMedium),
 
-          const Text(
-            'Как вы сегодня?',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: List.generate(_moodEmojis.length, (index) {
-              final emoji = _moodEmojis[index];
-              final selected = _moodIndex == index;
-              return ChoiceChip(
-                label: Text(emoji, style: const TextStyle(fontSize: 20)),
-                selected: selected,
-                onSelected: (_) {
-                  setState(() {
-                    if (selected) {
-                      _moodIndex = -1;
-                      _moodController.text = '';
-                    } else {
-                      _moodIndex = index;
-                      _moodController.text = emoji;
-                    }
-                  });
-                },
-              );
-            }),
-          ),
-          const SizedBox(height: 16),
-
-          TextField(
-            controller: _gratefulController,
-            maxLength: 140,
-            decoration: const InputDecoration(
-              labelText: 'За что я себя сегодня благодарю?',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          TextField(
-            controller: _goalController,
-            maxLength: 140,
-            decoration: const InputDecoration(
-              labelText: 'Что сделано для достижения цели?',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          const Text(
-            'Сон',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Как отдохнули? (0–5)',
-            value: _rest,
-            onChanged: (v) => setState(() => _rest = v),
-          ),
-          const SizedBox(height: 16),
-          _buildSleepDropdown(),
-          const SizedBox(height: 16),
-          _buildWakeUpDropdown(),
-          const SizedBox(height: 16),
-          _buildChoiceRow(
-            label: 'Сколько было ночных пробуждений? (0–5)',
-            value: _nightWakeUps,
-            onChanged: (v) => setState(() => _nightWakeUps = v),
-          ),
-          const SizedBox(height: 24),
-
-          const Text(
-            'Дискомфорт',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Физический дискомфорт (0–5)',
-            value: _physicalDiscomfort,
-            onChanged: (v) => setState(() => _physicalDiscomfort = v),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Эмоциональный дискомфорт (0–5)',
-            value: _emotionalDistress,
-            onChanged: (v) => setState(() => _emotionalDistress = v),
-          ),
-          const SizedBox(height: 24),
-
-          const Text(
-            'Эмоциональное состояние',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Ощущение нереальности (0–5)',
-            value: _dissociation,
-            onChanged: (v) => setState(() => _dissociation = v),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Руминации, навязчивые мысли (0–5)',
-            value: _ruminations,
-            onChanged: (v) => setState(() => _ruminations = v),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Самообвинение (0–5)',
-            value: _selfBlame,
-            onChanged: (v) => setState(() => _selfBlame = v),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Суицидальные мысли (0–5)',
-            value: _suicidalThoughts,
-            onChanged: (v) => setState(() => _suicidalThoughts = v),
-          ),
-          const SizedBox(height: 24),
-
-          const Text(
-            'Проблемное поведение',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Заполняйте, если отслеживаете какое-то конкретное проблемное поведение.',
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Насколько сильный импульс? (0–5)',
-            value: _urges,
-            onChanged: (v) => setState(() => _urges = v),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _actionController,
-            maxLength: 140,
-            decoration: const InputDecoration(
-              labelText: 'Что сделали?',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          const Text(
-            'Забота о себе',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Физическая активность (0–5)',
-            value: _physicalActivity,
-            onChanged: (v) => setState(() => _physicalActivity = v),
-          ),
-          const SizedBox(height: 8),
-          _buildChoiceRow(
-            label: 'Сколько было удовольствия (0–5)',
-            value: _pleasure,
-            onChanged: (v) => setState(() => _pleasure = v),
-          ),
-          const SizedBox(height: 16),
-          _buildWaterDropdown(),
-          const SizedBox(height: 16),
-          _buildChoiceRow(
-            label: 'Сколько раз ели? (0–5)',
-            value: _food,
-            onChanged: (v) => setState(() => _food = v),
-          ),
-          const SizedBox(height: 24),
-
-          const Text(
-            'Навыки',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 4),
-          const Text('Можно выбрать несколько.'),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade400),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _selectedSkills.isEmpty
-                      ? 'Навыки не выбраны'
-                      : _selectedSkills.join(', '),
+          // ОБЩЕЕ СОСТОЯНИЕ
+          FormSectionCard(
+            title: 'Общее состояние',
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Дата'),
+                subtitle: Text(formatDate(_date)),
+                trailing: IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: _pickDate,
                 ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: OutlinedButton(
-                    onPressed: _openSkillsSelector,
-                    child: const Text('Выбрать навыки'),
-                  ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Как вы сегодня?',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: List.generate(_moodEmojis.length, (index) {
+                  final emoji = _moodEmojis[index];
+                  final selected = _moodIndex == index;
+                  return _EmojiChoiceChip(
+                    emoji: emoji,
+                    selected: selected,
+                    onTap: () {
+                      setState(() {
+                        if (selected) {
+                          _moodIndex = -1;
+                          _moodController.text = '';
+                        } else {
+                          _moodIndex = index;
+                          _moodController.text = emoji;
+                        }
+                      });
+                    },
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _gratefulController,
+                label: 'За что я себя сегодня благодарю?',
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _goalController,
+                label: 'Что сделано для достижения цели?',
+                maxLines: 2,
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // СОН
+          FormSectionCard(
+            title: 'Сон',
+            children: [
+              _buildChoiceRow(
+                label: 'Как отдохнули? (0–5)',
+                value: _rest,
+                onChanged: (v) => setState(() => _rest = v),
+              ),
+              const SizedBox(height: 16),
+              _buildSleepDropdown(),
+              const SizedBox(height: 16),
+              _buildWakeUpDropdown(),
+              const SizedBox(height: 16),
+              _buildChoiceRow(
+                label: 'Сколько было ночных пробуждений? (0–5)',
+                value: _nightWakeUps,
+                onChanged: (v) => setState(() => _nightWakeUps = v),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ДИСКОМФОРТ
+          FormSectionCard(
+            title: 'Дискомфорт',
+            children: [
+              _buildChoiceRow(
+                label: 'Физический дискомфорт (0–5)',
+                value: _physicalDiscomfort,
+                onChanged: (v) =>
+                    setState(() => _physicalDiscomfort = v),
+              ),
+              const SizedBox(height: 8),
+              _buildChoiceRow(
+                label: 'Эмоциональный дискомфорт (0–5)',
+                value: _emotionalDistress,
+                onChanged: (v) =>
+                    setState(() => _emotionalDistress = v),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ЭМОЦИОНАЛЬНОЕ СОСТОЯНИЕ
+          FormSectionCard(
+            title: 'Эмоциональное состояние',
+            children: [
+              _buildChoiceRow(
+                label: 'Ощущение нереальности (0–5)',
+                value: _dissociation,
+                onChanged: (v) => setState(() => _dissociation = v),
+              ),
+              const SizedBox(height: 8),
+              _buildChoiceRow(
+                label: 'Руминации, навязчивые мысли (0–5)',
+                value: _ruminations,
+                onChanged: (v) => setState(() => _ruminations = v),
+              ),
+              const SizedBox(height: 8),
+              _buildChoiceRow(
+                label: 'Самообвинение (0–5)',
+                value: _selfBlame,
+                onChanged: (v) => setState(() => _selfBlame = v),
+              ),
+              const SizedBox(height: 8),
+              _buildChoiceRow(
+                label: 'Суицидальные мысли (0–5)',
+                value: _suicidalThoughts,
+                onChanged: (v) =>
+                    setState(() => _suicidalThoughts = v),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ПРОБЛЕМНОЕ ПОВЕДЕНИЕ
+          FormSectionCard(
+            title: 'Проблемное поведение',
+            children: [
+              const Text(
+                'Заполняйте, если отслеживаете какое-то конкретное проблемное поведение.',
+              ),
+              const SizedBox(height: 12),
+              _buildChoiceRow(
+                label: 'Насколько сильный импульс? (0–5)',
+                value: _urges,
+                onChanged: (v) => setState(() => _urges = v),
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _actionController,
+                label: 'Что сделали?',
+                maxLines: 2,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // ЗАБОТА О СЕБЕ
+          FormSectionCard(
+            title: 'Забота о себе',
+            children: [
+              _buildChoiceRow(
+                label: 'Физическая активность (0–5)',
+                value: _physicalActivity,
+                onChanged: (v) =>
+                    setState(() => _physicalActivity = v),
+              ),
+              const SizedBox(height: 8),
+              _buildChoiceRow(
+                label: 'Сколько было удовольствия (0–5)',
+                value: _pleasure,
+                onChanged: (v) => setState(() => _pleasure = v),
+              ),
+              const SizedBox(height: 16),
+              _buildWaterDropdown(),
+              const SizedBox(height: 16),
+              _buildChoiceRow(
+                label: 'Сколько раз ели? (0–5)',
+                value: _food,
+                onChanged: (v) => setState(() => _food = v),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // НАВЫКИ
+          FormSectionCard(
+            title: 'Применённые навыки',
+            children: [
+              const Text('Можно выбрать несколько.'),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final skill in _selectedSkills)
+                    Container(
+                      decoration: AppDecorations.filledChip,
+                      padding: AppChipStyles.padding,
+                      child: Text(
+                        skill,
+                        style: AppTypography.chipLabel,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: _openSkillsSelector,
+                  icon: const Icon(Icons.tune),
+                  label: const Text('Выбрать навыки'),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapXL),
 
           SizedBox(
             width: double.infinity,
@@ -465,16 +489,15 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
                   ),
                 ),
                 elevation: WidgetStateProperty.all(0),
-
-                // Лёгкая анимация при нажатии
-                overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                overlayColor:
+                    WidgetStateProperty.resolveWith<Color?>((states) {
                   if (states.contains(WidgetState.pressed)) {
                     return Colors.white.withValues(alpha: 0.15);
                   }
                   return null;
                 }),
-
-                animationDuration: const Duration(milliseconds: 120),
+                animationDuration:
+                    const Duration(milliseconds: 120),
               ),
               onPressed: _save,
               child: Text(
@@ -503,11 +526,13 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
+          runSpacing: 8,
           children: List.generate(6, (index) {
-            return ChoiceChip(
-              label: Text(index.toString()),
-              selected: value == index,
-              onSelected: (_) => onChanged(index),
+            final selected = value == index;
+            return AppPillChoice(
+              label: index.toString(),
+              selected: selected,
+              onTap: () => onChanged(index),
             );
           }),
         ),
@@ -529,7 +554,9 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
                 (h) => DropdownMenuItem<double>(
                   value: h,
                   child: Text(
-                    h.toStringAsFixed(h == h.roundToDouble() ? 0 : 1),
+                    h.toStringAsFixed(
+                      h == h.roundToDouble() ? 0 : 1,
+                    ),
                   ),
                 ),
               )
@@ -560,7 +587,12 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
           value: _wakeUpTime,
           isExpanded: true,
           items: options
-              .map((t) => DropdownMenuItem<String>(value: t, child: Text(t)))
+              .map(
+                (t) => DropdownMenuItem<String>(
+                  value: t,
+                  child: Text(t),
+                ),
+              )
               .toList(),
           onChanged: (value) {
             if (value == null) return;
@@ -591,7 +623,9 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               .map(
                 (w) => DropdownMenuItem<String>(
                   value: w,
-                  child: Text(w == 'Больше 4 л' ? w : '$w л'),
+                  child: Text(
+                    w == 'Больше 4 л' ? w : '$w л',
+                  ),
                 ),
               )
               .toList(),
@@ -640,7 +674,8 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(null),
+                  onPressed: () =>
+                      Navigator.of(context).pop(null),
                   child: const Text('Отмена'),
                 ),
                 TextButton(
@@ -662,5 +697,52 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
         _selectedSkills = result;
       });
     }
+  }
+}
+
+class _EmojiChoiceChip extends StatelessWidget {
+  final String emoji;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _EmojiChoiceChip({
+    required this.emoji,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final Color bg = selected
+        ? theme.colorScheme.primary.withOpacity(0.12)
+        : Colors.transparent;
+    final Color borderColor =
+        selected ? theme.colorScheme.primary : Colors.grey.shade300;
+    final Color textColor =
+        selected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color ?? Colors.black;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: borderColor),
+          ),
+          child: Text(
+            emoji,
+            style: TextStyle(
+              fontSize: 22,
+              color: textColor,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

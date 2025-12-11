@@ -43,6 +43,212 @@ class AppChipStyles {
   );
 }
 
+/// Пилюля‑чип для выбора (0–5, эмодзи, теги и т.п.)
+class AppPillChoice extends StatelessWidget {
+  const AppPillChoice({
+    super.key,
+    required this.label,
+    required this.selected,
+    this.onTap,
+    this.textStyle,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+  });
+
+  /// Текст/эмодзи внутри чипа
+  final String label;
+
+  /// Выбран ли чип
+  final bool selected;
+
+  /// Обработчик нажатия
+  final VoidCallback? onTap;
+
+  /// Кастомный стиль текста внутри чипа
+  final TextStyle? textStyle;
+
+  /// Внутренние отступы
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color background = selected ? AppColors.primary : AppColors.greyLight;
+    final Color foreground = selected ? Colors.white : AppColors.textPrimary;
+    final baseStyle = textStyle ?? AppTypography.chipLabel;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: padding,
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Text(
+          label,
+          style: baseStyle.copyWith(color: foreground),
+        ),
+      ),
+    );
+  }
+}
+
+/// Текстовое поле в стиле Wisemind (без material‑бордера)
+class AppTextField extends StatelessWidget {
+  const AppTextField({
+    super.key,
+    required this.controller,
+    required this.label,
+    this.maxLength,
+    this.maxLines = 1,
+    this.keyboardType,
+    this.hint,
+    this.hintText,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final int? maxLength;
+  final int maxLines;
+  final TextInputType? keyboardType;
+  final String? hintText;
+  final String? hint;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppTypography.body,
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          maxLength: maxLength,
+          maxLines: maxLines,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: hint ?? hintText,
+            hintStyle: AppTypography.bodySecondary.copyWith(
+              color: AppColors.textSecondary.withOpacity(0.8),
+            ),
+            filled: true,
+            fillColor: AppColors.greyLight,
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Поле‑селектор (псевдо‑дропдаун, открывающий bottom sheet или диалог)
+class AppSelectField extends StatelessWidget {
+  const AppSelectField({
+    super.key,
+    required this.label,
+    required this.valueLabel,
+    required this.onTap,
+  });
+
+  /// Подпись над полем (что выбираем)
+  final String label;
+
+  /// Текущее отображаемое значение
+  final String valueLabel;
+
+  /// Открытие bottom sheet / диалога с выбором
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTypography.body),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.greyLight,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    valueLabel,
+                    style: AppTypography.body,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Icon(Icons.keyboard_arrow_down),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Секция формы, оформленная как карточка
+class FormSectionCard extends StatelessWidget {
+  const FormSectionCard({
+    super.key,
+    required this.title,
+    this.subtitle,
+    required this.children,
+  });
+
+  /// Заголовок секции
+  final String title;
+
+  /// Подзаголовок/описание (опционально)
+  final String? subtitle;
+
+  /// Содержимое секции
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: AppDecorations.card,
+      padding: const EdgeInsets.all(AppSizes.padding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTypography.sectionTitle,
+          ),
+          if (subtitle != null && subtitle!.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle!,
+              style: AppTypography.bodySecondary,
+            ),
+          ],
+          const SizedBox(height: 12),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
 /// Карточка с изображением слева (например, для медитаций)
 class AppMediaCard extends StatelessWidget {
   const AppMediaCard({

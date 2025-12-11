@@ -4,6 +4,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wisemind/theme/app_theme.dart';
 import 'package:wisemind/billing/billing_service.dart';
 
+import '../theme/app_components.dart';
+import '../theme/app_spacing.dart';
+
 import '../analytics/amplitude_service.dart';
 import 'pros_cons.dart';
 
@@ -247,23 +250,39 @@ class ProsConsDetailScreen extends StatelessWidget {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
         children: [
-          _detailRow('Дата', _formatDate(entry.date)),
-          _detailRow('Проблемное поведение', entry.problematicBehavior),
-          _detailRow('За: поддаться импульсу', entry.prosActImpulsively),
-          _detailRow(
-            'За: противостоять импульсу',
-            entry.prosResistImpulse,
+          const SizedBox(height: AppSpacing.gapMedium),
+          FormSectionCard(
+            title: 'Рабочий лист "За и против"',
+            children: [
+              const Text(
+                'Устойчивость к стрессу',
+                style: AppTypography.bodySecondary,
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'За и против',
+                style: AppTypography.cardTitle,
+              ),
+              const SizedBox(height: 16),
+              _detailRow('Дата', _formatDate(entry.date)),
+              const SizedBox(height: 16),
+              _detailRow('Проблемное поведение', entry.problematicBehavior),
+              const SizedBox(height: 16),
+              _detailRow('За: поддаться импульсу', entry.prosActImpulsively),
+              const SizedBox(height: 12),
+              _detailRow('За: противостоять импульсу', entry.prosResistImpulse),
+              const SizedBox(height: 12),
+              _detailRow('Против: поддаться импульсу', entry.consActImpulsively),
+              const SizedBox(height: 12),
+              _detailRow('Против: противостоять импульсу', entry.consResistImpulse),
+            ],
           ),
-          _detailRow(
-            'Против: поддаться импульсу',
-            entry.consActImpulsively,
-          ),
-          _detailRow(
-            'Против: противостоять импульсу',
-            entry.consResistImpulse,
-          ),
+          const SizedBox(height: AppSpacing.gapLarge),
         ],
       ),
     );
@@ -271,25 +290,21 @@ class ProsConsDetailScreen extends StatelessWidget {
 
   Widget _detailRow(String title, String value) {
     final text = value.trim().isEmpty ? '—' : value;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: AppTypography.bodySecondary.copyWith(
+            fontWeight: FontWeight.w600,
           ),
-          const SizedBox(height: 4),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 15),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          text,
+          style: AppTypography.body,
+        ),
+      ],
     );
   }
 }
@@ -358,143 +373,170 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.gapMedium,
+        ),
         children: [
-          // Пример заполненного листа — в виде "пилюли" как на экране анализа цепочки
-          InkWell(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ProsConsExampleScreen(),
-                ),
-              );
-            },
-            borderRadius: BorderRadius.circular(32),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.description_outlined,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.primary,
+          const SizedBox(height: AppSpacing.gapMedium),
+
+          // Пример заполненного листа — во вторичной карточке
+          Container(
+            decoration: AppDecorations.subtleCard,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ProsConsExampleScreen(),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Пример заполненного листа "За и против"',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.primary,
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.description_outlined,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Пример заполненного листа "За и против"',
+                        style: AppTypography.body,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Мета-текст и заголовок рабочего листа
-          const Text(
-            'Устойчивость к стрессу',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'За и против',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Дата
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text(
-              'Дата',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(_formatDate(_date)),
-            trailing: const Icon(Icons.calendar_today),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _date,
-                firstDate: DateTime(2020),
-                lastDate: DateTime(2100),
-              );
-              if (picked != null) {
-                setState(() {
-                  _date = picked;
-                });
-              }
-            },
-          ),
-          const SizedBox(height: 12),
-          _field(
-            label: 'Проблемное поведение',
-            hint: 'Какое проблемное поведение оцениваем?',
-            controller: _problemCtrl,
-            maxLength: 140,
-          ),
-          _field(
-            label: 'За: поддаться импульсу',
-            hint:
-                'Запишите все "за" в пользу того, чтобы поддаться импульсу проблемного поведения',
-            controller: _prosActImpulseCtrl,
-            maxLines: 4,
-          ),
-          _field(
-            label: 'За: противостоять импульсу',
-            hint:
-                'Запишите все "за" в пользу того, чтобы противостоять импульсу проблемного поведения',
-            controller: _prosResistCtrl,
-            maxLines: 4,
-          ),
-          _field(
-            label: 'Против: поддаться импульсу',
-            hint:
-                'Запишите все "против" в пользу того, чтобы поддаться импульсу проблемного поведения',
-            controller: _consActImpulseCtrl,
-            maxLines: 4,
-          ),
-          _field(
-            label: 'Против: противостоять импульсу',
-            hint:
-                'Запишите все "против" в пользу того, чтобы противостоять импульсу проблемного поведения',
-            controller: _consResistCtrl,
-            maxLines: 4,
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
-                minimumSize: Size(double.infinity, 52),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  ],
                 ),
               ),
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          // Основной блок рабочего листа
+          FormSectionCard(
+            title: 'Рабочий лист "За и против"',
+            children: [
+              const Text(
+                'Устойчивость к стрессу',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'За и против',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text(
+                  'Дата',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(_formatDate(_date)),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _date,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _date = picked;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _problemCtrl,
+                label: 'Проблемное поведение',
+                hint: 'Какое проблемное поведение оцениваем?',
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _prosActImpulseCtrl,
+                label: 'За: поддаться импульсу',
+                hint:
+                    'Запишите все "за" в пользу того, чтобы поддаться импульсу проблемного поведения',
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _prosResistCtrl,
+                label: 'За: противостоять импульсу',
+                hint:
+                    'Запишите все "за" в пользу того, чтобы противостоять импульсу проблемного поведения',
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _consActImpulseCtrl,
+                label: 'Против: поддаться импульсу',
+                hint:
+                    'Запишите все "против" в пользу того, чтобы поддаться импульсу проблемного поведения',
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                controller: _consResistCtrl,
+                label: 'Против: противостоять импульсу',
+                hint:
+                    'Запишите все "против" в пользу того, чтобы противостоять импульсу проблемного поведения',
+                maxLines: 4,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(
+                  Theme.of(context).colorScheme.primary,
+                ),
+                foregroundColor: WidgetStateProperty.all(Colors.white),
+                padding: WidgetStateProperty.all(
+                  const EdgeInsets.symmetric(vertical: 16),
+                ),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                elevation: WidgetStateProperty.all(0),
+                overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                  (states) {
+                    if (states.contains(WidgetState.pressed)) {
+                      return Colors.white.withValues(alpha: 0.15);
+                    }
+                    return null;
+                  },
+                ),
+                animationDuration: const Duration(milliseconds: 120),
+              ),
               onPressed: _save,
-              icon: const Icon(Icons.check),
-              label: Text(
+              child: Text(
                 isEditing ? 'Сохранить изменения' : 'Сохранить',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -503,41 +545,6 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
     );
   }
 
-  Widget _field({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    int maxLines = 2,
-    int? maxLength,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 4),
-          TextField(
-            controller: controller,
-            maxLines: maxLines,
-            maxLength: maxLength,
-            decoration: InputDecoration(
-              hintText: hint,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Future<void> _save() async {
     final box = Hive.box<ProsConsEntry>(kProsConsBoxName);

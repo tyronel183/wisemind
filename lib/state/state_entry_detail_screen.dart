@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'state_entry.dart';
+import '../theme/app_components.dart';
 
 /// Детальный экран записи "Состояние дня"
 class StateEntryDetailScreen extends StatelessWidget {
@@ -204,37 +205,40 @@ class StateEntryDetailScreen extends StatelessWidget {
           children: [
             _buildHeaderCard(context),
             const SizedBox(height: 12),
-            _SectionCard(title: 'Примененные навыки', text: _skillsDetails),
+            _SectionCard(
+              title: '🧩 Примененные навыки',
+              text: _skillsDetails,
+            ),
             const SizedBox(height: 12),
             _buildMetricsRow(context),
             const SizedBox(height: 16),
             _SectionCard(
-              title: 'Что сделано для достижения цели',
+              title: '🎯 Что сделано для достижения цели',
               text: _importantGoal,
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: 'Качество сна',
+              title: '😴 Качество сна',
               text: _sleepDetails,
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: 'Дискомфорт',
+              title: '😣 Дискомфорт',
               text: _discomfortDetails,
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: 'Эмоциональное состояние',
+              title: '💭 Эмоциональное состояние',
               text: _emotionalStateDetails,
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: 'Проблемное поведение',
+              title: '⚠️ Проблемное поведение',
               text: _problemBehaviorDetails,
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: 'Забота о себе',
+              title: '💗 Забота о себе',
               text: _selfCareDetails,
             ),
             const SizedBox(height: 20),
@@ -248,9 +252,8 @@ class StateEntryDetailScreen extends StatelessWidget {
   Widget _buildHeaderCard(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      decoration: AppDecorations.card,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -329,7 +332,6 @@ class StateEntryDetailScreen extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class _SectionCard extends StatelessWidget {
@@ -348,9 +350,8 @@ class _SectionCard extends StatelessWidget {
         (text == null || text!.trim().isEmpty) ? 'Нет записей' : text!.trim();
     final isEmpty = displayText == 'Нет записей';
 
-    return Card(
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      decoration: AppDecorations.card,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(
@@ -397,9 +398,8 @@ class _MetricCard extends StatelessWidget {
         ? '—'
         : value!.toStringAsFixed(value! % 1 == 0 ? 0 : 1);
 
-    return Card(
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      decoration: AppDecorations.card,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Column(
