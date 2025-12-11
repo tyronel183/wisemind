@@ -546,7 +546,7 @@ class AppBottomNavBar extends StatelessWidget {
       _BottomNavItemData(
         icon: Icons.assignment_outlined,
         selectedIcon: Icons.assignment,
-        label: 'Листы',
+        label: 'Упражнения',
       ),
       _BottomNavItemData(
         icon: Icons.self_improvement_outlined,

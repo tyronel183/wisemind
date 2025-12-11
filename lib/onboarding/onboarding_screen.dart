@@ -34,26 +34,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   late final List<_OnboardingPageData> _pages = [
     _OnboardingPageData(
       emoji: '🌊',
-      title: 'Когда снова делаете то, о чём потом жалеете',
+      assetName: 'assets/images/onboarding/onboarding_1.png',
+      title: 'Часто делаете то, о чём потом жалеете',
       subtitle:
           'Сорвались на близких, напились, накупили лишнего, заели стресс сладким. '
-          'В моменте вроде легче, а потом стыдно, тяжело и хочется в следующий раз поступить иначе. Но в итоге всё повторяется снова и снова.',
+          'В моменте вроде легче, а потом стыдно и тяжело.'
+          'Но в итоге всё повторяется снова и снова.',
     ),
     _OnboardingPageData(
       emoji: '🧠',
+      assetName: 'assets/images/onboarding/onboarding_2.png',
       title: 'Wisemind помогает разорвать этот круг',
       subtitle:
-          'Приложение на основе DBT — подхода в психотерапии, который учит замечать, что с вами происходит и как вы реагируете:\n'
-          '• практические упражнения для разбора сложных ситуаций "по винтикам"\n'
-          '• трекер сна, настроения и поведения - чтобы понимать что повлияло на то, что вы "сорвались"\n'
-          '• навыки и медитации — чтобы научиться слышать себя и реагировать на обстоятельства адекватно',
+          'Приложение на основе DBT — подхода в психотерапии, который учит замечать, что с вами происходит и как вы реагируете на побуждения и импульсы.',
     ),
     _OnboardingPageData(
       emoji: '📅',
-      title: 'Меньше срывов. Больше действий в соответствии с вашими целями и желаниями',
+      assetName: 'assets/images/onboarding/onboarding_3.png',
+      title: 'Меньше срывов - больше контроля над собой',
       subtitle:
-          'С практикой вы начнете раньше замечать, что «что-то не так»: тянетесь к бутылке, к телефону, к корзине покупок, хочется сорваться.'
-          'У вас появляется возможность осознанно выбрать - поддаться или нет. Маленькие действия каждый день постепенно меняют поведение, которое впоследствии меняет жизнь.',
+          'У вас появляется возможность осознанно выбирать - поддаться нежелательному побуждению или нет. Маленькие действия каждый день постепенно меняют поведение, которое впоследствии меняет жизнь.',
       isLast: true,
     ),
   ];
@@ -130,28 +130,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          page.emoji,
-                          style: const TextStyle(fontSize: 48),
+                        Expanded(
+                          child: Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                              child: AspectRatio(
+                                aspectRatio: 1.0,
+                                child: Image.asset(
+                                  page.assetName,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Text(
                           page.title,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.screenTitle.copyWith(
-                            fontSize: 24,
-                          ),
+                          textAlign: TextAlign.left,
+                          style: AppTypography.screenTitle,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           page.subtitle,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.8,
-                            ),
-                          ),
+                          textAlign: TextAlign.left,
+                          style: AppTypography.bodySecondary,
                         ),
                       ],
                     ),
@@ -192,7 +197,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               child: SizedBox(
                 width: double.infinity,
-                child: FilledButton(
+                child: ElevatedButton(
                   onPressed: _onNext,
                   child: Text(
                     _pages[_currentIndex].isLast ? 'Начать' : 'Далее',
@@ -209,12 +214,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 class _OnboardingPageData {
   final String emoji;
+  final String assetName;
   final String title;
   final String subtitle;
   final bool isLast;
 
   _OnboardingPageData({
     required this.emoji,
+    required this.assetName,
     required this.title,
     required this.subtitle,
     this.isLast = false,

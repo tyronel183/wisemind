@@ -69,12 +69,6 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Как пользоваться Wisemind'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: _completeAndClose,
-          ),
-        ],
       ),
       body: Column(
         children: [

@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Читаем сохранённый флаг прохождения usage guide из настроек
+    // Читаем сохранённый флаг прохождения / скрытия usage guide из настроек
     final settingsBox = Hive.box('app_settings');
     final hasCompletedUsageGuide =
         settingsBox.get('hasCompletedUsageGuide', defaultValue: false) as bool;
@@ -42,6 +42,44 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       AmplitudeService.instance.logHomeScreenOpened();
     });
+  }
+
+  Future<void> _onUsageGuideClosePressed() async {
+    final shouldHide = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Скрыть инструкцию с главного экрана?'),
+          content: const Text(
+            'Вы всё ещё сможете посмотреть эту инструкцию в разделе "Настройки".',
+          ),
+          actions: [
+            // secondary
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Скрыть'),
+            ),
+            // primary
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Оставить'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldHide == true) {
+      final settingsBox = Hive.box('app_settings');
+      await settingsBox.put('hasCompletedUsageGuide', true);
+
+      if (!mounted) return;
+      setState(() {
+        _hasCompletedUsageGuide = true;
+      });
+
+      AmplitudeService.instance.logHomeGuideCompleted();
+    }
   }
 
   @override
@@ -176,61 +214,98 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenTitleHorizontal,
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: AppSpacing.gapMedium),
-                    decoration: AppDecorations.subtleCard,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-                      onTap: () async {
-                        AmplitudeService.instance.logHomeGuideOpened();
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(
+                          bottom: AppSpacing.gapMedium,
+                        ),
+                        decoration: AppDecorations.subtleCard,
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.cardRadius),
+                          onTap: () async {
+                            AmplitudeService.instance.logHomeGuideOpened();
 
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => UsageGuideScreen(
-                              onCompleted: () {
-                                final settingsBox = Hive.box('app_settings');
-                                settingsBox.put('hasCompletedUsageGuide', true);
-                                setState(() {
-                                  _hasCompletedUsageGuide = true;
-                                });
-                              },
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => UsageGuideScreen(
+                                  onCompleted: () {
+                                    final settingsBox =
+                                        Hive.box('app_settings');
+                                    settingsBox.put(
+                                        'hasCompletedUsageGuide', true);
+                                    setState(() {
+                                      _hasCompletedUsageGuide = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(
+                              AppSpacing.cardPaddingVertical,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.lightbulb_outline),
+                                const SizedBox(
+                                    width: AppSpacing.gapSmall),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Как пользоваться приложением',
+                                        style: theme
+                                            .textTheme.bodyMedium
+                                            ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Краткий гид на 2–3 минуты, чтобы выжать максимум пользы из Wisemind.',
+                                        style: theme
+                                            .textTheme.bodySmall
+                                            ?.copyWith(
+                                          color: theme
+                                              .colorScheme.onSurface
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.all(AppSpacing.cardPaddingVertical),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.lightbulb_outline),
-                            const SizedBox(width: AppSpacing.gapSmall),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Как пользоваться приложением',
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Краткий гид на 2–3 минуты, чтобы выжать максимум пользы из Wisemind.',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.7),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: GestureDetector(
+                          onTap: _onUsageGuideClosePressed,
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.9),
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 18,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               Expanded(
@@ -264,12 +339,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: AppDecorations.card,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.cardPaddingHorizontal,
-                                vertical: AppSpacing.cardPaddingVertical,
+                                horizontal:
+                                    AppSpacing.cardPaddingHorizontal,
+                                vertical:
+                                    AppSpacing.cardPaddingVertical,
                               ),
                               child: SizedBox(
                                 height: 220,
-                                child: _MoodRestActivityChart(entries: entries),
+                                child:
+                                    _MoodRestActivityChart(entries: entries),
                               ),
                             ),
                           ),
@@ -296,17 +374,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => StateEntryDetailScreen(entry: entry),
+                                    builder: (_) =>
+                                        StateEntryDetailScreen(entry: entry),
                                   ),
                                 );
                               },
                               child: Container(
-                                margin: const EdgeInsets.only(bottom: 12),
+                                margin:
+                                    const EdgeInsets.only(bottom: 12),
                                 decoration: AppDecorations.card,
                                 child: ListTile(
                                   leading: Text(
                                     entry.mood ?? '',
-                                    style: const TextStyle(fontSize: 26),
+                                    style:
+                                        const TextStyle(fontSize: 26),
                                   ),
                                   title: Text(
                                     formatDate(entry.date),
@@ -316,7 +397,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           entry.grateful!.isNotEmpty
                                       ? Text(
                                           'Благодарю себя: ${entry.grateful}',
-                                          style: AppTypography.bodySecondary,
+                                          style: AppTypography
+                                              .bodySecondary,
                                         )
                                       : null,
                                   trailing: PopupMenuButton<String>(
@@ -326,10 +408,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                             .logEditStateFormOpened();
 
                                         final updated =
-                                            await Navigator.push<StateEntry>(
+                                            await Navigator.push<
+                                                StateEntry>(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (_) => EntryFormScreen(
+                                            builder: (_) =>
+                                                EntryFormScreen(
                                               existing: entry,
                                             ),
                                           ),
@@ -337,11 +421,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         if (updated != null) {
                                           AmplitudeService.instance
                                               .logStateEntryEdited();
-                                          await widget.repository.update(updated);
+                                          await widget.repository
+                                              .update(updated);
                                         }
-                                      } else if (value == 'delete') {
-                                        AmplitudeService.instance.logDeleteStateEntry();
-                                        await widget.repository.deleteById(entry.id);
+                                      } else if (value ==
+                                          'delete') {
+                                        AmplitudeService.instance
+                                            .logDeleteStateEntry();
+                                        await widget.repository
+                                            .deleteById(entry.id);
                                       }
                                     },
                                     itemBuilder: (context) => const [
@@ -497,7 +585,7 @@ class _MoodRestActivityChart extends StatelessWidget {
             child: BarChart(
               BarChartData(
                 maxY: maxY,
-                alignment: BarChartAlignment.spaceBetween, // расстояние между днями
+                alignment: BarChartAlignment.spaceBetween,
                 barGroups: barGroups,
                 gridData: FlGridData(
                   show: true,

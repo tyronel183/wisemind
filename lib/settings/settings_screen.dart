@@ -143,6 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
 
+          /*
           // UI Kit (debug)
           AppCardTile(
             leading: const Icon(Icons.palette_outlined),
@@ -157,6 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
+          */
         ],
       ),
     );
