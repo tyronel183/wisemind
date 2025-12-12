@@ -1,0 +1,601 @@
+{
+    "@@locale": "en",
+  
+    "appTitle": "Wisemind",
+    "@appTitle": {
+      "description": "Application title"
+    },
+
+    "mainFabNewEntry": "New entry",
+
+    "mainNavState": "State",
+    "mainNavWorksheets": "Exercises",
+    "mainNavMeditations": "Meditations",
+    "mainNavSkills": "Skills",
+  
+    "tabState": "State",
+    "tabWorksheets": "Worksheets",
+    "tabMeditations": "Meditations",
+    "tabSkills": "Skills",
+  
+    "homeTitle": "My state",
+    "settingsTitle": "Settings",
+  
+    "onboarding_page1_title": "Do you often do things you later regret?",
+    "onboarding_page1_subtitle": "You snap at loved ones, drink too much, overspend or eat to numb stress. In the moment it feels easier, but afterwards there is shame and heaviness — and the cycle repeats again and again.",
+  
+    "onboarding_page2_title": "Wisemind helps break this cycle",
+    "onboarding_page2_subtitle": "An app based on DBT — a psychotherapy approach that helps you notice what is happening to you and how you react to urges and impulses.",
+  
+    "onboarding_page3_title": "Fewer breakdowns — more control over yourself",
+    "onboarding_page3_subtitle": "You get a chance to consciously choose whether to act on an urge or not. Small steps every day gradually change your behaviour — and, over time, your life.",
+  
+    "onboarding_skip_button": "Skip",
+    "onboarding_next_button": "Next",
+    "onboarding_start_button": "Start using the app",
+
+    "usageGuideAppBarTitle": "How to use Wisemind",
+
+    "usageGuideTitle1": "How Wisemind actually helps",
+    "usageGuideBody1": "Wisemind isn’t magic and it’s not about tracking everything just for the sake of it.\n\nThe free version already has everything you need to start changing your behavior: logging your state, breaking down difficult situations and trying new ways to respond.\n\nChange takes effort: the app can’t do the work for you, but it can support you step by step.",
+
+    "usageGuideTitle2": "Step 1. Notice what is happening to you",
+    "usageGuideBody2": "You can’t change your behavior if you don’t notice what’s going on with you.\n\nThat’s why the first skills block — Mindfulness — is available for free. It helps you pay attention to:\n• your body and sensations\n• your thoughts and emotions\n• what is happening around you\n\nThis makes it easier to catch the moment when a lapse usually starts.",
+
+    "usageGuideTitle3": "Step 2. Define your problem behavior",
+    "usageGuideBody3": "First be honest about what is a problem for you: alcohol, fights with loved ones, overeating, smoking, impulsive shopping and so on.\n\nThen fill in the Daily Card every evening. Over time you’ll see links between lack of sleep, stress, lack of rest and other triggers that push you towards lapses and your usual problem behavior.",
+
+    "usageGuideTitle4": "Step 3. Analyse lapses and train skills",
+    "usageGuideBody4": "Lapses are inevitable — they are not failure, but material to work with.\n\nUse worksheets to go step by step through what happened before, during and after an episode. DBT skills are grouped into four modules:\n• mindfulness\n• distress tolerance\n• emotion regulation\n• interpersonal effectiveness\n\nTake them slowly — we recommend one skill per week — and keep the ones that work best for you.",
+
+    "usageGuideTitle5": "Ready to start?",
+    "usageGuideBody5": "We’ll keep adding new tools, exercises and meditations to support you on your way.\n\nFor now, take the first step — fill in your first entry in the “My state” section.\n\nYou’ll answer a few simple questions about sleep, well-being and emotions. If you come back to it every day, a habit gradually forms — and habits change behavior over time.",
+
+    "usageGuideButtonNext": "Next",
+    "usageGuideButtonFillCard": "Fill in the Daily Card",
+
+    "settingsAppBarTitle": "Settings",
+
+    "settingsReminderTitle": "Daily Card reminders",
+    "settingsReminderSubtitle": "Evening reminder to fill in your Daily Card",
+
+    "settingsGuideTitle": "How to use the app",
+    "settingsGuideSubtitle": "A short guide to Wisemind",
+
+    "settingsContactTitle": "Contact us",
+    "settingsContactSubtitle": "Email for questions and suggestions",
+
+    "settingsAboutTitle": "About the app",
+
+    "settingsMailError": "Could not open the mail app",
+    "settingsFeedbackEmailSubject": "Feedback about the Wisemind app",
+
+    "homeAppBarTitle": "My state",
+    "homeSettingsTooltip": "Settings",
+
+    "homeExportMenu7Days": "Export last 7 days",
+    "homeExportMenuAll": "Export all entries",
+
+    "homeExportNoEntries": "There are no entries to export.",
+    "homeExportNoEntries7Days": "There are no entries to export for the last 7 days.",
+
+    "homeExportFileName": "State entries",
+    "homeExportSubject7Days": "State entries for the last 7 days",
+    "homeExportSubjectAll": "All state entries",
+    "homeExportText7Days": "State entries for the last 7 days (CSV).",
+    "homeExportTextAll": "All state entries (CSV).",
+
+    "homeUsageGuideCardTitle": "How to use the app",
+    "homeUsageGuideCardSubtitle": "A 2–3 minute guide to get the most out of Wisemind.",
+
+    "homeUsageGuideHideDialogTitle": "Hide this guide from the home screen?",
+    "homeUsageGuideHideDialogBody": "You can still view this guide later in the \"Settings\" section.",
+    "homeUsageGuideHideDialogHide": "Hide",
+    "homeUsageGuideHideDialogKeep": "Keep",
+
+    "homeEmptyStateText": "🔍 You don’t have any entries here yet.\nTap “+ New entry” to add your first one.",
+
+    "homeEntriesSectionTitle": "State entries",
+
+    "homeEntryGratefulPrefix": "I’m grateful for: {text}",
+    "@homeEntryGratefulPrefix": {
+      "placeholders": {
+        "text": {
+          "type": "String"
+        }
+      }
+    },
+
+    "homeChartNoData": "There’s no data for the chart yet.\nAdd entries for the last few days.",
+    "homeChartNoData14Days": "There’s no data for the last 14 days yet.",
+
+    "homeLegendSleep": "Hours of sleep",
+    "homeLegendRest": "Rest",
+    "homeLegendActivity": "Activity",
+
+    "homeEntryMenuEdit": "Edit",
+    "homeEntryMenuDelete": "Delete",
+
+    "worksheetsAppBarTitle": "Exercises",
+
+    "worksheetsSectionTitle": "Skill worksheets",
+
+    "worksheetsChainAnalysisTitle": "Problem behavior analysis",
+    "worksheetsChainAnalysisSubtitle": "Explore the unwanted behavior you want to change",
+
+    "worksheetsProsConsTitle": "Pros and cons",
+    "worksheetsProsConsSubtitle": "Helps you choose between problem behavior and a more mindful action",
+
+    "worksheetsFactCheckTitle": "Fact check",
+    "worksheetsFactCheckSubtitle": "Helps you see whether your emotions or thoughts fit the facts",
+
+    "chainAnalysisListAppBarTitle": "Behavior analysis",
+
+    "chainAnalysisLoadError": "Couldn’t load data.\nPlease try again later.",
+    "chainAnalysisEmptyList": "🔍 There are no entries here yet.\nTap “+ New entry” to fill in your first worksheet.",
+    "chainAnalysisUntitled": "Untitled",
+
+    "chainAnalysisMenuEdit": "Edit",
+    "chainAnalysisMenuDelete": "Delete",
+
+    "chainAnalysisDeleteDialogTitle": "Delete this entry?",
+    "chainAnalysisDeleteDialogBody": "This entry cannot be restored.",
+    "chainAnalysisDeleteDialogCancel": "Cancel",
+    "chainAnalysisDeleteDialogConfirm": "Delete",
+    "chainAnalysisDeleteSnack": "Entry deleted",
+
+    "chainAnalysisFabNewEntry": "New entry",
+
+    "chainAnalysisEditAppBarTitle": "Edit analysis",
+    "chainAnalysisNewAppBarTitle": "Behavior analysis",
+
+    "chainAnalysisProblemRequiredSnack": "Describe the problem behavior",
+
+    "chainAnalysisExampleCardTitle": "Example worksheet\n\"Problem behavior analysis\"",
+
+    "chainAnalysisSectionGeneralTitle": "General information",
+    "chainAnalysisSectionMindfulnessLabel": "Mindfulness",
+    "chainAnalysisSectionWorksheetTitle": "Behavior analysis",
+
+    "chainAnalysisFieldDateLabel": "Date",
+
+    "chainAnalysisFieldProblemLabel": "Problem behavior",
+    "chainAnalysisFieldProblemHint": "For example: yelled at a colleague, binged on food",
+
+    "chainAnalysisSectionChainTitle": "Chain of events",
+    "chainAnalysisFieldChainLinksLabel": "What exactly happened (chain)",
+    "chainAnalysisFieldChainLinksHint": "Thoughts, emotions, body reactions and actions step by step",
+
+    "chainAnalysisFieldPromptingEventLabel": "Prompting event",
+    "chainAnalysisFieldPromptingEventHint": "What exactly triggered this episode?",
+
+    "chainAnalysisFieldVulnerabilitiesLabel": "Vulnerabilities",
+    "chainAnalysisFieldVulnerabilitiesHint": "For example: lack of sleep, hunger, stressful week, illness",
+
+    "chainAnalysisSectionConsequencesTitle": "Consequences",
+    "chainAnalysisFieldConsequencesOthersLabel": "Consequences for others",
+    "chainAnalysisFieldConsequencesOthersHint": "How did this affect other people?",
+    "chainAnalysisFieldConsequencesMeLabel": "Consequences for me",
+    "chainAnalysisFieldConsequencesMeHint": "What happened to me after the episode — feelings, thoughts, state",
+    "chainAnalysisFieldDamageLabel": "Harm done",
+    "chainAnalysisFieldDamageHint": "What was damaged or lost because of this behavior?",
+
+    "chainAnalysisSectionPlanTitle": "Change plan",
+    "chainAnalysisFieldAdaptiveBehaviourLabel": "What could you have done instead?",
+    "chainAnalysisFieldAdaptiveBehaviourHint": "Which healthier behavior could have taken this place?",
+    "chainAnalysisFieldDecreaseVulnerabilityLabel": "How to reduce vulnerability in the future?",
+    "chainAnalysisFieldDecreaseVulnerabilityHint": "What in your routine and habits could you strengthen to make it easier?",
+    "chainAnalysisFieldPreventEventLabel": "How to prevent the prompting event?",
+    "chainAnalysisFieldPreventEventHint": "What can you do so that a similar situation is less likely to occur again?",
+    "chainAnalysisFieldFixPlanLabel": "Repair plan",
+    "chainAnalysisFieldFixPlanHint": "Concrete steps to repair consequences and relationships",
+
+    "chainAnalysisSaveButtonNew": "Save",
+    "chainAnalysisSaveButtonEdit": "Save changes",
+
+    "chainAnalysisSaveSnackNew": "Entry added",
+    "chainAnalysisSaveSnackEdit": "Entry updated",
+
+    "chainAnalysisExampleAppBarTitle": "Example worksheet",
+
+    "chainAnalysisDetailAppBarTitle": "Analysis details",
+
+  "factCheckListAppBarTitle": "Fact check",
+
+  "factCheckLoadErrorGeneric": "Couldn’t load entries.",
+  "factCheckLoadErrorWithReason": "Couldn’t load entries.\n{error}",
+  "@factCheckLoadErrorWithReason": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "factCheckEmptyList": "🔍 There are no entries here yet.\nTap \"+ New entry\" to fill in your first worksheet.",
+  "factCheckEmotionNone": "No emotion",
+
+  "factCheckMenuEdit": "Edit",
+  "factCheckMenuDelete": "Delete",
+
+  "factCheckDeleteDialogTitle": "Delete this entry?",
+  "factCheckDeleteDialogBody": "This entry cannot be restored.",
+  "factCheckDeleteDialogCancel": "Cancel",
+  "factCheckDeleteDialogConfirm": "Delete",
+  "factCheckDeleteSnack": "Entry deleted",
+
+  "factCheckFabNewEntry": "New entry",
+
+  "factCheckDetailAppBarTitle": "View entry",
+
+  "factCheckSectionGeneralTitle": "General information",
+  "factCheckSectionEmotionRegulationLabel": "Emotion regulation",
+  "factCheckSectionWorksheetTitle": "Fact check",
+  "factCheckSectionEmotionIntensityTitle": "Emotion and intensity",
+  "factCheckSectionAfterTitle": "After the fact check",
+
+  "factCheckFieldDateLabel": "Date",
+
+  "factCheckFieldEmotionLabel": "Emotion",
+
+  "factCheckEmotionAnger": "😡 Anger",
+  "factCheckEmotionFear": "😨 Fear",
+  "factCheckEmotionAnxiety": "😟 Anxiety",
+  "factCheckEmotionSadness": "😢 Sadness",
+  "factCheckEmotionGuilt": "😞 Guilt",
+  "factCheckEmotionShame": "😳 Shame",
+  "factCheckEmotionDisgust": "🤢 Disgust",
+  "factCheckEmotionDesire": "🤤 Desire",
+  "factCheckEmotionJoy": "😄 Joy",
+  "factCheckEmotionHurt": "😔 Hurt",
+
+  "factCheckFieldInitialIntensityLabel": "Emotion intensity (0–100)",
+  "factCheckFieldInitialIntensityHint": "From 0 to 100",
+
+  "factCheckFieldPromptingEventLabel": "Prompting event",
+  "factCheckFieldPromptingEventHint": "What happened that led to this emotion? Who did what to whom? What did it lead to? Is this a problem for you? Be as specific as possible.",
+
+  "factCheckFieldFactsExtremesLabel": "Check the facts!",
+  "factCheckFieldFactsExtremesHint": "Look for all-or-nothing thinking and judgments in your thoughts.",
+
+  "factCheckFieldMyInterpretationLabel": "My interpretation of the facts",
+  "factCheckFieldMyInterpretationHint": "What am I assuming? Am I adding my own story on top of what actually happened?",
+
+  "factCheckFieldAltInterpretationsLabel": "Check the facts (other interpretations)",
+  "factCheckFieldAltInterpretationsHint": "Write down as many alternative interpretations of these facts as you can.",
+
+  "factCheckFieldPerceivedThreatLabel": "Is this a threat to me?",
+  "factCheckFieldPerceivedThreatHint": "What exactly feels threatened here? How could this event or situation harm me? What negative outcomes am I expecting?",
+
+  "factCheckFieldAltOutcomesLabel": "Check the facts (other possible outcomes)",
+  "factCheckFieldAltOutcomesHint": "Write down as many other possible outcomes of this situation as you can, based on the facts.",
+
+  "factCheckFieldCatastropheLabel": "Is it a catastrophe?",
+  "factCheckFieldCatastropheHint": "Describe in detail the worst realistic consequences that could happen.",
+
+  "factCheckFieldCopingLabel": "How will I cope with the consequences?",
+  "factCheckFieldCopingHint": "Describe how you would handle it if it did happen.",
+
+  "factCheckFieldEmotionMatchLabel": "Do my emotions fit the facts? (0–5)",
+  "factCheckFieldCurrentIntensityLabel": "Current emotion intensity (0–100)",
+  "factCheckFieldCurrentIntensityHint": "From 0 to 100",
+
+  "factCheckSaveButtonNew": "Save",
+  "factCheckSaveButtonEdit": "Save changes",
+
+  "factCheckSaveSnackNew": "Entry added",
+  "factCheckSaveSnackEdit": "Entry updated",
+
+  "factCheckExamplePillTitle": "Example worksheet \"Fact check\"",
+  "factCheckExampleAppBarTitle": "Example worksheet",
+
+  "prosConsListAppBarTitle": "Pros and cons",
+
+  "prosConsEmptyList": "🔍 There are no entries here yet.\nTap \"+ New entry\" to fill in your first worksheet.",
+  "prosConsMenuEdit": "Edit",
+  "prosConsMenuDelete": "Delete",
+
+  "prosConsDeleteDialogTitle": "Delete this entry?",
+  "prosConsDeleteDialogBody": "This entry cannot be restored.",
+  "prosConsDeleteDialogCancel": "Cancel",
+  "prosConsDeleteDialogConfirm": "Delete",
+  "prosConsDeleteSnack": "Entry deleted",
+
+  "prosConsFabNewEntry": "New entry",
+
+  "prosConsDetailAppBarTitle": "View entry",
+  "prosConsDetailSectionWorksheetTitle": "Pros and cons worksheet",
+  "prosConsSectionDistressToleranceLabel": "Distress tolerance",
+  "prosConsSectionWorksheetTitle": "Pros and cons",
+
+  "prosConsFieldDateLabel": "Date",
+  "prosConsFieldProblemLabel": "Problem behavior",
+  "prosConsFieldProsActImpulsivelyLabel": "Pros: act on the impulse",
+  "prosConsFieldProsResistImpulseLabel": "Pros: resist the impulse",
+  "prosConsFieldConsActImpulsivelyLabel": "Cons: act on the impulse",
+  "prosConsFieldConsResistImpulseLabel": "Cons: resist the impulse",
+
+  "prosConsDecisionSectionTitle": "What did you decide?",
+  "prosConsDecisionFieldLabel": "What did you decide?",
+  "prosConsDecisionFieldHint": "Write down the decision you made. If you still can’t decide, go through the worksheet one more time.",
+
+  "prosConsEditAppBarTitle": "Edit entry",
+  "prosConsNewAppBarTitle": "New entry",
+
+  "prosConsExamplePillTitle": "Example \"Pros and cons\" worksheet",
+  "prosConsEditSectionWorksheetTitle": "Pros and cons worksheet",
+
+  "prosConsFieldProblemHint": "Which problem behavior are you evaluating?",
+  "prosConsFieldProsActImpulsivelyHint": "List all the reasons in favor of acting on the problem behavior impulse.",
+  "prosConsFieldProsResistImpulseHint": "List all the reasons in favor of resisting the problem behavior impulse.",
+  "prosConsFieldConsActImpulsivelyHint": "List all the reasons against acting on the problem behavior impulse.",
+  "prosConsFieldConsResistImpulseHint": "List all the reasons against resisting the problem behavior impulse.",
+
+  "prosConsSaveButtonNew": "Save",
+  "prosConsSaveButtonEdit": "Save changes",
+
+  "prosConsSaveSnackNew": "Entry added",
+  "prosConsSaveSnackEdit": "Entry updated",
+
+  "prosConsExampleAppBarTitle": "Example entry",
+
+  "meditationsAppBarTitle": "Meditations",
+
+  "meditationsSectionMindfulness": "Mindfulness",
+  "meditationsSectionDistressTolerance": "Distress tolerance",
+  "meditationsSectionEmotionRegulation": "Emotion regulation",
+  "meditationsSectionInterpersonalEffectiveness": "Interpersonal effectiveness",
+
+  "meditationsCategoryStressReductionRaw": "Stress reduction",
+
+  "meditationsSkillEmpathicPresenceShort": "Empathy",
+
+  "meditationHintCardText": "🌿 Find a quiet place where no one will disturb you, sit comfortably and begin.",
+
+  "meditationLoadErrorText": "We couldn’t load the meditation audio.\nThis is often related to your internet connection. Try again or switch tabs and come back.",
+
+  "meditationToggleWithVoice": "With voice",
+  "meditationToggleMusicOnly": "Music only",
+
+  "meditationButtonPause": "Pause",
+  "meditationButtonPlay": "Start",
+
+  "meditationSubscriptionInfo": "Access to this meditation may require a subscription.",
+
+  "stateDashboardEmptyTitle": "Here you'll see your state statistics.",
+  "stateDashboardEmptyBody": "There are no entries yet. Tap the button below to fill in today’s form.",
+
+  "stateDashboardTitle": "My state",
+
+  "stateDashboardChartTitle": "Sleep, rest and activity over recent days",
+  "stateDashboardLegendSleep": "Sleep",
+  "stateDashboardLegendRest": "Rest",
+  "stateDashboardLegendActivity": "Activity",
+
+  "stateDashboardHistoryTitle": "Entry history",
+  "stateDashboardHistorySubtitle": "Recent days",
+
+  "stateDashboardSleepText": "{hours} h",
+  "@stateDashboardSleepText": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+
+  "stateDashboardRestText": "{value}/5 rest",
+  "@stateDashboardRestText": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+
+  "stateDashboardActivityText": "{value}/5 activity",
+  "@stateDashboardActivityText": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+
+  "entryFormEditAppBarTitle": "Edit entry",
+  "entryFormNewAppBarTitle": "New entry",
+
+  "entryFormSectionGeneralTitle": "Overall state",
+  "entryFormFieldDateLabel": "Date",
+  "entryFormMoodQuestion": "How are you today?",
+  "entryFormFieldGratefulLabel": "What do I thank myself for today?",
+  "entryFormFieldGoalLabel": "What did I do toward my goal?",
+
+  "entryFormSectionSleepTitle": "Sleep",
+  "entryFormFieldRestLabel": "How rested do you feel?",
+  "entryFormFieldSleepHoursLabel": "How many hours did you sleep?",
+  "entryFormFieldWakeTimeLabel": "What time did you wake up?",
+  "entryFormFieldNightWakeupsLabel": "How many times did you wake up at night?",
+
+  "entryFormSectionDiscomfortTitle": "Discomfort",
+  "entryFormFieldPhysicalDiscomfortLabel": "Physical discomfort",
+  "entryFormFieldEmotionalDiscomfortLabel": "Emotional discomfort",
+
+  "entryFormSectionEmotionalStateTitle": "Emotional state",
+  "entryFormFieldDissociationLabel": "Feeling unreal / detached",
+  "entryFormFieldRuminationsLabel": "Ruminations and intrusive thoughts",
+  "entryFormFieldSelfBlameLabel": "Self-blame",
+  "entryFormFieldSuicidalThoughtsLabel": "Suicidal thoughts",
+
+  "entryFormSectionProblemBehaviorTitle": "Problem behavior",
+  "entryFormProblemBehaviorHint": "Fill this in if you’re tracking a specific problem behavior.",
+  "entryFormFieldUrgesLabel": "How strong was the urge?",
+  "entryFormFieldActionLabel": "What did you do?",
+
+  "entryFormSectionSelfCareTitle": "Self-care",
+  "entryFormFieldPhysicalActivityLabel": "Physical activity",
+  "entryFormFieldPleasureLabel": "How much pleasure did you have?",
+  "entryFormFieldWaterLabel": "How much liquid did you drink?",
+  "entryFormFieldMealsCountLabel": "How many times did you eat?",
+
+  "entryFormSectionSkillsTitle": "Skills used",
+  "entryFormSkillsHint": "You can select several.",
+  "entryFormSkillsButtonLabel": "Choose skills",
+
+  "entryFormSkillsDialogTitle": "Choose skills",
+  "entryFormDialogCancel": "Cancel",
+  "entryFormDialogConfirm": "Done",
+
+  "entryFormButtonSaveNew": "Save",
+  "entryFormButtonSaveEdit": "Save changes",
+
+  "entryFormWakeOptionBefore4": "Before 4:00",
+  "entryFormWakeOptionAfter13": "After 13:00",
+
+  "entryFormWaterOptionMoreThan4": "More than 4 L",
+  "entryFormWaterOptionLiters": "{liters} L",
+  "@entryFormWaterOptionLiters": {
+    "placeholders": {
+      "liters": {
+        "type": "String"
+      }
+    }
+  },
+
+  "stateEntryDetailAppBarTitle": "Daily state",
+
+  "stateEntryDetailSectionSkillsTitle": "🧩 Skills used",
+  "stateEntryDetailSectionGoalTitle": "🎯 Actions toward your goal",
+  "stateEntryDetailSectionSleepTitle": "😴 Sleep quality",
+  "stateEntryDetailSectionDiscomfortTitle": "😣 Discomfort",
+  "stateEntryDetailSectionEmotionalStateTitle": "💭 Emotional state",
+  "stateEntryDetailSectionProblemBehaviorTitle": "⚠️ Problem behavior",
+  "stateEntryDetailSectionSelfCareTitle": "💗 Self-care",
+
+  "stateEntryDetailHeaderGratefulLabel": "What I thank myself for",
+
+  "stateEntryDetailMetricSleepLabel": "Sleep",
+  "stateEntryDetailMetricRestLabel": "Rest",
+  "stateEntryDetailMetricActivityLabel": "Activity",
+  "stateEntryDetailMetricSleepUnitHours": "h",
+  "stateEntryDetailMetricScoreUnitOutOfFive": "out of 5",
+
+  "stateEntryDetailSleepWakeUp": "Wake-up time: {time}",
+  "@stateEntryDetailSleepWakeUp": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "stateEntryDetailSleepNightWakeups": "Night awakenings: {count}",
+  "@stateEntryDetailSleepNightWakeups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "stateEntryDetailDiscomfortPhysical": "Physical: {value}/5",
+  "@stateEntryDetailDiscomfortPhysical": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stateEntryDetailDiscomfortEmotional": "Emotional: {value}/5",
+  "@stateEntryDetailDiscomfortEmotional": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+
+  "stateEntryDetailEmotionalDissociation": "Dissociation: {value}/5",
+  "@stateEntryDetailEmotionalDissociation": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stateEntryDetailEmotionalRuminations": "Ruminations: {value}/5",
+  "@stateEntryDetailEmotionalRuminations": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stateEntryDetailEmotionalSelfBlame": "Self-blame: {value}/5",
+  "@stateEntryDetailEmotionalSelfBlame": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stateEntryDetailEmotionalSuicidalThoughts": "Suicidal thoughts: {value}/5",
+  "@stateEntryDetailEmotionalSuicidalThoughts": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+
+  "stateEntryDetailProblemUrge": "Urge strength: {value}/5",
+  "@stateEntryDetailProblemUrge": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stateEntryDetailProblemAction": "What happened: {text}",
+  "@stateEntryDetailProblemAction": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+
+  "stateEntryDetailSelfCarePhysicalActivity": "Physical activity: {value}/5",
+  "@stateEntryDetailSelfCarePhysicalActivity": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stateEntryDetailSelfCarePleasure": "Pleasure: {value}/5",
+  "@stateEntryDetailSelfCarePleasure": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stateEntryDetailSelfCareWater": "Amount of liquid: {liters} L",
+  "@stateEntryDetailSelfCareWater": {
+    "placeholders": {
+      "liters": {
+        "type": "String"
+      }
+    }
+  },
+  "stateEntryDetailSelfCareFood": "Number of meals: {count}",
+  "@stateEntryDetailSelfCareFood": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "stateEntryDetailNoData": "No entries"
+}

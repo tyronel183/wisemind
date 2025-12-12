@@ -4,6 +4,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wisemind/theme/app_theme.dart';
 import 'package:wisemind/billing/billing_service.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../theme/app_components.dart';
 import '../theme/app_spacing.dart';
 
@@ -33,13 +35,14 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final box = Hive.box<ProsConsEntry>(kProsConsBoxName);
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'За и против',
+          l.prosConsListAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -48,13 +51,16 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
         valueListenable: box.listenable(),
         builder: (context, Box<ProsConsEntry> box, _) {
           if (box.isEmpty) {
-            return _EmptyProsConsState(onCreate: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ProsConsEditScreen(),
-                ),
-              );
-            });
+            return _EmptyProsConsState(
+              onCreate: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ProsConsEditScreen(),
+                  ),
+                );
+              },
+              message: l.prosConsEmptyList,
+            );
           }
 
           final entries = box.values.toList()
@@ -142,22 +148,22 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text('Удалить запись?'),
-                                content: const Text(
-                                  'Эту запись нельзя будет восстановить.',
+                                title: Text(l.prosConsDeleteDialogTitle),
+                                content: Text(
+                                  l.prosConsDeleteDialogBody,
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.of(context).pop(false),
-                                    child: const Text('Отмена'),
+                                    child: Text(l.prosConsDeleteDialogCancel),
                                   ),
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.of(context).pop(true),
-                                    child: const Text(
-                                      'Удалить',
-                                      style: TextStyle(color: Colors.red),
+                                    child: Text(
+                                      l.prosConsDeleteDialogConfirm,
+                                      style: const TextStyle(color: Colors.red),
                                     ),
                                   ),
                                 ],
@@ -176,24 +182,24 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
                               await entry.delete();
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Запись удалена'),
+                                  SnackBar(
+                                    content: Text(l.prosConsDeleteSnack),
                                   ),
                                 );
                               }
                             }
                           }
                         },
-                        itemBuilder: (context) => const [
+                        itemBuilder: (context) => [
                           PopupMenuItem(
                             value: 'edit',
-                            child: Text('Редактировать'),
+                            child: Text(l.prosConsMenuEdit),
                           ),
                           PopupMenuItem(
                             value: 'delete',
                             child: Text(
-                              'Удалить',
-                              style: TextStyle(color: Colors.red),
+                              l.prosConsMenuDelete,
+                              style: const TextStyle(color: Colors.red),
                             ),
                           ),
                         ],
@@ -211,7 +217,7 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
           _onCreateProsConsPressed(context);
         },
         icon: const Icon(Icons.add),
-        label: const Text('Новая запись'),
+        label: Text(l.prosConsFabNewEntry),
       ),
     );
   }
@@ -238,8 +244,12 @@ Future<void> _onCreateProsConsPressed(BuildContext context) async {
 
 class _EmptyProsConsState extends StatelessWidget {
   final VoidCallback onCreate;
+  final String message;
 
-  const _EmptyProsConsState({required this.onCreate});
+  const _EmptyProsConsState({
+    required this.onCreate,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -248,9 +258,9 @@ class _EmptyProsConsState extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Text(
-              '🔍 Здесь пока нет ни одной записи.\nНажмите "+ Новая запись", чтобы заполнить первый рабочий лист.',
+              message,
               textAlign: TextAlign.center,
             ),
           ],
@@ -268,11 +278,12 @@ class ProsConsDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Просмотр записи',
+          l.prosConsDetailAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -285,35 +296,35 @@ class ProsConsDetailScreen extends StatelessWidget {
         children: [
           const SizedBox(height: AppSpacing.gapMedium),
           FormSectionCard(
-            title: 'Рабочий лист "За и против"',
+            title: l.prosConsDetailSectionWorksheetTitle,
             children: [
-              const Text(
-                'Устойчивость к стрессу',
+              Text(
+                l.prosConsSectionDistressToleranceLabel,
                 style: AppTypography.bodySecondary,
               ),
               const SizedBox(height: 4),
-              const Text(
-                'За и против',
+              Text(
+                l.prosConsSectionWorksheetTitle,
                 style: AppTypography.cardTitle,
               ),
               const SizedBox(height: 16),
-              _detailRow('Дата', _formatDate(entry.date)),
+              _detailRow(l.prosConsFieldDateLabel, _formatDate(entry.date)),
               const SizedBox(height: 16),
-              _detailRow('Проблемное поведение', entry.problematicBehavior),
+              _detailRow(l.prosConsFieldProblemLabel, entry.problematicBehavior),
               const SizedBox(height: 16),
-              _detailRow('За: поддаться импульсу', entry.prosActImpulsively),
+              _detailRow(l.prosConsFieldProsActImpulsivelyLabel, entry.prosActImpulsively),
               const SizedBox(height: 12),
-              _detailRow('За: противостоять импульсу', entry.prosResistImpulse),
+              _detailRow(l.prosConsFieldProsResistImpulseLabel, entry.prosResistImpulse),
               const SizedBox(height: 12),
-              _detailRow('Против: поддаться импульсу', entry.consActImpulsively),
+              _detailRow(l.prosConsFieldConsActImpulsivelyLabel, entry.consActImpulsively),
               const SizedBox(height: 12),
-              _detailRow('Против: противостоять импульсу', entry.consResistImpulse),
+              _detailRow(l.prosConsFieldConsResistImpulseLabel, entry.consResistImpulse),
             ],
           ),
           if (entry.decision != null && entry.decision!.trim().isNotEmpty) ...[
             const SizedBox(height: AppSpacing.gapLarge),
             FormSectionCard(
-              title: 'Какое решение приняли?',
+              title: l.prosConsDecisionSectionTitle,
               children: [
                 Text(
                   entry.decision!.trim(),
@@ -403,13 +414,14 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final isEditing = widget.isEditing;
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          isEditing ? 'Редактирование записи' : 'Новая запись',
+          isEditing ? l.prosConsEditAppBarTitle : l.prosConsNewAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -446,7 +458,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Пример заполненного листа "За и против"',
+                        l.prosConsExamplePillTitle,
                         style: AppTypography.body,
                       ),
                     ),
@@ -460,19 +472,19 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
 
           // Основной блок рабочего листа
           FormSectionCard(
-            title: 'Рабочий лист "За и против"',
+            title: l.prosConsEditSectionWorksheetTitle,
             children: [
-              const Text(
-                'Устойчивость к стрессу',
-                style: TextStyle(
+              Text(
+                l.prosConsSectionDistressToleranceLabel,
+                style: const TextStyle(
                   fontSize: 13,
                   color: Colors.grey,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'За и против',
-                style: TextStyle(
+              Text(
+                l.prosConsSectionWorksheetTitle,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   height: 1.2,
@@ -481,9 +493,9 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
               const SizedBox(height: 16),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text(
-                  'Дата',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                title: Text(
+                  l.prosConsFieldDateLabel,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(_formatDate(_date)),
                 trailing: const Icon(Icons.calendar_today),
@@ -504,40 +516,36 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
               const SizedBox(height: 16),
               AppTextField(
                 controller: _problemCtrl,
-                label: 'Проблемное поведение',
-                hint: 'Какое проблемное поведение оцениваем?',
+                label: l.prosConsFieldProblemLabel,
+                hint: l.prosConsFieldProblemHint,
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _prosActImpulseCtrl,
-                label: 'За: поддаться импульсу',
-                hint:
-                    'Запишите все "за" в пользу того, чтобы поддаться импульсу проблемного поведения',
+                label: l.prosConsFieldProsActImpulsivelyLabel,
+                hint: l.prosConsFieldProsActImpulsivelyHint,
                 maxLines: 4,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _prosResistCtrl,
-                label: 'За: противостоять импульсу',
-                hint:
-                    'Запишите все "за" в пользу того, чтобы противостоять импульсу проблемного поведения',
+                label: l.prosConsFieldProsResistImpulseLabel,
+                hint: l.prosConsFieldProsResistImpulseHint,
                 maxLines: 4,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _consActImpulseCtrl,
-                label: 'Против: поддаться импульсу',
-                hint:
-                    'Запишите все "против" в пользу того, чтобы поддаться импульсу проблемного поведения',
+                label: l.prosConsFieldConsActImpulsivelyLabel,
+                hint: l.prosConsFieldConsActImpulsivelyHint,
                 maxLines: 4,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _consResistCtrl,
-                label: 'Против: противостоять импульсу',
-                hint:
-                    'Запишите все "против" в пользу того, чтобы противостоять импульсу проблемного поведения',
+                label: l.prosConsFieldConsResistImpulseLabel,
+                hint: l.prosConsFieldConsResistImpulseHint,
                 maxLines: 4,
               ),
             ],
@@ -546,14 +554,12 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
           const SizedBox(height: AppSpacing.gapLarge),
 
           FormSectionCard(
-            title: 'Какое решение приняли?',
+            title: l.prosConsDecisionSectionTitle,
             children: [
               AppTextField(
                 controller: _decisionCtrl,
-                label: 'Какое решение приняли?',
-                hint:
-                    'Запишите принятое решение. Если не получилось принять решение — '
-                    'попробуйте пройтись по рабочему листу ещё раз.',
+                label: l.prosConsDecisionFieldLabel,
+                hint: l.prosConsDecisionFieldHint,
                 maxLines: 3,
               ),
             ],
@@ -590,7 +596,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
               ),
               onPressed: _save,
               child: Text(
-                isEditing ? 'Сохранить изменения' : 'Сохранить',
+                isEditing ? l.prosConsSaveButtonEdit : l.prosConsSaveButtonNew,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -605,6 +611,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
 
   Future<void> _save() async {
     final box = Hive.box<ProsConsEntry>(kProsConsBoxName);
+    final l = AppLocalizations.of(context)!;
 
     // временная заглушка для email
     const fakeEmail = 'user@example.com';
@@ -635,7 +642,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Запись добавлена')),
+          SnackBar(content: Text(l.prosConsSaveSnackNew)),
         );
       }
     } else {
@@ -660,7 +667,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Запись обновлена')),
+          SnackBar(content: Text(l.prosConsSaveSnackEdit)),
         );
       }
     }
@@ -679,11 +686,12 @@ class ProsConsExampleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Пример заполнения',
+          l.prosConsExampleAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),

@@ -26,6 +26,9 @@ import 'onboarding/onboarding_screen.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+// Подключение локализации
+import 'l10n/app_localizations.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -113,15 +116,9 @@ class WisemindApp extends StatelessWidget {
       title: 'Wisemind',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('ru'),
-      ],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // locale: ... // позже, если сделаем ручной переключатель
       routes: {
         '/': (context) => WisemindRoot(
               repository: repository,
@@ -201,6 +198,8 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: _buildBody(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -208,7 +207,7 @@ class _MainScaffoldState extends State<MainScaffold> {
           ? FloatingActionButton.extended(
               onPressed: _onNewEntryPressed,
               icon: const Icon(Icons.add),
-              label: const Text('Новая запись'),
+              label: Text(l10n.mainFabNewEntry),
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
@@ -219,26 +218,26 @@ class _MainScaffoldState extends State<MainScaffold> {
             _currentIndex = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Состояние',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l10n.mainNavState,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.article_outlined),
-            activeIcon: Icon(Icons.article),
-            label: 'Упражнения',
+            icon: const Icon(Icons.article_outlined),
+            activeIcon: const Icon(Icons.article),
+            label: l10n.mainNavWorksheets,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.self_improvement_outlined),
-            activeIcon: Icon(Icons.self_improvement),
-            label: 'Медитации',
+            icon: const Icon(Icons.self_improvement_outlined),
+            activeIcon: const Icon(Icons.self_improvement),
+            label: l10n.mainNavMeditations,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
-            label: 'Навыки',
+            icon: const Icon(Icons.menu_book_outlined),
+            activeIcon: const Icon(Icons.menu_book),
+            label: l10n.mainNavSkills,
           ),
         ],
       ),

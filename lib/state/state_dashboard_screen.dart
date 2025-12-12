@@ -5,6 +5,7 @@ import 'state_entry.dart';
 import 'state_repository.dart';
 import '../utils/date_format.dart';
 import 'state_entry_detail_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class StateDashboardScreen extends StatelessWidget {
   final StateRepository repository;
@@ -16,6 +17,7 @@ class StateDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ValueListenableBuilder<Box>(
       valueListenable: repository.box.listenable(),
       builder: (context, box, _) {
@@ -28,14 +30,14 @@ class StateDashboardScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Здесь будет ваша статистика состояния.',
+                  Text(
+                    l10n.stateDashboardEmptyTitle,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Пока нет ни одной записи. Нажмите кнопку внизу, чтобы заполнить анкету за сегодня.',
+                  Text(
+                    l10n.stateDashboardEmptyBody,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -52,9 +54,9 @@ class StateDashboardScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Моё состояние',
-                style: TextStyle(
+              Text(
+                l10n.stateDashboardTitle,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
@@ -124,15 +126,17 @@ class StateDashboardScreen extends StatelessWidget {
 
     maxY = maxY + 1;
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Сон, отдых и активность за последние дни',
-              style: TextStyle(
+            Text(
+              l10n.stateDashboardChartTitle,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -198,19 +202,19 @@ class StateDashboardScreen extends StatelessWidget {
                 _buildLegendItem(
                   context,
                   color: Theme.of(context).colorScheme.primary,
-                  label: 'Сон (часы)',
+                  label: l10n.stateDashboardLegendSleep,
                 ),
                 const SizedBox(width: 12),
                 _buildLegendItem(
                   context,
                   color: Theme.of(context).colorScheme.secondary,
-                  label: 'Отдых (0–5)',
+                  label: l10n.stateDashboardLegendRest,
                 ),
                 const SizedBox(width: 12),
                 _buildLegendItem(
                   context,
                   color: Theme.of(context).colorScheme.tertiary,
-                  label: 'Активность (0–5)',
+                  label: l10n.stateDashboardLegendActivity,
                 ),
               ],
             ),
@@ -248,28 +252,32 @@ class StateDashboardScreen extends StatelessWidget {
   Widget _buildHistoryCard(BuildContext context, List<StateEntry> entries) {
     final recent = entries.take(30).toList();
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ListTile(
+            ListTile(
               title: Text(
-                'История записей',
-                style: TextStyle(
+                l10n.stateDashboardHistoryTitle,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              subtitle: Text('Последние дни'),
+              subtitle: Text(l10n.stateDashboardHistorySubtitle),
             ),
             const Divider(height: 1),
             ...recent.map((e) {
               final mood = e.mood ?? '🙂';
-              final sleepText =
-                  '${e.sleepHours.toStringAsFixed(e.sleepHours == e.sleepHours.roundToDouble() ? 0 : 1)} ч';
-              final restText = '${e.rest}/5 отдых';
-              final activityText = '${e.physicalActivity}/5 активность';
+              final sleepValue = e.sleepHours.toStringAsFixed(
+                e.sleepHours == e.sleepHours.roundToDouble() ? 0 : 1,
+              );
+              final sleepText = l10n.stateDashboardSleepText(sleepValue);
+              final restText = l10n.stateDashboardRestText(e.rest);
+              final activityText = l10n.stateDashboardActivityText(e.physicalActivity);
 
               return Column(
                 children: [

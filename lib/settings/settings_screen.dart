@@ -1,5 +1,6 @@
 // lib/settings/settings_screen.dart
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../notifications/notification_service.dart';
@@ -48,41 +49,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _launchMail() async {
-  AmplitudeService.instance.logFeedbackEmailOpened();
+    final l10n = AppLocalizations.of(context)!;
+    AmplitudeService.instance.logFeedbackEmailOpened();
 
-  final uri = Uri(
-    scheme: 'mailto',
-    path: 'dbtenthusiast@gmail.com',
-    queryParameters: {
-      'subject': 'Обратная связь по приложению Wisemind',
-    },
-  );
+    final uri = Uri(
+      scheme: 'mailto',
+      path: 'dbtenthusiast@gmail.com',
+      queryParameters: {
+        'subject': l10n.settingsFeedbackEmailSubject,
+      },
+    );
 
-  try {
-    final launched = await launchUrl(uri);
-    if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Не удалось открыть почтовое приложение'),
-        ),
-      );
-    }
-  } catch (_) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Не удалось открыть почтовое приложение'),
-        ),
-      );
+    try {
+      final launched = await launchUrl(uri);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.settingsMailError),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.settingsMailError),
+          ),
+        );
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Настройки'),
+        title: Text(l10n.settingsAppBarTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(
@@ -92,8 +95,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           // Напоминания
           SwitchListTile(
-            title: const Text('Напоминания о «Карте дня»'),
-            subtitle: const Text('Вечером напомнить заполнить карту дня'),
+            title: Text(l10n.settingsReminderTitle),
+            subtitle: Text(l10n.settingsReminderSubtitle),
             value: _remindersEnabled,
             onChanged: _onReminderToggle,
           ),
@@ -101,8 +104,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Как пользоваться приложением
           AppCardTile(
             leading: const Icon(Icons.menu_book_outlined),
-            title: 'Как пользоваться приложением',
-            subtitle: 'Краткий гид по Wisemind',
+            title: l10n.settingsGuideTitle,
+            subtitle: l10n.settingsGuideSubtitle,
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               AmplitudeService.instance.logSettingsGuideOpened();
@@ -122,8 +125,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Написать нам
           AppCardTile(
             leading: const Icon(Icons.mail_outline),
-            title: 'Написать нам',
-            subtitle: 'Почта для вопросов и предложений',
+            title: l10n.settingsContactTitle,
+            subtitle: l10n.settingsContactSubtitle,
             trailing: const Icon(Icons.chevron_right),
             onTap: _launchMail,
           ),
@@ -131,7 +134,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // О приложении
           AppCardTile(
             leading: const Icon(Icons.info_outline),
-            title: 'О приложении',
+            title: l10n.settingsAboutTitle,
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               AmplitudeService.instance.logAboutAppOpened();

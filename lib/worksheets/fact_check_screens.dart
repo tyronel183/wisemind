@@ -11,6 +11,7 @@ import '../theme/app_components.dart';
 import '../theme/app_spacing.dart';
 import 'package:wisemind/billing/billing_service.dart';
 import '../analytics/amplitude_service.dart';
+import '../l10n/app_localizations.dart';
 
 import 'fact_check.dart';
 
@@ -44,11 +45,13 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Проверка фактов',
+          l10n.factCheckListAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -61,11 +64,14 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
           }
 
           if (snapshot.hasError) {
+            final errorText = snapshot.error?.toString() ?? '';
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Не удалось загрузить записи.\n${snapshot.error}',
+                  errorText.isEmpty
+                      ? l10n.factCheckLoadErrorGeneric
+                      : l10n.factCheckLoadErrorWithReason(errorText),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -73,7 +79,12 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
           }
 
           if (!snapshot.hasData) {
-            return const Center(child: Text('Не удалось загрузить записи.'));
+            return Center(
+              child: Text(
+                l10n.factCheckLoadErrorGeneric,
+                textAlign: TextAlign.center,
+              ),
+            );
           }
 
           final box = snapshot.data!;
@@ -95,7 +106,7 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
                   final entry = entries[index];
 
                   final emotionsText = entry.emotions.isEmpty
-                      ? 'Без эмоции'
+                      ? l10n.factCheckEmotionNone
                       : entry.emotions.join(', ');
 
                   return Container(
@@ -110,11 +121,13 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
                         children: [
                           Expanded(
                             child: InkWell(
-                              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.cardRadius),
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => FactCheckDetailScreen(entry: entry),
+                                    builder: (_) =>
+                                        FactCheckDetailScreen(entry: entry),
                                   ),
                                 );
                               },
@@ -125,7 +138,8 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
                                     _formatDate(entry.date),
                                     style: AppTypography.cardTitle,
                                   ),
-                                  const SizedBox(height: AppSpacing.gapSmall),
+                                  const SizedBox(
+                                      height: AppSpacing.gapSmall),
                                   Text(
                                     emotionsText,
                                     maxLines: 2,
@@ -147,7 +161,8 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
                                 );
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => FactCheckEditScreen(entry: entry),
+                                    builder: (_) =>
+                                        FactCheckEditScreen(entry: entry),
                                   ),
                                 );
                               } else if (value == 'delete') {
@@ -161,22 +176,28 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
                                 final confirm = await showDialog<bool>(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text('Удалить запись?'),
-                                    content: const Text(
-                                      'Эту запись нельзя будет восстановить.',
+                                    title: Text(
+                                      l10n.factCheckDeleteDialogTitle,
+                                    ),
+                                    content: Text(
+                                      l10n.factCheckDeleteDialogBody,
                                     ),
                                     actions: [
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.of(context).pop(false),
-                                        child: const Text('Отмена'),
+                                        child: Text(
+                                          l10n.factCheckDeleteDialogCancel,
+                                        ),
                                       ),
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.of(context).pop(true),
-                                        child: const Text(
-                                          'Удалить',
-                                          style: TextStyle(color: Colors.red),
+                                        child: Text(
+                                          l10n.factCheckDeleteDialogConfirm,
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -193,24 +214,26 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
                                   await entry.delete();
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Запись удалена'),
+                                      SnackBar(
+                                        content: Text(
+                                          l10n.factCheckDeleteSnack,
+                                        ),
                                       ),
                                     );
                                   }
                                 }
                               }
                             },
-                            itemBuilder: (context) => const [
+                            itemBuilder: (context) => [
                               PopupMenuItem(
                                 value: 'edit',
-                                child: Text('Редактировать'),
+                                child: Text(l10n.factCheckMenuEdit),
                               ),
                               PopupMenuItem(
                                 value: 'delete',
                                 child: Text(
-                                  'Удалить',
-                                  style: TextStyle(color: Colors.red),
+                                  l10n.factCheckMenuDelete,
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                               ),
                             ],
@@ -230,7 +253,12 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
           _onCreateNewPressed(context);
         },
         icon: const Icon(Icons.add),
-        label: const Text('Новая запись'),
+        label: Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return Text(l10n.factCheckFabNewEntry);
+          },
+        ),
       ),
     );
   }
@@ -260,12 +288,13 @@ class _FactCheckEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Text(
-          '🔍 Здесь пока нет ни одной записи.\n'
-          'Нажмите "+ Новая запись", чтобы заполнить первый рабочий лист.',
+          l10n.factCheckEmptyList,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
@@ -282,6 +311,7 @@ class FactCheckDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final emotionsText =
         entry.emotions.isEmpty ? '—' : entry.emotions.join(', ');
 
@@ -289,7 +319,7 @@ class FactCheckDetailScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Просмотр записи',
+          l10n.factCheckDetailAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -304,14 +334,20 @@ class FactCheckDetailScreen extends StatelessWidget {
 
           // ОБЩАЯ ИНФОРМАЦИЯ
           FormSectionCard(
-            title: 'Общая информация',
+            title: l10n.factCheckSectionGeneralTitle,
             children: [
-              _detailRow('Дата', _formatDate(entry.date)),
-              const SizedBox(height: AppSpacing.gapMedium),
-              _detailRow('Эмоции', emotionsText),
+              _detailRow(
+                l10n.factCheckFieldDateLabel,
+                _formatDate(entry.date),
+              ),
               const SizedBox(height: AppSpacing.gapMedium),
               _detailRow(
-                'Интенсивность эмоции (0–100)',
+                l10n.factCheckFieldEmotionLabel,
+                emotionsText,
+              ),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                l10n.factCheckFieldInitialIntensityLabel,
                 entry.initialIntensity.toString(),
               ),
             ],
@@ -321,30 +357,45 @@ class FactCheckDetailScreen extends StatelessWidget {
 
           // ПРОВЕРКА ФАКТОВ
           FormSectionCard(
-            title: 'Проверка фактов',
+            title: l10n.factCheckSectionWorksheetTitle,
             children: [
-              _detailRow('Побуждающее событие', entry.promptingEvent),
-              const SizedBox(height: AppSpacing.gapMedium),
-              _detailRow('Проверьте факты (крайности)', entry.factsExtremes),
-              const SizedBox(height: AppSpacing.gapMedium),
-              _detailRow('Моя интерпретация фактов', entry.myInterpretation),
+              _detailRow(
+                l10n.factCheckFieldPromptingEventLabel,
+                entry.promptingEvent,
+              ),
               const SizedBox(height: AppSpacing.gapMedium),
               _detailRow(
-                'Другие интерпретации фактов',
+                l10n.factCheckFieldFactsExtremesLabel,
+                entry.factsExtremes,
+              ),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                l10n.factCheckFieldMyInterpretationLabel,
+                entry.myInterpretation,
+              ),
+              const SizedBox(height: AppSpacing.gapMedium),
+              _detailRow(
+                l10n.factCheckFieldAltInterpretationsLabel,
                 entry.alternativeInterpretations,
               ),
               const SizedBox(height: AppSpacing.gapMedium),
-              _detailRow('Для меня это угроза?', entry.perceivedThreat),
+              _detailRow(
+                l10n.factCheckFieldPerceivedThreatLabel,
+                entry.perceivedThreat,
+              ),
               const SizedBox(height: AppSpacing.gapMedium),
               _detailRow(
-                'Другие исходы ситуации',
+                l10n.factCheckFieldAltOutcomesLabel,
                 entry.alternativeOutcomes,
               ),
               const SizedBox(height: AppSpacing.gapMedium),
-              _detailRow('Это катастрофа?', entry.catastropheThoughts),
+              _detailRow(
+                l10n.factCheckFieldCatastropheLabel,
+                entry.catastropheThoughts,
+              ),
               const SizedBox(height: AppSpacing.gapMedium),
               _detailRow(
-                'Как совладаю с последствиями?',
+                l10n.factCheckFieldCopingLabel,
                 entry.copingPlan,
               ),
             ],
@@ -354,15 +405,15 @@ class FactCheckDetailScreen extends StatelessWidget {
 
           // ПОСЛЕ ПРОВЕРКИ ФАКТОВ
           FormSectionCard(
-            title: 'После проверки фактов',
+            title: l10n.factCheckSectionAfterTitle,
             children: [
               _detailRow(
-                'Мои эмоции соответствуют фактам? (0–5)',
+                l10n.factCheckFieldEmotionMatchLabel,
                 entry.emotionMatchScore.toString(),
               ),
               const SizedBox(height: AppSpacing.gapMedium),
               _detailRow(
-                'Текущая интенсивность эмоций (0–100)',
+                l10n.factCheckFieldCurrentIntensityLabel,
                 entry.currentIntensity.toString(),
               ),
             ],
@@ -375,7 +426,8 @@ class FactCheckDetailScreen extends StatelessWidget {
   }
 
   Widget _detailRow(String title, String value) {
-    if (value.trim().isEmpty) value = '—';
+    String text = value;
+    if (text.trim().isEmpty) text = '—';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -388,7 +440,7 @@ class FactCheckDetailScreen extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          value,
+          text,
           style: AppTypography.body,
         ),
       ],
@@ -422,22 +474,10 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
   late TextEditingController _copingCtrl;
   late TextEditingController _currentIntensityCtrl;
 
-  final List<String> _emotionOptions = const [
-    '😡 Злость',
-    '😨 Страх',
-    '😟 Тревога',
-    '😢 Грусть',
-    '😞 Вина',
-    '😳 Стыд',
-    '🤢 Отвращение',
-    '🤤 Желание',
-    '😄 Радость',
-    '😔 Обида',
-  ];
-
   late Set<String> _selectedEmotions;
 
   int? _emotionMatchScore;
+
 
   @override
   void initState() {
@@ -489,13 +529,27 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isEditing = widget.isEditing;
+
+    final emotionOptions = <String>[
+      l10n.factCheckEmotionAnger,
+      l10n.factCheckEmotionFear,
+      l10n.factCheckEmotionAnxiety,
+      l10n.factCheckEmotionSadness,
+      l10n.factCheckEmotionGuilt,
+      l10n.factCheckEmotionShame,
+      l10n.factCheckEmotionDisgust,
+      l10n.factCheckEmotionDesire,
+      l10n.factCheckEmotionJoy,
+      l10n.factCheckEmotionHurt,
+    ];
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          isEditing ? 'Редактирование записи' : 'Новая запись',
+          isEditing ? l10n.factCheckSaveButtonEdit : l10n.factCheckSaveButtonNew,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -526,9 +580,9 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
                   children: [
                     const Icon(Icons.description_outlined),
                     const SizedBox(width: AppSpacing.gapMedium),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Пример заполненного листа "Проверка фактов"',
+                        l10n.factCheckExamplePillTitle,
                         style: AppTypography.body,
                       ),
                     ),
@@ -542,23 +596,23 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
 
           // ОБЩАЯ ИНФОРМАЦИЯ
           FormSectionCard(
-            title: 'Общая информация',
+            title: l10n.factCheckSectionGeneralTitle,
             children: [
               Text(
-                'Регуляция эмоций',
+                l10n.factCheckSectionEmotionRegulationLabel,
                 style: AppTypography.bodySecondary,
               ),
               const SizedBox(height: 4),
               Text(
-                'Проверка фактов',
+                l10n.factCheckSectionWorksheetTitle,
                 style: AppTypography.sectionTitle,
               ),
               const SizedBox(height: AppSpacing.gapLarge),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text(
-                  'Дата',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                title: Text(
+                  l10n.factCheckFieldDateLabel,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(_formatDate(_date)),
                 trailing: const Icon(Icons.calendar_today),
@@ -583,11 +637,11 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
 
           // ЭМОЦИЯ И ИНТЕНСИВНОСТЬ
           FormSectionCard(
-            title: 'Эмоция и интенсивность',
+            title: l10n.factCheckSectionEmotionIntensityTitle,
             children: [
-              const Text(
-                'Эмоция',
-                style: TextStyle(
+              Text(
+                l10n.factCheckFieldEmotionLabel,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
@@ -596,7 +650,7 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _emotionOptions.map((emotion) {
+                children: emotionOptions.map((emotion) {
                   final selected = _selectedEmotions.contains(emotion);
                   return AppPillChoice(
                     label: emotion,
@@ -616,8 +670,8 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
               const SizedBox(height: 16),
               AppTextField(
                 controller: _initialIntensityCtrl,
-                label: 'Интенсивность эмоции (0–100)',
-                hint: 'От 0 до 100',
+                label: l10n.factCheckFieldInitialIntensityLabel,
+                hint: l10n.factCheckFieldInitialIntensityHint,
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -627,68 +681,61 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
 
           // ПРОВЕРКА ФАКТОВ
           FormSectionCard(
-            title: 'Проверка фактов',
+            title: l10n.factCheckSectionWorksheetTitle,
             children: [
               AppTextField(
                 controller: _promptingEventCtrl,
-                label: 'Побуждающее событие',
-                hint:
-                    'Что произошло и привело вас к этой эмоции? Кто кому что сделал? К чему это привело? Является ли это проблемой для вас? Будьте максимально конкретны.',
+                label: l10n.factCheckFieldPromptingEventLabel,
+                hint: l10n.factCheckFieldPromptingEventHint,
                 maxLines: 4,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _factsExtremesCtrl,
-                label: 'Проверьте факты!',
-                hint:
-                    'Выясните, нет ли крайностей и оценочности в ваших суждениях.',
+                label: l10n.factCheckFieldFactsExtremesLabel,
+                hint: l10n.factCheckFieldFactsExtremesHint,
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _myInterpretationCtrl,
-                label: 'Моя интерпретация фактов',
-                hint:
-                    'Что я допускаю (предполагаю)? Добавляю ли я какую-то свою интерпретацию в описание произошедших событий?',
+                label: l10n.factCheckFieldMyInterpretationLabel,
+                hint: l10n.factCheckFieldMyInterpretationHint,
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _altInterpretationsCtrl,
-                label: 'Проверьте факты! (другие интерпретации)',
-                hint:
-                    'Напишите как можно больше других интерпретаций этих фактов.',
+                label: l10n.factCheckFieldAltInterpretationsLabel,
+                hint: l10n.factCheckFieldAltInterpretationsHint,
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _perceivedThreatCtrl,
-                label: 'Для меня это угроза?',
-                hint:
-                    'В чем в данном случае состоит эта угроза? Чем это событие или ситуация угрожают мне? Какие тревожные события или последствия я ожидаю?',
+                label: l10n.factCheckFieldPerceivedThreatLabel,
+                hint: l10n.factCheckFieldPerceivedThreatHint,
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _altOutcomesCtrl,
-                label: 'Проверьте факты! (другие исходы ситуации)',
-                hint:
-                    'Напишите как можно больше других исходов этой ситуации, учитывая факты.',
+                label: l10n.factCheckFieldAltOutcomesLabel,
+                hint: l10n.factCheckFieldAltOutcomesHint,
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _catastropheCtrl,
-                label: 'Это катастрофа?',
-                hint:
-                    'Опишите подробно наиболее плохие последствия, которые только могут произойти.',
+                label: l10n.factCheckFieldCatastropheLabel,
+                hint: l10n.factCheckFieldCatastropheHint,
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _copingCtrl,
-                label: 'Как совладаю с последствиями?',
-                hint: 'Опишите способы, как справитесь с этим.',
+                label: l10n.factCheckFieldCopingLabel,
+                hint: l10n.factCheckFieldCopingHint,
                 maxLines: 3,
               ),
             ],
@@ -697,11 +744,11 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
           const SizedBox(height: AppSpacing.gapXL),
 
           FormSectionCard(
-            title: 'После проверки фактов',
+            title: l10n.factCheckSectionAfterTitle,
             children: [
-              const Text(
-                'Мои эмоции соответствуют фактам? (0–5)',
-                style: TextStyle(
+              Text(
+                l10n.factCheckFieldEmotionMatchLabel,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
@@ -725,8 +772,8 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
               const SizedBox(height: 16),
               AppTextField(
                 controller: _currentIntensityCtrl,
-                label: 'Текущая интенсивность эмоций (0–100)',
-                hint: 'От 0 до 100',
+                label: l10n.factCheckFieldCurrentIntensityLabel,
+                hint: l10n.factCheckFieldCurrentIntensityHint,
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -763,7 +810,9 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
               ),
               onPressed: _save,
               child: Text(
-                isEditing ? 'Сохранить изменения' : 'Сохранить',
+                isEditing
+                    ? l10n.factCheckSaveButtonEdit
+                    : l10n.factCheckSaveButtonNew,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -780,6 +829,7 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
 
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final box = await _openFactCheckBox();
 
     final initialIntensity =
@@ -817,7 +867,7 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Запись добавлена')),
+          SnackBar(content: Text(l10n.factCheckSaveSnackNew)),
         );
       }
     } else {
@@ -848,7 +898,7 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Запись обновлена')),
+          SnackBar(content: Text(l10n.factCheckSaveSnackEdit)),
         );
       }
     }
@@ -861,11 +911,13 @@ class FactCheckExampleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Пример заполненного листа',
+          l10n.factCheckExampleAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'state_entry.dart';
 import '../theme/app_components.dart';
+import '../l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 
 /// Детальный экран записи "Состояние дня"
 class StateEntryDetailScreen extends StatelessWidget {
@@ -40,7 +42,7 @@ class StateEntryDetailScreen extends StatelessWidget {
   int? get _restScore => _safeGet<int?>(() => entry.rest);
   int? get _activityScore => _safeGet<int?>(() => entry.physicalActivity);
 
-  String? get _sleepDetails {
+  String? _sleepDetails(BuildContext context) {
     final wakeUpTime = _safeGet<String?>(() => entry.wakeUpTime);
     final nightWakeUps = _safeGet<int?>(() => entry.nightWakeUps);
 
@@ -49,33 +51,39 @@ class StateEntryDetailScreen extends StatelessWidget {
       return null;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final buffer = StringBuffer();
     if (wakeUpTime != null && wakeUpTime.trim().isNotEmpty) {
-      buffer.writeln('Подъём: ${wakeUpTime.trim()}');
+      buffer.writeln(
+        l10n.stateEntryDetailSleepWakeUp(wakeUpTime.trim()),
+      );
     }
     if (nightWakeUps != null) {
-      buffer.writeln('Ночных пробуждений: $nightWakeUps');
+      buffer.writeln(
+        l10n.stateEntryDetailSleepNightWakeups(nightWakeUps),
+      );
     }
     return buffer.toString().trim();
   }
 
-  String? get _discomfortDetails {
+  String? _discomfortDetails(BuildContext context) {
     final physical = _safeGet<int?>(() => entry.physicalDiscomfort);
     final emotional = _safeGet<int?>(() => entry.emotionalDistress);
 
     if (physical == null && emotional == null) return null;
 
+    final l10n = AppLocalizations.of(context)!;
     final buffer = StringBuffer();
     if (physical != null) {
-      buffer.writeln('Физический: $physical/5');
+      buffer.writeln(l10n.stateEntryDetailDiscomfortPhysical(physical));
     }
     if (emotional != null) {
-      buffer.writeln('Эмоциональный: $emotional/5');
+      buffer.writeln(l10n.stateEntryDetailDiscomfortEmotional(emotional));
     }
     return buffer.toString().trim();
   }
 
-  String? get _emotionalStateDetails {
+  String? _emotionalStateDetails(BuildContext context) {
     final dissociation = _safeGet<int?>(() => entry.dissociation);
     final ruminations = _safeGet<int?>(() => entry.ruminations);
     final selfBlame = _safeGet<int?>(() => entry.selfBlame);
@@ -88,23 +96,32 @@ class StateEntryDetailScreen extends StatelessWidget {
       return null;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final buffer = StringBuffer();
     if (dissociation != null) {
-      buffer.writeln('Диссоциация: $dissociation/5');
+      buffer.writeln(
+        l10n.stateEntryDetailEmotionalDissociation(dissociation),
+      );
     }
     if (ruminations != null) {
-      buffer.writeln('Зацикленные мысли: $ruminations/5');
+      buffer.writeln(
+        l10n.stateEntryDetailEmotionalRuminations(ruminations),
+      );
     }
     if (selfBlame != null) {
-      buffer.writeln('Самообвинение: $selfBlame/5');
+      buffer.writeln(
+        l10n.stateEntryDetailEmotionalSelfBlame(selfBlame),
+      );
     }
     if (suicidalThoughts != null) {
-      buffer.writeln('Суицидальные мысли: $suicidalThoughts/5');
+      buffer.writeln(
+        l10n.stateEntryDetailEmotionalSuicidalThoughts(suicidalThoughts),
+      );
     }
     return buffer.toString().trim();
   }
 
-  String? get _problemBehaviorDetails {
+  String? _problemBehaviorDetails(BuildContext context) {
     final urges = _safeGet<int?>(() => entry.urges);
     final action = _safeGet<String?>(() => entry.action);
 
@@ -112,17 +129,20 @@ class StateEntryDetailScreen extends StatelessWidget {
       return null;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final buffer = StringBuffer();
     if (urges != null) {
-      buffer.writeln('Сила импульса: $urges/5');
+      buffer.writeln(l10n.stateEntryDetailProblemUrge(urges));
     }
     if (action != null && action.trim().isNotEmpty) {
-      buffer.writeln('Что произошло: ${action.trim()}');
+      buffer.writeln(
+        l10n.stateEntryDetailProblemAction(action.trim()),
+      );
     }
     return buffer.toString().trim();
   }
 
-  String? get _selfCareDetails {
+  String? _selfCareDetails(BuildContext context) {
     final physicalActivity = _safeGet<int?>(() => entry.physicalActivity);
     final pleasure = _safeGet<int?>(() => entry.pleasure);
     final water = _safeGet<String?>(() => entry.water);
@@ -135,18 +155,27 @@ class StateEntryDetailScreen extends StatelessWidget {
       return null;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final buffer = StringBuffer();
     if (physicalActivity != null) {
-      buffer.writeln('Физическая активность: $physicalActivity/5');
+      buffer.writeln(
+        l10n.stateEntryDetailSelfCarePhysicalActivity(physicalActivity),
+      );
     }
     if (pleasure != null) {
-      buffer.writeln('Удовольствие: $pleasure/5');
+      buffer.writeln(
+        l10n.stateEntryDetailSelfCarePleasure(pleasure),
+      );
     }
     if (water != null && water.trim().isNotEmpty) {
-      buffer.writeln('Количество выпитой жидкости: ${water.trim()} л');
+      buffer.writeln(
+        l10n.stateEntryDetailSelfCareWater(water.trim()),
+      );
     }
     if (food != null) {
-      buffer.writeln('Количество приемов пищи: $food');
+      buffer.writeln(
+        l10n.stateEntryDetailSelfCareFood(food),
+      );
     }
     return buffer.toString().trim();
   }
@@ -166,36 +195,20 @@ class StateEntryDetailScreen extends StatelessWidget {
   }
 
   String _formatDate(BuildContext context) {
-    final monthsRu = [
-      'января',
-      'февраля',
-      'марта',
-      'апреля',
-      'мая',
-      'июня',
-      'июля',
-      'августа',
-      'сентября',
-      'октября',
-      'ноября',
-      'декабря',
-    ];
-
-    final day = _date.day.toString().padLeft(2, '0');
-    final monthName = monthsRu[_date.month - 1];
-    final year = _date.year.toString();
-
-    return '$day $monthName $year';
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final formatter = DateFormat('dd MMMM yyyy', locale);
+    return formatter.format(_date);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Состояние дня'),
+        title: Text(l10n.stateEntryDetailAppBarTitle),
         centerTitle: true,
         backgroundColor: colorScheme.surface,
       ),
@@ -206,40 +219,40 @@ class StateEntryDetailScreen extends StatelessWidget {
             _buildHeaderCard(context),
             const SizedBox(height: 12),
             _SectionCard(
-              title: '🧩 Примененные навыки',
+              title: l10n.stateEntryDetailSectionSkillsTitle,
               text: _skillsDetails,
             ),
             const SizedBox(height: 12),
             _buildMetricsRow(context),
             const SizedBox(height: 16),
             _SectionCard(
-              title: '🎯 Что сделано для достижения цели',
+              title: l10n.stateEntryDetailSectionGoalTitle,
               text: _importantGoal,
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: '😴 Качество сна',
-              text: _sleepDetails,
+              title: l10n.stateEntryDetailSectionSleepTitle,
+              text: _sleepDetails(context),
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: '😣 Дискомфорт',
-              text: _discomfortDetails,
+              title: l10n.stateEntryDetailSectionDiscomfortTitle,
+              text: _discomfortDetails(context),
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: '💭 Эмоциональное состояние',
-              text: _emotionalStateDetails,
+              title: l10n.stateEntryDetailSectionEmotionalStateTitle,
+              text: _emotionalStateDetails(context),
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: '⚠️ Проблемное поведение',
-              text: _problemBehaviorDetails,
+              title: l10n.stateEntryDetailSectionProblemBehaviorTitle,
+              text: _problemBehaviorDetails(context),
             ),
             const SizedBox(height: 12),
             _SectionCard(
-              title: '💗 Забота о себе',
-              text: _selfCareDetails,
+              title: l10n.stateEntryDetailSectionSelfCareTitle,
+              text: _selfCareDetails(context),
             ),
             const SizedBox(height: 20),
             const SizedBox(height: 20),
@@ -283,7 +296,7 @@ class StateEntryDetailScreen extends StatelessWidget {
             if (_grateful != null && _grateful!.trim().isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(
-                'За что себя благодарю',
+                AppLocalizations.of(context)!.stateEntryDetailHeaderGratefulLabel,
                 style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
@@ -301,31 +314,33 @@ class StateEntryDetailScreen extends StatelessWidget {
   }
 
   Widget _buildMetricsRow(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Expanded(
           child: _MetricCard(
-            label: 'Сон',
+            label: l10n.stateEntryDetailMetricSleepLabel,
             value: _sleepHours,
-            unit: 'ч',
+            unit: l10n.stateEntryDetailMetricSleepUnitHours,
             icon: Icons.nights_stay_rounded,
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: _MetricCard(
-            label: 'Отдых',
+            label: l10n.stateEntryDetailMetricRestLabel,
             value: _restScore?.toDouble(),
-            unit: 'из 5',
+            unit: l10n.stateEntryDetailMetricScoreUnitOutOfFive,
             icon: Icons.self_improvement_rounded,
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: _MetricCard(
-            label: 'Активность',
+            label: l10n.stateEntryDetailMetricActivityLabel,
             value: _activityScore?.toDouble(),
-            unit: 'из 5',
+            unit: l10n.stateEntryDetailMetricScoreUnitOutOfFive,
             icon: Icons.directions_walk_rounded,
           ),
         ),
@@ -346,9 +361,10 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final displayText =
-        (text == null || text!.trim().isEmpty) ? 'Нет записей' : text!.trim();
-    final isEmpty = displayText == 'Нет записей';
+    final l10n = AppLocalizations.of(context)!;
+    final rawText = text?.trim();
+    final isEmpty = rawText == null || rawText.isEmpty;
+    final displayText = isEmpty ? l10n.stateEntryDetailNoData : rawText;
 
     return Container(
       decoration: AppDecorations.card,
@@ -365,7 +381,7 @@ class _SectionCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              displayText,
+              displayText!,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: isEmpty ? Colors.grey : null,
               ),
@@ -409,7 +425,7 @@ class _MetricCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               '$displayValue $unit',
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),

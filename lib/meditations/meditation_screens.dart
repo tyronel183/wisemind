@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:just_audio/just_audio.dart';
+
 import 'package:wisemind/billing/billing_service.dart';
+import '../l10n/app_localizations.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
@@ -28,22 +30,23 @@ class _MeditationsScreenState extends State<MeditationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final meditations = MeditationRepository.getAll();
 
     // Группируем медитации по "разделам" (категориям)
     final Map<String, List<Meditation>> grouped = {};
     for (final m in meditations) {
       final rawCategory = m.category;
-      final header = _mapCategoryToHeader(rawCategory);
+      final header = _mapCategoryToHeader(context, rawCategory);
       grouped.putIfAbsent(header, () => []).add(m);
     }
 
     // Задаём порядок разделов
     final sectionOrder = <String>[
-      'Осознанность',
-      'Устойчивость к стрессу',
-      'Регуляция эмоций',
-      'Межличностная эффективность',
+      l10n.meditationsSectionMindfulness,
+      l10n.meditationsSectionDistressTolerance,
+      l10n.meditationsSectionEmotionRegulation,
+      l10n.meditationsSectionInterpersonalEffectiveness,
     ];
 
     final listChildren = <Widget>[];
@@ -91,13 +94,13 @@ class _MeditationsScreenState extends State<MeditationsScreen> {
               horizontal: AppSpacing.screenTitleHorizontal,
               vertical: AppSpacing.screenTitleVertical,
             ),
-            child: Center(
-              child: Text(
-                'Медитации',
-                style: AppTypography.screenTitle,
-                textAlign: TextAlign.center,
-              ),
+          child: Center(
+            child: Text(
+              l10n.meditationsAppBarTitle,
+              style: AppTypography.screenTitle,
+              textAlign: TextAlign.center,
             ),
+          ),
           ),
           Expanded(
             child: ListView(
@@ -114,16 +117,18 @@ class _MeditationsScreenState extends State<MeditationsScreen> {
   }
 
   // Маппинг "тегов" в желаемые заголовки разделов
-  String _mapCategoryToHeader(String raw) {
+  String _mapCategoryToHeader(BuildContext context, String raw) {
+    final l10n = AppLocalizations.of(context)!;
+
     switch (raw) {
       case 'Осознанность':
-        return 'Осознанность';
+        return l10n.meditationsSectionMindfulness;
       case 'Снижение стресса':
-        return 'Устойчивость к стрессу';
+        return l10n.meditationsSectionDistressTolerance;
       case 'Принятие себя':
-        return 'Регуляция эмоций';
+        return l10n.meditationsSectionEmotionRegulation;
       case 'Межличностная эффективность':
-        return 'Межличностная эффективность';
+        return l10n.meditationsSectionInterpersonalEffectiveness;
       default:
         // на всякий случай — если появится новый тег
         return raw;
@@ -142,10 +147,10 @@ class _MeditationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final m = meditation;
 
-    // Преобразуем "Эмпатическое присутствие" в короткий тег "Эмпатия"
+    // Преобразуем "Эмпатическое присутствие" в короткий тег (локализованный)
     String skillLabel = m.dbtSkill;
     if (skillLabel == 'Эмпатическое присутствие') {
-      skillLabel = 'Эмпатия';
+      skillLabel = AppLocalizations.of(context)!.meditationsSkillEmpathicPresenceShort;
     }
 
     // Сначала длительность, потом навык
@@ -301,6 +306,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final meditation = widget.meditation;
 
     return Scaffold(
@@ -390,8 +396,8 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
               color: AppColors.greyLight,
               borderRadius: BorderRadius.circular(AppSizes.cardRadius),
             ),
-            child: const Text(
-              '🌿 Найдите спокойное место, где вас никто не потревожит, сядьте поудобнее и начните.',
+            child: Text(
+              l10n.meditationHintCardText,
               style: AppTypography.bodySecondary,
             ),
           ),
@@ -401,7 +407,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
           if (_loadFailed) ...[
             const SizedBox(height: AppSpacing.gapXL),
             Text(
-              'Не удалось загрузить аудио медитации.\nЧасто это связано с подключением к интернету. Попробуйте ещё раз или переключите вкладку.',
+              l10n.meditationLoadErrorText,
               textAlign: TextAlign.center,
               style: AppTypography.bodySecondary,
             ),
@@ -438,7 +444,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                           _switchAudio(true);
                         }
                       },
-                      child: const Text('С голосом'),
+                      child: Text(l10n.meditationToggleWithVoice),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.gapMedium),
@@ -464,7 +470,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                           _switchAudio(false);
                         }
                       },
-                      child: const Text('Только музыка'),
+                      child: Text(l10n.meditationToggleMusicOnly),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.gapSmall),
@@ -510,7 +516,11 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                   return Center(
                     child: FilledButton.icon(
                       icon: Icon(playing ? Icons.pause : Icons.play_arrow),
-                      label: Text(playing ? "Пауза" : "Начать"),
+                      label: Text(
+                        playing
+                            ? l10n.meditationButtonPause
+                            : l10n.meditationButtonPlay,
+                      ),
                       onPressed: () async {
                         if (playing) {
                           await _player.pause();
@@ -536,7 +546,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
           if (!meditation.isFree) ...[
             const SizedBox(height: AppSpacing.gapLarge),
             Text(
-              "Для доступа к этой медитации может потребоваться подписка.",
+              l10n.meditationSubscriptionInfo,
               style: AppTypography.bodySecondary,
             ),
           ],

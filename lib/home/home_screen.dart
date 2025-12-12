@@ -14,6 +14,7 @@ import '../export/state_entries_csv_exporter.dart';
 import '../settings/settings_screen.dart';
 import '../usage_guide/usage_guide_screen.dart';
 import '../analytics/amplitude_service.dart';
+import '../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   final StateRepository repository;
@@ -48,21 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final shouldHide = await showDialog<bool>(
       context: context,
       builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+
         return AlertDialog(
-          title: const Text('Скрыть инструкцию с главного экрана?'),
-          content: const Text(
-            'Вы всё ещё сможете посмотреть эту инструкцию в разделе "Настройки".',
-          ),
+          title: Text(l10n.homeUsageGuideHideDialogTitle),
+          content: Text(l10n.homeUsageGuideHideDialogBody),
           actions: [
             // secondary
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Скрыть'),
+              child: Text(l10n.homeUsageGuideHideDialogHide),
             ),
             // primary
             FilledButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Оставить'),
+              child: Text(l10n.homeUsageGuideHideDialogKeep),
             ),
           ],
         );
@@ -90,14 +91,15 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, box, _) {
           final entries = widget.repository.getAll();
           final theme = Theme.of(context);
+          final l10n = AppLocalizations.of(context)!;
 
           Future<void> exportCsv({
             required bool last7Days,
           }) async {
             if (entries.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Нет записей для экспорта.'),
+                SnackBar(
+                  content: Text(l10n.homeExportNoEntries),
                 ),
               );
               return;
@@ -127,8 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 SnackBar(
                   content: Text(
                     last7Days
-                        ? 'За последние 7 дней нет записей для экспорта.'
-                        : 'Нет записей для экспорта.',
+                        ? l10n.homeExportNoEntries7Days
+                        : l10n.homeExportNoEntries,
                   ),
                 ),
               );
@@ -137,13 +139,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
             await exportStateEntriesAsCsvFile(
               entries: filtered,
-              fileName: 'Записи состояний',
+              fileName: l10n.homeExportFileName,
               subject: last7Days
-                  ? 'Записи состояний за последние 7 дней'
-                  : 'Все записи состояний',
+                  ? l10n.homeExportSubject7Days
+                  : l10n.homeExportSubjectAll,
               text: last7Days
-                  ? 'Записи состояний за последние 7 дней (CSV).'
-                  : 'Все записи состояний (CSV).',
+                  ? l10n.homeExportText7Days
+                  : l10n.homeExportTextAll,
             );
           }
 
@@ -161,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.settings),
-                      tooltip: 'Настройки',
+                      tooltip: l10n.homeSettingsTooltip,
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -172,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Expanded(
                       child: Text(
-                        'Моё состояние',
+                        l10n.homeAppBarTitle,
                         style: AppTypography.screenTitle,
                         textAlign: TextAlign.center,
                       ),
@@ -193,14 +195,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               exportCsv(last7Days: false);
                             }
                           },
-                          itemBuilder: (context) => const [
+                          itemBuilder: (context) => [
                             PopupMenuItem(
                               value: '7days',
-                              child: Text('Экспорт за последние 7 дней'),
+                              child: Text(l10n.homeExportMenu7Days),
                             ),
                             PopupMenuItem(
                               value: 'all',
-                              child: Text('Экспорт всех записей'),
+                              child: Text(l10n.homeExportMenuAll),
                             ),
                           ],
                         ),
@@ -259,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Как пользоваться приложением',
+                                        l10n.homeUsageGuideCardTitle,
                                         style: theme
                                             .textTheme.bodyMedium
                                             ?.copyWith(
@@ -268,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Краткий гид на 2–3 минуты, чтобы выжать максимум пользы из Wisemind.',
+                                        l10n.homeUsageGuideCardSubtitle,
                                         style: theme
                                             .textTheme.bodySmall
                                             ?.copyWith(
@@ -316,8 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             horizontal: AppSpacing.screenPadding,
                           ),
                           child: Text(
-                            '🔍 Здесь пока нет ваших записей.\n'
-                            'Нажмите «+ Новая запись», чтобы добавить первую.',
+                            l10n.homeEmptyStateText,
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onSurface.withValues(
@@ -359,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               bottom: AppSpacing.sectionTitleBottom,
                             ),
                             child: Text(
-                              'Записи состояний',
+                              l10n.homeEntriesSectionTitle,
                               style: AppTypography.sectionTitle,
                             ),
                           ),
@@ -396,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   subtitle: entry.grateful != null &&
                                           entry.grateful!.isNotEmpty
                                       ? Text(
-                                          'Благодарю себя: ${entry.grateful}',
+                                          l10n.homeEntryGratefulPrefix(entry.grateful!),
                                           style: AppTypography
                                               .bodySecondary,
                                         )
@@ -432,14 +433,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                             .deleteById(entry.id);
                                       }
                                     },
-                                    itemBuilder: (context) => const [
+                                    itemBuilder: (context) => [
                                       PopupMenuItem(
                                         value: 'edit',
-                                        child: Text('Редактировать'),
+                                        child: Text(l10n.homeEntryMenuEdit),
                                       ),
                                       PopupMenuItem(
                                         value: 'delete',
-                                        child: Text('Удалить'),
+                                        child: Text(l10n.homeEntryMenuDelete),
                                       ),
                                     ],
                                   ),
@@ -467,10 +468,11 @@ class _MoodRestActivityChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (entries.isEmpty) {
       return Center(
         child: Text(
-          'Пока нет данных для графика.\nДобавь записи за последние дни.',
+          l10n.homeChartNoData,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall,
         ),
@@ -506,7 +508,7 @@ class _MoodRestActivityChart extends StatelessWidget {
     if (daysWithData.isEmpty) {
       return Center(
         child: Text(
-          'Пока нет данных за последние 14 дней.',
+          l10n.homeChartNoData14Days,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall,
         ),
@@ -568,14 +570,14 @@ class _MoodRestActivityChart extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Легенда
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _LegendItem(color: Colors.blue, text: 'Часы сна'),
-            SizedBox(width: 12),
-            _LegendItem(color: Colors.green, text: 'Отдых'),
-            SizedBox(width: 12),
-            _LegendItem(color: Colors.red, text: 'Активность'),
+            _LegendItem(color: Colors.blue, text: l10n.homeLegendSleep),
+            const SizedBox(width: 12),
+            _LegendItem(color: Colors.green, text: l10n.homeLegendRest),
+            const SizedBox(width: 12),
+            _LegendItem(color: Colors.red, text: l10n.homeLegendActivity),
           ],
         ),
         const SizedBox(height: 4),

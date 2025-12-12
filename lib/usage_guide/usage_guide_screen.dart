@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../analytics/amplitude_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
@@ -16,6 +17,8 @@ class UsageGuideScreen extends StatefulWidget {
 }
 
 class _UsageGuideScreenState extends State<UsageGuideScreen> {
+  static const int _pageCount = 5;
+
   final _controller = PageController();
   int _currentPage = 0;
 
@@ -37,75 +40,18 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
     });
   }
 
-  final _pages = const [
-    _GuidePageData(
-      title: 'Как Wisemind действительно помогает',
-      body:
-          'Wisemind не про магию и не про «трекать всё подряд».\n\n'
-          'В бесплатной версии уже есть всё, чтобы начать менять поведение: '
-          'отмечать состояние, разбирать сложные ситуации и пробовать реагировать по‑новому.\n\n'
-          'Но изменения требуют усилий: приложение не сделает работу за вас, '
-          'оно помогает идти вперёд шаг за шагом.',
-    ),
-    _GuidePageData(
-      title: 'Шаг 1. Замечать, что с вами происходит',
-      body:
-          'Менять поведение невозможно, если вы не замечаете, что с вами происходит.\n\n'
-          'Поэтому первый блок навыков — «Осознанность» — открыт бесплатно. '
-          'С его помощью вы учитесь обращать внимание на:\n'
-          '• тело и ощущения\n'
-          '• мысли и эмоции\n'
-          '• обстановку вокруг\n\n'
-          'Так легче вовремя заметить момент, когда обычно начинается срыв.',
-    ),
-    _GuidePageData(
-      title: 'Шаг 2. Определить своё проблемное поведение',
-      body:
-          'Сначала честно назовите, что именно для вас проблема: алкоголь, '
-          'ссоры с близкими, переедание, курение, импульсивные покупки и так далее.\n\n'
-          'Затем каждый вечер заполняйте «Карту дня». Со временем вы увидите связи между '
-          'недосыпом, стрессом, отсутствием отдыха и другими факторами, которые подталкивают '
-          'к срывам и привычному проблемному поведению.',
-    ),
-    _GuidePageData(
-      title: 'Шаг 3. Разбирать срывы и тренировать навыки',
-      body:
-          'Срывы неизбежны — это не провал, а материал для работы.\n\n'
-          'Используйте рабочие листы, чтобы по шагам разобрать, что произошло до, во время '
-          'и после эпизода. Навыки DBT разделены на 4 блока:\n'
-          '• осознанность\n'
-          '• устойчивость к стрессу\n'
-          '• регулирование эмоций\n'
-          '• межличностная эффективность\n\n'
-          'Осваивайте их постепенно, мы рекомендуем по одному навыку в неделю — '
-          'и оставляйте в арсенале то, что лучше всего работает именно для вас.',
-    ),
-    _GuidePageData(
-      title: 'Поехали?',
-      body:
-          'Мы будем добавлять новые инструменты, практики и медитации, '
-          'чтобы поддерживать вас на пути изменений.\n\n'
-          'А сейчас сделайте первый шаг — заполните первую запись в разделе '
-          '«Моё состояние».\n\n'
-          'Вы ответите на простые вопросы о сне, самочувствии и эмоциях. '
-          'Если возвращаться к этому каждый день, постепенно формируется привычка, '
-          'которая со временем меняет поведение.',
-      isLast: true,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Как пользоваться Wisemind'),
+        title: Text(AppLocalizations.of(context)!.usageGuideAppBarTitle),
       ),
       body: Column(
         children: [
           Expanded(
             child: PageView.builder(
               controller: _controller,
-              itemCount: _pages.length,
+              itemCount: _pageCount,
               onPageChanged: (index) {
                 setState(() {
                   _currentPage = index;
@@ -114,9 +60,43 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
                     .logHomeGuideStepViewed(stepIndex: index + 1);
               },
               itemBuilder: (context, index) {
-                final page = _pages[index];
+                final l10n = AppLocalizations.of(context)!;
+
+                String title;
+                String body;
+
+                switch (index) {
+                  case 0:
+                    title = l10n.usageGuideTitle1;
+                    body = l10n.usageGuideBody1;
+                    break;
+                  case 1:
+                    title = l10n.usageGuideTitle2;
+                    body = l10n.usageGuideBody2;
+                    break;
+                  case 2:
+                    title = l10n.usageGuideTitle3;
+                    body = l10n.usageGuideBody3;
+                    break;
+                  case 3:
+                    title = l10n.usageGuideTitle4;
+                    body = l10n.usageGuideBody4;
+                    break;
+                  case 4:
+                  default:
+                    title = l10n.usageGuideTitle5;
+                    body = l10n.usageGuideBody5;
+                    break;
+                }
+
+                // Determine which image subfolder to use based on current locale
+                final languageCode = Localizations.localeOf(context).languageCode;
+                const supportedImageLangs = ['ru', 'en'];
+                // Fallback to English if the current locale is not explicitly supported
+                final imageLang = supportedImageLangs.contains(languageCode) ? languageCode : 'en';
+
                 final imagePath =
-                    'assets/images/usage_guide/slide_${index + 1}.png';
+                    'assets/images/usage_guide/$imageLang/slide_${index + 1}.png';
 
                 return LayoutBuilder(
                   builder: (context, constraints) {
@@ -149,7 +129,7 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              page.title,
+                              title,
                               textAlign: TextAlign.left,
                               style: AppTypography.screenTitle.copyWith(
                                 fontSize: 20,
@@ -157,7 +137,7 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              page.body,
+                              body,
                               textAlign: TextAlign.left,
                               style: AppTypography.bodySecondary,
                             ),
@@ -178,7 +158,7 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.screenPadding,
             ),
-            child: _buildBottomButton(_pages[_currentPage]),
+            child: _buildBottomButton(_currentPage == _pageCount - 1),
           ),
           const SizedBox(height: 16),
         ],
@@ -190,7 +170,7 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
-        _pages.length,
+        _pageCount,
         (index) {
           final isActive = index == _currentPage;
           return AnimatedContainer(
@@ -208,8 +188,8 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
     );
   }
 
-  Widget _buildBottomButton(_GuidePageData page) {
-    if (page.isLast) {
+  Widget _buildBottomButton(bool isLastPage) {
+    if (isLastPage) {
       return Container(
         decoration: const BoxDecoration(
           color: AppColors.background,
@@ -219,7 +199,7 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: _completeAndClose,
-            child: const Text('Заполнить карту дня'),
+            child: Text(AppLocalizations.of(context)!.usageGuideButtonFillCard),
           ),
         ),
       );
@@ -239,21 +219,9 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
               curve: Curves.easeOut,
             );
           },
-          child: const Text('Далее'),
+          child: Text(AppLocalizations.of(context)!.usageGuideButtonNext),
         ),
       ),
     );
   }
-}
-
-class _GuidePageData {
-  final String title;
-  final String body;
-  final bool isLast;
-
-  const _GuidePageData({
-    required this.title,
-    required this.body,
-    this.isLast = false,
-  });
 }

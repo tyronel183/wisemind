@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:wisemind/theme/app_theme.dart';
+import 'package:wisemind/l10n/app_localizations.dart';
 
 import '../theme/app_components.dart';
 import '../theme/app_spacing.dart';
@@ -143,11 +144,12 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Анализ поведения',
+          l.chainAnalysisListAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -159,11 +161,11 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Не удалось загрузить данные.\nПопробуйте ещё раз позже.',
+                  l.chainAnalysisLoadError,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -179,12 +181,11 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                 ..sort((a, b) => b.date.compareTo(a.date)); // свежие сверху
 
               if (entries.isEmpty) {
-                return const Center(
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(24),
                     child: Text(
-                      '🔍 Здесь пока нет ни одной записи.\n'
-                      'Нажмите «+ Новая запись», чтобы заполнить первый рабочий лист.',
+                      l.chainAnalysisEmptyList,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -200,7 +201,7 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                   final title = _formatDate(entry.date);
                   final subtitle = entry.problematicBehavior.isNotEmpty
                       ? entry.problematicBehavior
-                      : 'Без названия';
+                      : l.chainAnalysisUntitled;
                   return Container(
                     decoration: AppDecorations.card,
                     child: ListTile(
@@ -253,20 +254,20 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text('Удалить запись?'),
-                                content: const Text(
-                                  'Эту запись нельзя будет восстановить.',
+                                title: Text(l.chainAnalysisDeleteDialogTitle),
+                                content: Text(
+                                  l.chainAnalysisDeleteDialogBody,
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.of(context).pop(false),
-                                    child: const Text('Отмена'),
+                                    child: Text(l.chainAnalysisDeleteDialogCancel),
                                   ),
                                   TextButton(
                                     onPressed: () => Navigator.of(context).pop(true),
-                                    child: const Text(
-                                      'Удалить',
-                                      style: TextStyle(color: Colors.red),
+                                    child: Text(
+                                      l.chainAnalysisDeleteDialogConfirm,
+                                      style: const TextStyle(color: Colors.red),
                                     ),
                                   ),
                                 ],
@@ -283,24 +284,24 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                               await entry.delete();
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Запись удалена'),
+                                  SnackBar(
+                                    content: Text(l.chainAnalysisDeleteSnack),
                                   ),
                                 );
                               }
                             }
                           }
                         },
-                        itemBuilder: (context) => const [
+                        itemBuilder: (context) => [
                           PopupMenuItem(
                             value: 'edit',
-                            child: Text('Редактировать'),
+                            child: Text(l.chainAnalysisMenuEdit),
                           ),
                           PopupMenuItem(
                             value: 'delete',
                             child: Text(
-                              'Удалить',
-                              style: TextStyle(color: Colors.red),
+                              l.chainAnalysisMenuDelete,
+                              style: const TextStyle(color: Colors.red),
                             ),
                           ),
                         ],
@@ -330,7 +331,7 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
           );
         },
         icon: const Icon(Icons.add),
-        label: const Text('Новая запись'),
+        label: Text(l.chainAnalysisFabNewEntry),
       ),
     );
   }
@@ -425,12 +426,13 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
   }
 
   Future<void> _save() async {
+    final l = AppLocalizations.of(context)!;
     // Проблемное поведение — обязательное поле
     final problematic = _problematicBehaviorController.text.trim();
     if (problematic.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Опиши проблемное поведение')),
+          SnackBar(content: Text(l.chainAnalysisProblemRequiredSnack)),
         );
       }
       return;
@@ -503,7 +505,7 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(isNew ? 'Запись добавлена' : 'Запись обновлена'),
+        content: Text(isNew ? l.chainAnalysisSaveSnackNew : l.chainAnalysisSaveSnackEdit),
       ),
     );
 
@@ -512,13 +514,14 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final isEdit = widget.existingEntry != null;
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          isEdit ? 'Редактировать анализ' : 'Анализ поведения',
+          isEdit ? l.chainAnalysisEditAppBarTitle : l.chainAnalysisNewAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -555,9 +558,9 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
                           color: AppColors.primary,
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Пример заполненного листа\n"Анализ нежелательного поведения"',
+                            l.chainAnalysisExampleCardTitle,
                             style: AppTypography.bodySecondary,
                           ),
                         ),
@@ -571,19 +574,19 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
               // Блок: заголовок рабочего листа + дата
               FormSectionCard(
-                title: 'Общая информация',
+                title: l.chainAnalysisSectionGeneralTitle,
                 children: [
                   Text(
-                    'Осознанность',
+                    l.chainAnalysisSectionMindfulnessLabel,
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey.shade700,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Анализ поведения',
-                    style: TextStyle(
+                  Text(
+                    l.chainAnalysisSectionWorksheetTitle,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),
@@ -592,7 +595,7 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Дата'),
+                    title: Text(l.chainAnalysisFieldDateLabel),
                     subtitle: Text(_formatDate(_date)),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: _pickDate,
@@ -601,8 +604,8 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
                   AppTextField(
                     controller: _problematicBehaviorController,
-                    label: 'Проблемное поведение',
-                    hint: 'Например: накричал на коллегу, сорвался на переедание',
+                    label: l.chainAnalysisFieldProblemLabel,
+                    hint: l.chainAnalysisFieldProblemHint,
                     maxLines: 2,
                   ),
                 ],
@@ -612,26 +615,26 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
               // Блок: цепочка
               FormSectionCard(
-                title: 'Цепочка событий',
+                title: l.chainAnalysisSectionChainTitle,
                 children: [
                   AppTextField(
                     controller: _chainLinksController,
-                    label: 'Что именно происходило (цепочка)',
-                    hint: 'Мысли, эмоции, телесные реакции и действия по шагам',
+                    label: l.chainAnalysisFieldChainLinksLabel,
+                    hint: l.chainAnalysisFieldChainLinksHint,
                     maxLines: 4,
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _promptingEventController,
-                    label: 'Побуждающее событие',
-                    hint: 'Что конкретно стало триггером эпизода?',
+                    label: l.chainAnalysisFieldPromptingEventLabel,
+                    hint: l.chainAnalysisFieldPromptingEventHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _environmentController,
-                    label: 'Уязвимости',
-                    hint: 'Например: недосып, голод, стрессовая неделя, болезнь',
+                    label: l.chainAnalysisFieldVulnerabilitiesLabel,
+                    hint: l.chainAnalysisFieldVulnerabilitiesHint,
                     maxLines: 3,
                   ),
                 ],
@@ -640,26 +643,26 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
               const SizedBox(height: AppSpacing.gapLarge),
 
               FormSectionCard(
-                title: 'Последствия',
+                title: l.chainAnalysisSectionConsequencesTitle,
                 children: [
                   AppTextField(
                     controller: _consequencesForOthersController,
-                    label: 'Последствия для окружения',
-                    hint: 'Как это повлияло на других людей?',
+                    label: l.chainAnalysisFieldConsequencesOthersLabel,
+                    hint: l.chainAnalysisFieldConsequencesOthersHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _consequencesForMeController,
-                    label: 'Последствия для меня',
-                    hint: 'Что стало со мной после эпизода — чувства, мысли, состояние',
+                    label: l.chainAnalysisFieldConsequencesMeLabel,
+                    hint: l.chainAnalysisFieldConsequencesMeHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _damageCtrl,
-                    label: 'Нанесённый вред',
-                    hint: 'Что испортилось или было потеряно из‑за этого поведения?',
+                    label: l.chainAnalysisFieldDamageLabel,
+                    hint: l.chainAnalysisFieldDamageHint,
                     maxLines: 3,
                   ),
                 ],
@@ -668,33 +671,33 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
               const SizedBox(height: AppSpacing.gapLarge),
 
               FormSectionCard(
-                title: 'План изменений',
+                title: l.chainAnalysisSectionPlanTitle,
                 children: [
                   AppTextField(
                     controller: _adaptiveBehaviourCtrl,
-                    label: 'Как можно было по-другому?',
-                    hint: 'Какое более здоровое поведение могло бы быть на этом месте?',
+                    label: l.chainAnalysisFieldAdaptiveBehaviourLabel,
+                    hint: l.chainAnalysisFieldAdaptiveBehaviourHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _decreaseVulnerabilityCtrl,
-                    label: 'Как снизить уязвимость в будущем?',
-                    hint: 'Что в режиме и привычках можно укрепить, чтобы было легче?',
+                    label: l.chainAnalysisFieldDecreaseVulnerabilityLabel,
+                    hint: l.chainAnalysisFieldDecreaseVulnerabilityHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _preventEventCtrl,
-                    label: 'Как предотвратить побуждающее событие?',
-                    hint: 'Что можно сделать, чтобы подобная ситуация не повторялась?',
+                    label: l.chainAnalysisFieldPreventEventLabel,
+                    hint: l.chainAnalysisFieldPreventEventHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _fixPlanCtrl,
-                    label: 'План исправления',
-                    hint: 'Конкретные шаги по исправлению последствий и отношений',
+                    label: l.chainAnalysisFieldFixPlanLabel,
+                    hint: l.chainAnalysisFieldFixPlanHint,
                     maxLines: 3,
                   ),
                 ],
@@ -716,7 +719,7 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
                   onPressed: _save,
                   icon: const Icon(Icons.check),
                   label: Text(
-                    isEdit ? 'Сохранить изменения' : 'Сохранить',
+                    isEdit ? l.chainAnalysisSaveButtonEdit : l.chainAnalysisSaveButtonNew,
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
@@ -734,28 +737,29 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 class ChainAnalysisExampleScreen extends StatelessWidget {
   const ChainAnalysisExampleScreen({super.key});
 
-          @override
-          Widget build(BuildContext context) {
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('Пример заполненного листа'),
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l.chainAnalysisExampleAppBarTitle),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Html(
+            data: kChainAnalysisExampleHtml,
+            style: {
+              "body": Style(
+                margin: Margins.zero,
+                padding: HtmlPaddings.zero,
               ),
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Html(
-          data: kChainAnalysisExampleHtml,
-          style: {
-            "body": Style(
-              margin: Margins.zero,
-              padding: HtmlPaddings.zero,
-            ),
-            "h2": Style(margin: Margins.only(bottom: 12)),
-            "h3": Style(margin: Margins.only(top: 16, bottom: 8)),
-            "p": Style(margin: Margins.only(bottom: 8)),
-            "ul": Style(margin: Margins.only(bottom: 8, left: 16)),
-            "hr": Style(
-              margin: Margins.only(top: 12, bottom: 12),
+              "h2": Style(margin: Margins.only(bottom: 12)),
+              "h3": Style(margin: Margins.only(top: 16, bottom: 8)),
+              "p": Style(margin: Margins.only(bottom: 8)),
+              "ul": Style(margin: Margins.only(bottom: 8, left: 16)),
+              "hr": Style(
+                margin: Margins.only(top: 12, bottom: 12),
                 border: const Border(
                   bottom: BorderSide(
                     color: Colors.black26,
@@ -777,11 +781,12 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          'Детали анализа',
+        title: Text(
+          l.chainAnalysisDetailAppBarTitle,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -796,21 +801,21 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
 
           // ОБЩАЯ ИНФОРМАЦИЯ
           FormSectionCard(
-            title: 'Общая информация',
+            title: l.chainAnalysisSectionGeneralTitle,
             children: [
-              const Text(
-                'Осознанность',
+              Text(
+                l.chainAnalysisSectionMindfulnessLabel,
                 style: AppTypography.bodySecondary,
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Анализ поведения',
+              Text(
+                l.chainAnalysisSectionWorksheetTitle,
                 style: AppTypography.cardTitle,
               ),
               const SizedBox(height: 16),
-              _detailRow('Дата', _formatDate(entry.date)),
+              _detailRow(l.chainAnalysisFieldDateLabel, _formatDate(entry.date)),
               const SizedBox(height: 16),
-              _detailRow('Проблемное поведение', entry.problematicBehavior),
+              _detailRow(l.chainAnalysisFieldProblemLabel, entry.problematicBehavior),
             ],
           ),
 
@@ -818,13 +823,13 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
 
           // ЦЕПОЧКА СОБЫТИЙ
           FormSectionCard(
-            title: 'Цепочка событий',
+            title: l.chainAnalysisSectionChainTitle,
             children: [
-              _detailRow('Что именно происходило (цепочка)', entry.chainLinks),
+              _detailRow(l.chainAnalysisFieldChainLinksLabel, entry.chainLinks),
               const SizedBox(height: 16),
-              _detailRow('Побуждающее событие', entry.promptingEvent),
+              _detailRow(l.chainAnalysisFieldPromptingEventLabel, entry.promptingEvent),
               const SizedBox(height: 16),
-              _detailRow('Уязвимости', entry.environment),
+              _detailRow(l.chainAnalysisFieldVulnerabilitiesLabel, entry.environment),
             ],
           ),
 
@@ -832,13 +837,13 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
 
           // ПОСЛЕДСТВИЯ
           FormSectionCard(
-            title: 'Последствия',
+            title: l.chainAnalysisSectionConsequencesTitle,
             children: [
-              _detailRow('Последствия для окружения', entry.consequencesForOthers),
+              _detailRow(l.chainAnalysisFieldConsequencesOthersLabel, entry.consequencesForOthers),
               const SizedBox(height: 16),
-              _detailRow('Последствия для меня', entry.consequencesForMe),
+              _detailRow(l.chainAnalysisFieldConsequencesMeLabel, entry.consequencesForMe),
               const SizedBox(height: 16),
-              _detailRow('Нанесённый вред', entry.damage),
+              _detailRow(l.chainAnalysisFieldDamageLabel, entry.damage),
             ],
           ),
 
@@ -846,15 +851,15 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
 
           // ПЛАН ИЗМЕНЕНИЙ
           FormSectionCard(
-            title: 'План изменений',
+            title: l.chainAnalysisSectionPlanTitle,
             children: [
-              _detailRow('Как можно было по-другому?', entry.adaptiveBehaviour),
+              _detailRow(l.chainAnalysisFieldAdaptiveBehaviourLabel, entry.adaptiveBehaviour),
               const SizedBox(height: 16),
-              _detailRow('Как снизить уязвимость в будущем?', entry.decreaseVulnerability),
+              _detailRow(l.chainAnalysisFieldDecreaseVulnerabilityLabel, entry.decreaseVulnerability),
               const SizedBox(height: 16),
-              _detailRow('Как предотвратить побуждающее событие?', entry.preventEvent),
+              _detailRow(l.chainAnalysisFieldPreventEventLabel, entry.preventEvent),
               const SizedBox(height: 16),
-              _detailRow('План исправления', entry.fixPlan),
+              _detailRow(l.chainAnalysisFieldFixPlanLabel, entry.fixPlan),
             ],
           ),
 

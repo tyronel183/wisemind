@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../analytics/amplitude_service.dart';
+import 'package:wisemind/l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onFinished;
@@ -31,35 +32,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     });
   }
 
-  late final List<_OnboardingPageData> _pages = [
-    _OnboardingPageData(
-      emoji: '🌊',
-      assetName: 'assets/images/onboarding/onboarding_1.png',
-      title: 'Часто делаете то, о чём потом жалеете',
-      subtitle:
-          'Сорвались на близких, напились, накупили лишнего, заели стресс сладким.\n\n'
-          'В моменте вроде легче, а потом стыдно и тяжело.\n'
-          'И всё повторяется снова и снова.',
-    ),
-    _OnboardingPageData(
-      emoji: '🧠',
-      assetName: 'assets/images/onboarding/onboarding_2.png',
-      title: 'Wisemind помогает разорвать этот круг',
-      subtitle:
-          'Приложение на основе DBT — подхода в психотерапии, который учит замечать, что с вами происходит.\n\n'
-          'Вы отслеживаете свои реакции, побуждения и импульсы и учитесь влиять на них.',
-    ),
-    _OnboardingPageData(
-      emoji: '📅',
-      assetName: 'assets/images/onboarding/onboarding_3.png',
-      title: 'Меньше срывов - больше контроля над собой',
-      subtitle:
-          'С практикой вы раньше замечаете, что «что-то не так» и успеваете остановиться.\n\n'
-          'У вас появляется выбор — поддаться побуждению или сделать иначе.\n'
-          'Маленькие шаги каждый день постепенно меняют вашу жизнь.',
-      isLast: true,
-    ),
-  ];
+  List<_OnboardingPageData> get _pages {
+    final l = AppLocalizations.of(context)!;
+    return [
+      _OnboardingPageData(
+        emoji: '🌊',
+        assetName: 'assets/images/onboarding/onboarding_1.png',
+        title: l.onboarding_page1_title,
+        subtitle: l.onboarding_page1_subtitle,
+      ),
+      _OnboardingPageData(
+        emoji: '🧠',
+        assetName: 'assets/images/onboarding/onboarding_2.png',
+        title: l.onboarding_page2_title,
+        subtitle: l.onboarding_page2_subtitle,
+      ),
+      _OnboardingPageData(
+        emoji: '📅',
+        assetName: 'assets/images/onboarding/onboarding_3.png',
+        title: l.onboarding_page3_title,
+        subtitle: l.onboarding_page3_subtitle,
+        isLast: true,
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -92,6 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -108,7 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   TextButton(
                     onPressed: _onSkip,
-                    child: const Text('Пропустить'),
+                    child: Text(l.onboarding_skip_button),
                   ),
                 ],
               ),
@@ -203,7 +200,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: ElevatedButton(
                   onPressed: _onNext,
                   child: Text(
-                    _pages[_currentIndex].isLast ? 'Начать' : 'Далее',
+                    _pages[_currentIndex].isLast
+                        ? l.onboarding_start_button
+                        : l.onboarding_next_button,
                   ),
                 ),
               ),

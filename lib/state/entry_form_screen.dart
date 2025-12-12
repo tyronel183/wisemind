@@ -4,6 +4,7 @@ import 'state_entry.dart';
 import '../theme/app_components.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 const List<String> kAllSkills = [
   'Карта дня',
@@ -229,11 +230,14 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.existing != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? 'Редактировать запись' : 'Новая запись'),
+        title: Text(
+          isEdit ? l10n.entryFormEditAppBarTitle : l10n.entryFormNewAppBarTitle,
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(
@@ -245,11 +249,11 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
           // ОБЩЕЕ СОСТОЯНИЕ
           FormSectionCard(
-            title: 'Общее состояние',
+            title: l10n.entryFormSectionGeneralTitle,
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Дата'),
+                title: Text(l10n.entryFormFieldDateLabel),
                 subtitle: Text(formatDate(_date)),
                 trailing: IconButton(
                   icon: const Icon(Icons.calendar_today),
@@ -257,9 +261,9 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Как вы сегодня?',
-                style: TextStyle(
+              Text(
+                l10n.entryFormMoodQuestion,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -291,13 +295,13 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               const SizedBox(height: 16),
               AppTextField(
                 controller: _gratefulController,
-                label: 'За что я себя сегодня благодарю?',
+                label: l10n.entryFormFieldGratefulLabel,
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _goalController,
-                label: 'Что сделано для достижения цели?',
+                label: l10n.entryFormFieldGoalLabel,
                 maxLines: 2,
               ),
             ],
@@ -307,10 +311,10 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
           // СОН
           FormSectionCard(
-            title: 'Сон',
+            title: l10n.entryFormSectionSleepTitle,
             children: [
               _buildChoiceRow(
-                label: 'Как отдохнули?',
+                label: l10n.entryFormFieldRestLabel,
                 value: _rest,
                 onChanged: (v) => setState(() => _rest = v),
               ),
@@ -320,7 +324,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               _buildWakeUpDropdown(),
               const SizedBox(height: 16),
               _buildChoiceRow(
-                label: 'Сколько было ночных пробуждений?',
+                label: l10n.entryFormFieldNightWakeupsLabel,
                 value: _nightWakeUps,
                 onChanged: (v) => setState(() => _nightWakeUps = v),
               ),
@@ -331,17 +335,17 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
           // ДИСКОМФОРТ
           FormSectionCard(
-            title: 'Дискомфорт',
+            title: l10n.entryFormSectionDiscomfortTitle,
             children: [
               _buildChoiceRow(
-                label: 'Физический дискомфорт',
+                label: l10n.entryFormFieldPhysicalDiscomfortLabel,
                 value: _physicalDiscomfort,
                 onChanged: (v) =>
                     setState(() => _physicalDiscomfort = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Эмоциональный дискомфорт',
+                label: l10n.entryFormFieldEmotionalDiscomfortLabel,
                 value: _emotionalDistress,
                 onChanged: (v) =>
                     setState(() => _emotionalDistress = v),
@@ -353,28 +357,28 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
           // ЭМОЦИОНАЛЬНОЕ СОСТОЯНИЕ
           FormSectionCard(
-            title: 'Эмоциональное состояние',
+            title: l10n.entryFormSectionEmotionalStateTitle,
             children: [
               _buildChoiceRow(
-                label: 'Ощущение нереальности',
+                label: l10n.entryFormFieldDissociationLabel,
                 value: _dissociation,
                 onChanged: (v) => setState(() => _dissociation = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Руминации, навязчивые мысли',
+                label: l10n.entryFormFieldRuminationsLabel,
                 value: _ruminations,
                 onChanged: (v) => setState(() => _ruminations = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Самообвинение',
+                label: l10n.entryFormFieldSelfBlameLabel,
                 value: _selfBlame,
                 onChanged: (v) => setState(() => _selfBlame = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Суицидальные мысли',
+                label: l10n.entryFormFieldSuicidalThoughtsLabel,
                 value: _suicidalThoughts,
                 onChanged: (v) =>
                     setState(() => _suicidalThoughts = v),
@@ -386,21 +390,21 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
           // ПРОБЛЕМНОЕ ПОВЕДЕНИЕ
           FormSectionCard(
-            title: 'Проблемное поведение',
+            title: l10n.entryFormSectionProblemBehaviorTitle,
             children: [
-              const Text(
-                'Заполняйте, если отслеживаете какое-то конкретное проблемное поведение.',
+              Text(
+                l10n.entryFormProblemBehaviorHint,
               ),
               const SizedBox(height: 12),
               _buildChoiceRow(
-                label: 'Насколько сильный импульс?',
+                label: l10n.entryFormFieldUrgesLabel,
                 value: _urges,
                 onChanged: (v) => setState(() => _urges = v),
               ),
               const SizedBox(height: 16),
               AppTextField(
                 controller: _actionController,
-                label: 'Что сделали?',
+                label: l10n.entryFormFieldActionLabel,
                 maxLines: 2,
               ),
             ],
@@ -410,17 +414,17 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
           // ЗАБОТА О СЕБЕ
           FormSectionCard(
-            title: 'Забота о себе',
+            title: l10n.entryFormSectionSelfCareTitle,
             children: [
               _buildChoiceRow(
-                label: 'Физическая активность',
+                label: l10n.entryFormFieldPhysicalActivityLabel,
                 value: _physicalActivity,
                 onChanged: (v) =>
                     setState(() => _physicalActivity = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Сколько было удовольствия?',
+                label: l10n.entryFormFieldPleasureLabel,
                 value: _pleasure,
                 onChanged: (v) => setState(() => _pleasure = v),
               ),
@@ -428,7 +432,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               _buildWaterDropdown(),
               const SizedBox(height: 16),
               _buildChoiceRow(
-                label: 'Сколько раз ели?',
+                label: l10n.entryFormFieldMealsCountLabel,
                 value: _food,
                 onChanged: (v) => setState(() => _food = v),
               ),
@@ -439,9 +443,9 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
           // НАВЫКИ
           FormSectionCard(
-            title: 'Применённые навыки',
+            title: l10n.entryFormSectionSkillsTitle,
             children: [
-              const Text('Можно выбрать несколько.'),
+              Text(l10n.entryFormSkillsHint),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -464,7 +468,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
                 child: TextButton.icon(
                   onPressed: _openSkillsSelector,
                   icon: const Icon(Icons.tune),
-                  label: const Text('Выбрать навыки'),
+                  label: Text(l10n.entryFormSkillsButtonLabel),
                 ),
               ),
             ],
@@ -501,7 +505,9 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               ),
               onPressed: _save,
               child: Text(
-                isEdit ? 'Сохранить изменения' : 'Сохранить',
+                isEdit
+                    ? l10n.entryFormButtonSaveEdit
+                    : l10n.entryFormButtonSaveNew,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -541,10 +547,11 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
   }
 
   Widget _buildSleepDropdown() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Сколько спали (часы)?'),
+        Text(l10n.entryFormFieldSleepHoursLabel),
         const SizedBox(height: 8),
         DropdownButton<double>(
           value: _sleepHours,
@@ -573,6 +580,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
   }
 
   Widget _buildWakeUpDropdown() {
+    final l10n = AppLocalizations.of(context)!;
     final options = _wakeOptions;
     if (!options.contains(_wakeUpTime)) {
       _wakeUpTime = options[1];
@@ -581,7 +589,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Во сколько проснулись?'),
+        Text(l10n.entryFormFieldWakeTimeLabel),
         const SizedBox(height: 8),
         DropdownButton<String>(
           value: _wakeUpTime,
@@ -590,7 +598,13 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               .map(
                 (t) => DropdownMenuItem<String>(
                   value: t,
-                  child: Text(t),
+                  child: Text(
+                    t == 'Раньше 4:00'
+                        ? l10n.entryFormWakeOptionBefore4
+                        : t == 'Позже 13:00'
+                            ? l10n.entryFormWakeOptionAfter13
+                            : t,
+                  ),
                 ),
               )
               .toList(),
@@ -606,6 +620,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
   }
 
   Widget _buildWaterDropdown() {
+    final l10n = AppLocalizations.of(context)!;
     final options = _waterOptions;
     if (!options.contains(_water)) {
       _water = '2';
@@ -614,7 +629,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Сколько пили жидкости?'),
+        Text(l10n.entryFormFieldWaterLabel),
         const SizedBox(height: 8),
         DropdownButton<String>(
           value: _water,
@@ -624,7 +639,9 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
                 (w) => DropdownMenuItem<String>(
                   value: w,
                   child: Text(
-                    w == 'Больше 4 л' ? w : '$w л',
+                    w == 'Больше 4 л'
+                        ? l10n.entryFormWaterOptionMoreThan4
+                        : l10n.entryFormWaterOptionLiters(w),
                   ),
                 ),
               )
@@ -644,12 +661,13 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     final result = await showDialog<List<String>>(
       context: context,
       builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
         final tempSelected = Set<String>.from(_selectedSkills);
 
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text('Выберите навыки'),
+              title: Text(l10n.entryFormSkillsDialogTitle),
               content: SizedBox(
                 width: double.maxFinite,
                 height: 400,
@@ -676,14 +694,14 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
                 TextButton(
                   onPressed: () =>
                       Navigator.of(context).pop(null),
-                  child: const Text('Отмена'),
+                  child: Text(l10n.entryFormDialogCancel),
                 ),
                 TextButton(
                   onPressed: () {
                     final list = tempSelected.toList()..sort();
                     Navigator.of(context).pop(list);
                   },
-                  child: const Text('Готово'),
+                  child: Text(l10n.entryFormDialogConfirm),
                 ),
               ],
             );

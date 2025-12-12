@@ -7,6 +7,7 @@ import '../analytics/amplitude_service.dart';
 import 'chain_analysis_screens.dart';
 import 'pros_cons_screens.dart';
 import 'fact_check_screens.dart';
+import '../l10n/app_localizations.dart';
 
 class WorksheetsRootScreen extends StatefulWidget {
   const WorksheetsRootScreen({super.key});
@@ -27,6 +28,7 @@ class _WorksheetsRootScreenState extends State<WorksheetsRootScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -38,9 +40,9 @@ class _WorksheetsRootScreenState extends State<WorksheetsRootScreen> {
                 horizontal: AppSpacing.screenTitleHorizontal,
                 vertical: AppSpacing.screenTitleVertical,
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Упражнения',
+                  l10n.worksheetsAppBarTitle,
                   style: AppTypography.screenTitle,
                   textAlign: TextAlign.center,
                 ),
@@ -60,14 +62,14 @@ class _WorksheetsRootScreenState extends State<WorksheetsRootScreen> {
                       bottom: AppSpacing.sectionTitleBottom,
                     ),
                     child: Text(
-                      'Рабочие листы по навыкам',
+                      l10n.worksheetsSectionTitle,
                       style: AppTypography.sectionTitle,
                     ),
                   ),
                   AppCardTile(
                     leadingIcon: Icons.commit,
-                    title: 'Анализ нежелательного поведения',
-                    subtitle: 'Исследование нежелательного поведения, которое хочется изменить',
+                    title: l10n.worksheetsChainAnalysisTitle,
+                    subtitle: l10n.worksheetsChainAnalysisSubtitle,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -78,8 +80,8 @@ class _WorksheetsRootScreenState extends State<WorksheetsRootScreen> {
                   ),
                   AppCardTile(
                     leadingIcon: Icons.balance,
-                    title: 'За и против',
-                    subtitle: 'Помогает сделать выбор между нежелательным поведением и осознанным действием',
+                    title: l10n.worksheetsProsConsTitle,
+                    subtitle: l10n.worksheetsProsConsSubtitle,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -90,8 +92,8 @@ class _WorksheetsRootScreenState extends State<WorksheetsRootScreen> {
                   ),
                   AppCardTile(
                     leadingIcon: Icons.fact_check,
-                    title: 'Проверка фактов',
-                    subtitle: 'Помогает оценить эмоции или мысли на соответствие фактам',
+                    title: l10n.worksheetsFactCheckTitle,
+                    subtitle: l10n.worksheetsFactCheckSubtitle,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
