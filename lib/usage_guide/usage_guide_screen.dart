@@ -118,40 +118,55 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
                 final imagePath =
                     'assets/images/usage_guide/slide_${index + 1}.png';
 
-                return Padding(
-                  padding: const EdgeInsets.all(AppSpacing.screenPadding),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      AspectRatio(
-                        aspectRatio: 1,
-                        child: ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.cardRadius),
-                          child: Image.asset(
-                            imagePath,
-                            fit: BoxFit.cover,
-                          ),
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(AppSpacing.screenPadding),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: FractionallySizedBox(
+                                widthFactor: 0.8, // на ~20% меньше ширины экрана
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                      AppSizes.cardRadius,
+                                    ),
+                                    child: Image.asset(
+                                      imagePath,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              page.title,
+                              textAlign: TextAlign.left,
+                              style: AppTypography.screenTitle.copyWith(
+                                fontSize: 20,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              page.body,
+                              textAlign: TextAlign.left,
+                              style: AppTypography.bodySecondary,
+                            ),
+                            const SizedBox(height: 24),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Text(
-                        page.title,
-                        textAlign: TextAlign.left,
-                        style: AppTypography.screenTitle,
-                      ),
-                      const SizedBox(height: 12),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Text(
-                            page.body,
-                            textAlign: TextAlign.left,
-                            style: AppTypography.bodySecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             ),
@@ -195,25 +210,37 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
 
   Widget _buildBottomButton(_GuidePageData page) {
     if (page.isLast) {
-      return SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _completeAndClose,
-          child: const Text('Заполнить карту дня'),
+      return Container(
+        decoration: const BoxDecoration(
+          color: AppColors.background,
+          boxShadow: AppShadows.subtle,
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _completeAndClose,
+            child: const Text('Заполнить карту дня'),
+          ),
         ),
       );
     }
 
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          _controller.nextPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        },
-        child: const Text('Далее'),
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        boxShadow: AppShadows.subtle,
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+            _controller.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          },
+          child: const Text('Далее'),
+        ),
       ),
     );
   }

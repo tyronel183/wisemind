@@ -287,7 +287,12 @@ class FactCheckDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Просмотр записи'),
+        centerTitle: true,
+        title: Text(
+          'Просмотр записи',
+          style: AppTypography.screenTitle,
+          textAlign: TextAlign.center,
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(
@@ -378,6 +383,7 @@ class FactCheckDetailScreen extends StatelessWidget {
           title,
           style: AppTypography.bodySecondary.copyWith(
             fontWeight: FontWeight.w600,
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(height: 4),
@@ -487,8 +493,11 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           isEditing ? 'Редактирование записи' : 'Новая запись',
+          style: AppTypography.screenTitle,
+          textAlign: TextAlign.center,
         ),
       ),
       body: ListView(
@@ -854,7 +863,12 @@ class FactCheckExampleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Пример заполненного листа'),
+        centerTitle: true,
+        title: Text(
+          'Пример заполненного листа',
+          style: AppTypography.screenTitle,
+          textAlign: TextAlign.center,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

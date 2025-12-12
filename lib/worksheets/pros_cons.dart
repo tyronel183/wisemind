@@ -33,6 +33,9 @@ class ProsConsEntry extends HiveObject {
   @HiveField(6)
   String consResistImpulse;
 
+  @HiveField(7)
+  String? decision;
+
   ProsConsEntry({
     required this.email,
     required this.date,
@@ -41,5 +44,6 @@ class ProsConsEntry extends HiveObject {
     required this.prosResistImpulse,
     required this.consActImpulsively,
     required this.consResistImpulse,
+    this.decision,
   });
 }

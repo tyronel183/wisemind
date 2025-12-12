@@ -310,6 +310,18 @@ class ProsConsDetailScreen extends StatelessWidget {
               _detailRow('Против: противостоять импульсу', entry.consResistImpulse),
             ],
           ),
+          if (entry.decision != null && entry.decision!.trim().isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.gapLarge),
+            FormSectionCard(
+              title: 'Какое решение приняли?',
+              children: [
+                Text(
+                  entry.decision!.trim(),
+                  style: AppTypography.body,
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: AppSpacing.gapLarge),
         ],
       ),
@@ -325,6 +337,7 @@ class ProsConsDetailScreen extends StatelessWidget {
           title,
           style: AppTypography.bodySecondary.copyWith(
             fontWeight: FontWeight.w600,
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(height: 4),
@@ -357,6 +370,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
   late TextEditingController _prosResistCtrl;
   late TextEditingController _consActImpulseCtrl;
   late TextEditingController _consResistCtrl;
+  late TextEditingController _decisionCtrl;
 
   @override
   void initState() {
@@ -365,16 +379,15 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
 
     _date = e?.date ?? DateTime.now();
 
-    _problemCtrl =
-        TextEditingController(text: e?.problematicBehavior ?? '');
+    _problemCtrl = TextEditingController(text: e?.problematicBehavior ?? '');
     _prosActImpulseCtrl =
         TextEditingController(text: e?.prosActImpulsively ?? '');
-    _prosResistCtrl =
-        TextEditingController(text: e?.prosResistImpulse ?? '');
+    _prosResistCtrl = TextEditingController(text: e?.prosResistImpulse ?? '');
     _consActImpulseCtrl =
         TextEditingController(text: e?.consActImpulsively ?? '');
     _consResistCtrl =
         TextEditingController(text: e?.consResistImpulse ?? '');
+    _decisionCtrl = TextEditingController(text: e?.decision ?? '');
   }
 
   @override
@@ -384,6 +397,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
     _prosResistCtrl.dispose();
     _consActImpulseCtrl.dispose();
     _consResistCtrl.dispose();
+    _decisionCtrl.dispose();
     super.dispose();
   }
 
@@ -531,6 +545,22 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
 
           const SizedBox(height: AppSpacing.gapLarge),
 
+          FormSectionCard(
+            title: 'Какое решение приняли?',
+            children: [
+              AppTextField(
+                controller: _decisionCtrl,
+                label: 'Какое решение приняли?',
+                hint:
+                    'Запишите принятое решение. Если не получилось принять решение — '
+                    'попробуйте пройтись по рабочему листу ещё раз.',
+                maxLines: 3,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.gapLarge),
+
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -573,12 +603,14 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
     );
   }
 
-
   Future<void> _save() async {
     final box = Hive.box<ProsConsEntry>(kProsConsBoxName);
 
     // временная заглушка для email
     const fakeEmail = 'user@example.com';
+
+    final decisionText = _decisionCtrl.text.trim();
+    final decisionValue = decisionText.isEmpty ? null : decisionText;
 
     if (widget.entry == null) {
       final entry = ProsConsEntry(
@@ -589,6 +621,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
         prosResistImpulse: _prosResistCtrl.text.trim(),
         consActImpulsively: _consActImpulseCtrl.text.trim(),
         consResistImpulse: _consResistCtrl.text.trim(),
+        decision: decisionValue,
       );
 
       await box.add(entry);
@@ -613,7 +646,8 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
         ..prosActImpulsively = _prosActImpulseCtrl.text.trim()
         ..prosResistImpulse = _prosResistCtrl.text.trim()
         ..consActImpulsively = _consActImpulseCtrl.text.trim()
-        ..consResistImpulse = _consResistCtrl.text.trim();
+        ..consResistImpulse = _consResistCtrl.text.trim()
+        ..decision = decisionValue;
 
       await e.save();
 
@@ -646,7 +680,14 @@ class ProsConsExampleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Пример заполнения')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Пример заполнения',
+          style: AppTypography.screenTitle,
+          textAlign: TextAlign.center,
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Html(

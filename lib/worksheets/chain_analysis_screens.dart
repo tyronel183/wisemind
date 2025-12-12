@@ -147,7 +147,7 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Анализ нежелательного поведения',
+          'Анализ поведения',
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -516,10 +516,11 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
-          isEdit
-              ? 'Редактировать анализ'
-              : 'Анализ нежелательного поведения',
+          isEdit ? 'Редактировать анализ' : 'Анализ поведения',
+          style: AppTypography.screenTitle,
+          textAlign: TextAlign.center,
         ),
       ),
       body: SafeArea(
@@ -581,7 +582,7 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Анализ нежелательного поведения',
+                    'Анализ поведения',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
@@ -733,37 +734,37 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
 class ChainAnalysisExampleScreen extends StatelessWidget {
   const ChainAnalysisExampleScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Пример заполненного листа'),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Html(
-  data: kChainAnalysisExampleHtml,
-  style: {
-    "body": Style(
-      margin: Margins.zero,
-      padding: HtmlPaddings.zero,
-    ),
-    "h2": Style(margin: Margins.only(bottom: 12)),
-    "h3": Style(margin: Margins.only(top: 16, bottom: 8)),
-    "p": Style(margin: Margins.only(bottom: 8)),
-    "ul": Style(margin: Margins.only(bottom: 8, left: 16)),
-    "hr": Style(
-      margin: Margins.only(top: 12, bottom: 12),
-      border: const Border(
-        bottom: BorderSide(
-          color: Colors.black26,
-          width: 1,
-        ),
-      ),
-    ),
-  },
-),
+          @override
+          Widget build(BuildContext context) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Пример заполненного листа'),
+              ),
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Html(
+          data: kChainAnalysisExampleHtml,
+          style: {
+            "body": Style(
+              margin: Margins.zero,
+              padding: HtmlPaddings.zero,
+            ),
+            "h2": Style(margin: Margins.only(bottom: 12)),
+            "h3": Style(margin: Margins.only(top: 16, bottom: 8)),
+            "p": Style(margin: Margins.only(bottom: 8)),
+            "ul": Style(margin: Margins.only(bottom: 8, left: 16)),
+            "hr": Style(
+              margin: Margins.only(top: 12, bottom: 12),
+                border: const Border(
+                  bottom: BorderSide(
+                    color: Colors.black26,
+                    width: 1,
+                  ),
+                ),
+              ),
+            },
+          ),
         ),
       ),
     );
@@ -778,7 +779,12 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Детали анализа'),
+        centerTitle: true,
+        title: const Text(
+          'Детали анализа',
+          style: AppTypography.screenTitle,
+          textAlign: TextAlign.center,
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(
@@ -798,7 +804,7 @@ class ChainAnalysisDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               const Text(
-                'Анализ нежелательного поведения',
+                'Анализ поведения',
                 style: AppTypography.cardTitle,
               ),
               const SizedBox(height: 16),
@@ -868,6 +874,7 @@ Widget _detailRow(String title, String? value) {
         title,
         style: AppTypography.bodySecondary.copyWith(
           fontWeight: FontWeight.w600,
+          color: AppColors.primary,
         ),
       ),
       const SizedBox(height: 4),

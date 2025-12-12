@@ -24,13 +24,14 @@ class ProsConsEntryAdapter extends TypeAdapter<ProsConsEntry> {
       prosResistImpulse: fields[4] as String,
       consActImpulsively: fields[5] as String,
       consResistImpulse: fields[6] as String,
+      decision: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProsConsEntry obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.email)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class ProsConsEntryAdapter extends TypeAdapter<ProsConsEntry> {
       ..writeByte(5)
       ..write(obj.consActImpulsively)
       ..writeByte(6)
-      ..write(obj.consResistImpulse);
+      ..write(obj.consResistImpulse)
+      ..writeByte(7)
+      ..write(obj.decision);
   }
 
   @override

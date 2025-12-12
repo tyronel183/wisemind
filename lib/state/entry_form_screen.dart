@@ -310,7 +310,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
             title: 'Сон',
             children: [
               _buildChoiceRow(
-                label: 'Как отдохнули? (0–5)',
+                label: 'Как отдохнули?',
                 value: _rest,
                 onChanged: (v) => setState(() => _rest = v),
               ),
@@ -320,7 +320,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               _buildWakeUpDropdown(),
               const SizedBox(height: 16),
               _buildChoiceRow(
-                label: 'Сколько было ночных пробуждений? (0–5)',
+                label: 'Сколько было ночных пробуждений?',
                 value: _nightWakeUps,
                 onChanged: (v) => setState(() => _nightWakeUps = v),
               ),
@@ -334,14 +334,14 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
             title: 'Дискомфорт',
             children: [
               _buildChoiceRow(
-                label: 'Физический дискомфорт (0–5)',
+                label: 'Физический дискомфорт',
                 value: _physicalDiscomfort,
                 onChanged: (v) =>
                     setState(() => _physicalDiscomfort = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Эмоциональный дискомфорт (0–5)',
+                label: 'Эмоциональный дискомфорт',
                 value: _emotionalDistress,
                 onChanged: (v) =>
                     setState(() => _emotionalDistress = v),
@@ -356,25 +356,25 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
             title: 'Эмоциональное состояние',
             children: [
               _buildChoiceRow(
-                label: 'Ощущение нереальности (0–5)',
+                label: 'Ощущение нереальности',
                 value: _dissociation,
                 onChanged: (v) => setState(() => _dissociation = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Руминации, навязчивые мысли (0–5)',
+                label: 'Руминации, навязчивые мысли',
                 value: _ruminations,
                 onChanged: (v) => setState(() => _ruminations = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Самообвинение (0–5)',
+                label: 'Самообвинение',
                 value: _selfBlame,
                 onChanged: (v) => setState(() => _selfBlame = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Суицидальные мысли (0–5)',
+                label: 'Суицидальные мысли',
                 value: _suicidalThoughts,
                 onChanged: (v) =>
                     setState(() => _suicidalThoughts = v),
@@ -393,7 +393,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               ),
               const SizedBox(height: 12),
               _buildChoiceRow(
-                label: 'Насколько сильный импульс? (0–5)',
+                label: 'Насколько сильный импульс?',
                 value: _urges,
                 onChanged: (v) => setState(() => _urges = v),
               ),
@@ -413,14 +413,14 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
             title: 'Забота о себе',
             children: [
               _buildChoiceRow(
-                label: 'Физическая активность (0–5)',
+                label: 'Физическая активность',
                 value: _physicalActivity,
                 onChanged: (v) =>
                     setState(() => _physicalActivity = v),
               ),
               const SizedBox(height: 8),
               _buildChoiceRow(
-                label: 'Сколько было удовольствия (0–5)',
+                label: 'Сколько было удовольствия?',
                 value: _pleasure,
                 onChanged: (v) => setState(() => _pleasure = v),
               ),
@@ -428,7 +428,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
               _buildWaterDropdown(),
               const SizedBox(height: 16),
               _buildChoiceRow(
-                label: 'Сколько раз ели? (0–5)',
+                label: 'Сколько раз ели?',
                 value: _food,
                 onChanged: (v) => setState(() => _food = v),
               ),
@@ -728,7 +728,7 @@ class _EmojiChoiceChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(999),
@@ -737,7 +737,7 @@ class _EmojiChoiceChip extends StatelessWidget {
           child: Text(
             emoji,
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 18,
               color: textColor,
             ),
           ),
