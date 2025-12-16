@@ -1,7 +1,56 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/widgets.dart';
+
 import 'meditation.dart';
 
 class MeditationRepository {
-  static final List<Meditation> _all = [
+  MeditationRepository._();
+
+  static final MeditationRepository _instance = MeditationRepository._();
+
+  static MeditationRepository get instance => _instance;
+
+  // Current in-memory list of meditations.
+  // By default it contains the built-in Russian fallback until JSON is loaded.
+  List<Meditation> _items = List.unmodifiable(_fallbackAll);
+
+  /// Loads meditations for the given [locale] from bundled JSON.
+  /// If loading fails, keeps previously loaded data or falls back to built-in list.
+  static Future<List<Meditation>> loadForLocale(Locale locale) {
+    return _instance._loadForLocale(locale);
+  }
+
+  /// Returns the currently loaded list of meditations.
+  /// Initially this is a built-in Russian fallback until [loadForLocale] is called.
+  static List<Meditation> getAll() {
+    return List.unmodifiable(_instance._items);
+  }
+
+  Future<List<Meditation>> _loadForLocale(Locale locale) async {
+    final languageCode = locale.languageCode.toLowerCase();
+    final assetPath = languageCode == 'en'
+        ? 'assets/data/meditations-en.json'
+        : 'assets/data/meditations-ru.json';
+
+    try {
+      final jsonString = await rootBundle.loadString(assetPath);
+      final List<dynamic> jsonList = jsonDecode(jsonString) as List<dynamic>;
+      final items = jsonList
+          .map((e) => Meditation.fromJson(e as Map<String, dynamic>))
+          .toList();
+      _items = List.unmodifiable(items);
+    } catch (e) {
+      // If something goes wrong, keep whatever is already in _items
+      // (either previous locale or the built-in fallback list).
+    }
+
+    return _items;
+  }
+
+  // Built-in Russian fallback list, used until JSON is loaded.
+  static final List<Meditation> _fallbackAll = [
     Meditation(
       id: 'breath_observation',
       title: 'Наблюдение дыхания',
@@ -311,7 +360,7 @@ class MeditationRepository {
     Meditation(
       id: 'soft_return_to_self',
       title: 'Мягкое возвращение к себе',
-      situation: 'Устал, выгорел, хочу тепла',
+      situation: 'Устал(а), выгорел(а), хочу тепла',
       description:
           'Тёплая медитация на возвращение внимания внутрь',
       category: 'Принятие себя',
@@ -343,6 +392,4 @@ class MeditationRepository {
       duration: '8 мин',
     ),
   ];
-
-  static List<Meditation> getAll() => List.unmodifiable(_all);
 }

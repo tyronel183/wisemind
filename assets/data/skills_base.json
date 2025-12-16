@@ -1,0 +1,290 @@
+[
+  {
+    "id": "mindfulness_wise_mind",
+    "module": "mindfulness",
+    "order": 1,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/kCQGQGNjxF6mk6YGQToo.jpg",
+    "hasWorksheet": false,
+    "emoji": "🧠",
+    "isPremium": false
+  },
+  {
+    "id": "mind_observe",
+    "module": "mindfulness",
+    "order": 120,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/iHBZNnPYCMyIh4snQZzf.jpg",
+    "hasWorksheet": false,
+    "emoji": "👁️",
+    "isPremium": false
+  },
+  {
+    "id": "mind_describe",
+    "module": "mindfulness",
+    "order": 130,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/9Nz8rzywb0yw4IFt1QoY.jpg",
+    "hasWorksheet": false,
+    "emoji": "✍️",
+    "isPremium": false
+  },
+  {
+    "id": "mind_participate",
+    "module": "mindfulness",
+    "order": 140,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/1J0GQf562rYdVwbRa8xw.jpg",
+    "hasWorksheet": false,
+    "emoji": "🎭",
+    "isPremium": false
+  },
+  {
+    "id": "mind_nonjudgment",
+    "module": "mindfulness",
+    "order": 310,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/cfkYxmCRDli7rYNovC5W.jpg",
+    "hasWorksheet": false,
+    "emoji": "⚖️",
+    "isPremium": false
+  },
+  {
+    "id": "mind_single_tasking",
+    "module": "mindfulness",
+    "order": 320,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/ATnAKnG4yzLN5qxjfR2N.jpg",
+    "hasWorksheet": false,
+    "emoji": "🎯",
+    "isPremium": false
+  },
+  {
+    "id": "mind_effectiveness",
+    "module": "mindfulness",
+    "order": 330,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/Has932jgJ9RpUFxTrbAs.jpg",
+    "hasWorksheet": false,
+    "emoji": "⚙️",
+    "isPremium": false
+  },
+  {
+    "id": "mind_eating",
+    "module": "mindfulness",
+    "order": 400,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/vblSgsqYATVm4sSVluQz.jpg",
+    "hasWorksheet": false,
+    "emoji": "🍽️",
+    "isPremium": false
+  },
+  {
+    "id": "urge_surfing",
+    "module": "mindfulness",
+    "order": 410,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/a4kGeryMlI9qNVGW7SNj.jpg",
+    "hasWorksheet": false,
+    "emoji": "🌊",
+    "isPremium": false
+  },
+  {
+    "id": "pros_and_cons",
+    "module": "distress_tolerance",
+    "order": 600,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/aRwVFYLSnfwYNqLIgtE8.jpg",
+    "hasWorksheet": false,
+    "emoji": "⚖️",
+    "isPremium": false
+  },
+  {
+    "id": "stop",
+    "module": "distress_tolerance",
+    "order": 500,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/RpszR7lMCTPitNAM0smT.jpg",
+    "hasWorksheet": false,
+    "emoji": "🛑",
+    "isPremium": false
+  },
+  {
+    "id": "tip",
+    "module": "distress_tolerance",
+    "order": 600,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/ATyjwWIr2XZ5eSiAjNDw.jpg",
+    "hasWorksheet": false,
+    "emoji": "💧",
+    "isPremium": false
+  },
+  {
+    "id": "five_senses",
+    "module": "distress_tolerance",
+    "order": 800,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/4PASRt4TXiF6kBv4BKDr.jpg",
+    "hasWorksheet": false,
+    "emoji": "👃",
+    "isPremium": false
+  },
+  {
+    "id": "improve",
+    "module": "distress_tolerance",
+    "order": 900,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/4l5kMn0heZ59MJ75AwVR.jpg",
+    "hasWorksheet": false,
+    "emoji": "🌈",
+    "isPremium": false
+  },
+  {
+    "id": "radical_acceptance",
+    "module": "distress_tolerance",
+    "order": 1000,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/waWSPwroSMNX4A5KSkQN.jpg",
+    "hasWorksheet": false,
+    "emoji": "🕊️",
+    "isPremium": false
+  },
+  {
+    "id": "half_smile_open_hands",
+    "module": "distress_tolerance",
+    "order": 1100,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/KiYvT9paSC3eKe9tAR82.jpg",
+    "hasWorksheet": false,
+    "emoji": "🤲",
+    "isPremium": false
+  },
+  {
+    "id": "willingness",
+    "module": "distress_tolerance",
+    "order": 1200,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/Wat6duvKCALsv29pG6JE.jpg",
+    "hasWorksheet": false,
+    "emoji": "😎",
+    "isPremium": false
+  },
+  {
+    "id": "mindfulness_of_thoughts",
+    "module": "distress_tolerance",
+    "order": 1300,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/xxM2pe8YOCPHuuXe5PC6.jpg",
+    "hasWorksheet": false,
+    "emoji": "💭",
+    "isPremium": false
+  },
+  {
+    "id": "emotion_identification",
+    "module": "emotion_regulation",
+    "order": 1100,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/T0rBMX6ZFDQTkUXneTuI.jpg",
+    "hasWorksheet": false,
+    "emoji": "🎨",
+    "isPremium": false
+  },
+  {
+    "id": "fact_checking",
+    "module": "emotion_regulation",
+    "order": 1200,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/boLisBifEuAdJSG88jYs.jpg",
+    "hasWorksheet": false,
+    "emoji": "🔍",
+    "isPremium": false
+  },
+  {
+    "id": "opposite_action",
+    "module": "emotion_regulation",
+    "order": 1300,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/QMAYPznipnrgLrdImjex.jpg",
+    "hasWorksheet": false,
+    "emoji": "🔄",
+    "isPremium": false
+  },
+  {
+    "id": "problem_solving",
+    "module": "emotion_regulation",
+    "order": 1400,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/L5qu6xsqtLwzOKkuxwCI.jpg",
+    "hasWorksheet": false,
+    "emoji": "🧩",
+    "isPremium": false
+  },
+  {
+    "id": "accumulate_positive_emotions_a",
+    "module": "emotion_regulation",
+    "order": 1500,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/l33kEQBxumeaBIluqdAb.jpg",
+    "hasWorksheet": false,
+    "emoji": "🌷",
+    "isPremium": false
+  },
+  {
+    "id": "build_mastery_b",
+    "module": "emotion_regulation",
+    "order": 1510,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/5PxK5un6rHg1g4rEf0mS.jpg",
+    "hasWorksheet": false,
+    "emoji": "💪",
+    "isPremium": false
+  },
+  {
+    "id": "cope_ahead_c",
+    "module": "emotion_regulation",
+    "order": 1530,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/8I36gaFRySBpv8NJOTpT.jpg",
+    "hasWorksheet": false,
+    "emoji": "🧠",
+    "isPremium": false
+  },
+  {
+    "id": "please_skill",
+    "module": "emotion_regulation",
+    "order": 1540,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/QDZ7NY07jGXA4lP4tVgY.jpg",
+    "hasWorksheet": false,
+    "emoji": "🧯",
+    "isPremium": false
+  },
+  {
+    "id": "alternative_rebellion",
+    "module": "emotion_regulation",
+    "order": 1550,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/MHNPR78NM0LIpW1jZMu6.jpg",
+    "hasWorksheet": false,
+    "emoji": "📛",
+    "isPremium": false
+  },
+  {
+    "id": "dear",
+    "module": "interpersonal_effectiveness",
+    "order": 1100,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/EhtASxMrgMLjCxdM9ooC.jpg",
+    "hasWorksheet": false,
+    "emoji": "💬",
+    "isPremium": false
+  },
+  {
+    "id": "man",
+    "module": "interpersonal_effectiveness",
+    "order": 1110,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/2mcn5Q2g7HNODILMNk9M.jpg",
+    "hasWorksheet": false,
+    "emoji": "💪",
+    "isPremium": false
+  },
+  {
+    "id": "give",
+    "module": "interpersonal_effectiveness",
+    "order": 1130,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/p5eLRm0TkP5VNahLlsfY.jpg",
+    "hasWorksheet": false,
+    "emoji": "🤝",
+    "isPremium": false
+  },
+  {
+    "id": "fast",
+    "module": "interpersonal_effectiveness",
+    "order": 1140,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/rSxG8X91y8PRGZXAM1k1.jpg",
+    "hasWorksheet": false,
+    "emoji": "🛡️",
+    "isPremium": false
+  },
+  {
+    "id": "validation",
+    "module": "interpersonal_effectiveness",
+    "order": 1150,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/BOn4pAuhuD2jUXXmCuZE.jpg",
+    "hasWorksheet": false,
+    "emoji": "💞",
+    "isPremium": false
+  }
+]

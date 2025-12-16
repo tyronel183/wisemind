@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:wisemind/billing/billing_service.dart';
+import '../l10n/app_localizations.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
@@ -9,6 +10,21 @@ import '../theme/app_components.dart';
 import '../analytics/amplitude_service.dart';
 import 'dbt_skill.dart';
 import 'dbt_skills_loader.dart';
+
+// Helper: Localize module title
+String localizedModuleTitle(BuildContext context, DbtModule module) {
+  final l = AppLocalizations.of(context)!;
+  switch (module) {
+    case DbtModule.mindfulness:
+      return l.dbtModule_mindfulness;
+    case DbtModule.distressTolerance:
+      return l.dbtModule_distressTolerance;
+    case DbtModule.emotionRegulation:
+      return l.dbtModule_emotionRegulation;
+    case DbtModule.interpersonalEffectiveness:
+      return l.dbtModule_interpersonalEffectiveness;
+  }
+}
 
 /// Корневой экран вкладки "Навыки DBT":
 /// показывает интро DBT и 4 модуля
@@ -29,6 +45,7 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final modules = DbtModule.values;
 
     return Scaffold(
@@ -41,9 +58,9 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
                 horizontal: AppSpacing.screenTitleHorizontal,
                 vertical: AppSpacing.screenTitleVertical,
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Навыки DBT',
+                  l.skillsRoot_title,
                   style: AppTypography.screenTitle,
                   textAlign: TextAlign.center,
                 ),
@@ -56,9 +73,8 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
                   // Интро-карточка DBT
                   AppCardTile(
                     leading: const Icon(Icons.psychology_alt, size: 32),
-                    title: 'Диалектическая поведенческая терапия',
-                    subtitle:
-                        'Что такое DBT, из чего она состоит и как с ней работать в этом приложении.',
+                    title: l.skillsRoot_dbtIntro_title,
+                    subtitle: l.skillsRoot_dbtIntro_subtitle,
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.of(context).push(
@@ -81,8 +97,8 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
                     children: [
                       for (final module in modules)
                         SkillCategoryCard(
-                          title: module.title,
-                          assetPath: _assetPathForModule(module),
+                          title: localizedModuleTitle(context, module),
+                          assetPath: _assetPathForModule(context, module),
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -103,21 +119,22 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
     );
   }
 
-  String? _assetPathForModule(DbtModule module) {
-    final title = module.title;
+  String? _assetPathForModule(BuildContext context, DbtModule module) {
+    final l = AppLocalizations.of(context)!;
+    final localeName = l.localeName; // e.g. 'en', 'en_US', 'ru', 'ru_RU'
+    final isRu = localeName.toLowerCase().startsWith('ru');
+    final prefix = isRu ? 'assets/images/skills/ru' : 'assets/images/skills/en';
 
-    if (title == 'Осознанность') {
-      return 'assets/images/skills/mindfulness.png';
-    } else if (title == 'Устойчивость к стрессу') {
-      return 'assets/images/skills/distress_tolerance.png';
-    } else if (title == 'Регуляция эмоций') {
-      return 'assets/images/skills/emotion_regulation.png';
-    } else if (title == 'Межличностная эффективность') {
-      return 'assets/images/skills/interpersonal_effectiveness.png';
+    switch (module) {
+      case DbtModule.mindfulness:
+        return '$prefix/mindfulness.png';
+      case DbtModule.distressTolerance:
+        return '$prefix/distress_tolerance.png';
+      case DbtModule.emotionRegulation:
+        return '$prefix/emotion_regulation.png';
+      case DbtModule.interpersonalEffectiveness:
+        return '$prefix/interpersonal_effectiveness.png';
     }
-
-    // Для модулей без своей картинки вернём null — SkillCategoryCard покажет заглушку.
-    return null;
   }
 }
 
@@ -127,11 +144,12 @@ class DbtIntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          'Что такое DBT',
+        title: Text(
+          l.dbtIntro_appBar_title,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -140,24 +158,23 @@ class DbtIntroScreen extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.screenPadding),
         child: ListView(
           children: [
-            const Text(
-              'Диалектическая поведенческая терапия',
+            Text(
+              l.dbtIntro_header,
               style: AppTypography.screenTitle,
             ),
             const SizedBox(height: 12),
             Text(
-              'Здесь позже появится полный текст о том, что такое DBT, из каких модулей она состоит и как использовать это приложение как сопровождение к терапии.',
+              l.dbtIntro_body,
               style: AppTypography.body,
             ),
             const SizedBox(height: 24),
-            const Text(
-              'С чего начать',
+            Text(
+              l.dbtIntro_section_start,
               style: AppTypography.sectionTitle,
             ),
             const SizedBox(height: 8),
             Text(
-              'Обычно знакомство с DBT начинается с блока осознанности: навыков «что» и «как» быть в моменте. '
-              'Нажми на кнопку ниже, чтобы перейти к модулю Осознанность и начать разбирать навыки по шагам.',
+              l.dbtIntro_howToStart,
               style: AppTypography.body,
             ),
             const SizedBox(height: 32),
@@ -173,7 +190,7 @@ class DbtIntroScreen extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.self_improvement),
-                label: const Text('Начнём с осознанности'),
+                label: Text(l.dbtIntro_startMindfulness_button),
               ),
             ),
           ],
@@ -206,13 +223,14 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final module = widget.module;
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          module.title,
+          localizedModuleTitle(context, module),
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -228,7 +246,7 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Ошибка при загрузке навыков:\n${snapshot.error}',
+                '${l.skillsList_error_prefix}\n${snapshot.error}',
                 textAlign: TextAlign.center,
               ),
             );
@@ -237,14 +255,14 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
           final allSkills = snapshot.data ?? [];
 
           final skills = allSkills
-              .where((s) => s.module == module)
+              .where((s) => s.meta.module == module)
               .toList()
-            ..sort((a, b) => a.order.compareTo(b.order));
+            ..sort((a, b) => a.meta.order.compareTo(b.meta.order));
 
           if (skills.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'Навыков в этом разделе пока нет.',
+                l.skillsList_empty,
                 textAlign: TextAlign.center,
               ),
             );
@@ -253,7 +271,7 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
           // Группируем по section
           final Map<String, List<DbtSkill>> bySection = {};
           for (final skill in skills) {
-            final key = skill.section ?? '';
+            final key = skill.meta.section ?? '';
             bySection.putIfAbsent(key, () => []).add(skill);
           }
 
@@ -281,13 +299,13 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
                 for (final skill in entry.value)
                   AppCardTile(
                     leading: Text(
-                      skill.emoji ?? '🧠',
+                      skill.meta.emoji ?? '🧠',
                       style: const TextStyle(
                         fontSize: 28,
                       ),
                     ),
-                    title: skill.name,
-                    subtitle: skill.shortDescription,
+                    title: skill.texts.name,
+                    subtitle: skill.texts.shortDescription,
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
                       // Модуль "Осознанность" всегда доступен бесплатно.
@@ -338,29 +356,32 @@ class _SkillOverviewScreenState extends State<SkillOverviewScreen> {
   @override
   void initState() {
     super.initState();
-    final categoryTitle = widget.skill.module.title;
+    final categoryTitle = widget.skill.meta.module.title;
 
     AmplitudeService.instance.logEvent(
       'skill_overview',
       properties: {
         'category': categoryTitle,
-        'skill': widget.skill.name,
+        'skill': widget.skill.texts.name,
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final skill = widget.skill;
-    final meta = skill.section == null || skill.section!.isEmpty
-        ? skill.module.title
-        : '${skill.module.title} · ${skill.section}';
+    final categoryTitle = localizedModuleTitle(context, skill.meta.module);
+    final section = skill.meta.section;
+    final meta = section == null || section.isEmpty
+        ? categoryTitle
+        : '$categoryTitle${l.skillOverview_meta_separator}$section';
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          skill.name,
+          skill.texts.name,
           style: AppTypography.screenTitle,
           textAlign: TextAlign.center,
         ),
@@ -371,13 +392,13 @@ class _SkillOverviewScreenState extends State<SkillOverviewScreen> {
           children: [
             // Заголовок
             Text(
-              skill.name,
+              skill.texts.name,
               style: AppTypography.screenTitle,
             ),
             const SizedBox(height: 8),
             // Краткое описание как подзаголовок
             Text(
-              skill.shortDescription,
+              skill.texts.shortDescription,
               style: AppTypography.cardTitle,
             ),
             const SizedBox(height: 8),
@@ -392,14 +413,13 @@ class _SkillOverviewScreenState extends State<SkillOverviewScreen> {
             const SizedBox(height: 24),
 
             // Блок "Что это такое"
-            const Text(
-              'Что это такое',
+            Text(
+              l.skillOverview_section_what,
               style: AppTypography.sectionTitle,
             ),
             const SizedBox(height: 8),
             Text(
-              skill.textWhat ??
-                  'Здесь будет описание того, что это за навык — мы добавим его из материалов позже.',
+              skill.textWhat ?? l.skillOverview_section_what_placeholder,
               style: const TextStyle(fontSize: 15),
             ),
             const SizedBox(height: 16),
@@ -410,42 +430,41 @@ class _SkillOverviewScreenState extends State<SkillOverviewScreen> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => FullSkillInfoScreen(
-                      skillTitle: skill.name,
-                      categoryTitle: skill.module.title,
-                      fullInfo: skill.fullInfo ??
-                          'Здесь будет полное текстовое описание навыка «${skill.name}» '
-                              'из твоих материалов. Пока это заглушка.',
+                      skillTitle: skill.texts.name,
+                      categoryTitle: skill.meta.module.title,
+                      fullInfo: skill.texts.fullInfo ??
+                          l.skillOverview_fullInfo_placeholder(skill.texts.name),
                     ),
                   ),
                 );
               },
               icon: const Icon(Icons.menu_book),
-              label: const Text('Полная информация о навыке'),
+              label: Text(l.skillOverview_fullInfo_button),
             ),
             const SizedBox(height: 24),
 
             // Блок "Зачем это нужно"
-            const Text(
-              'Зачем это нужно',
+            Text(
+              l.skillOverview_section_why,
               style: AppTypography.sectionTitle,
             ),
             const SizedBox(height: 8),
             Text(
-              skill.textWhy ??
-                  'Позже здесь появится текст о том, в каких ситуациях навык особенно полезен и как он помогает.',
+              skill.texts.textWhy ??
+                  l.skillOverview_section_why_placeholder,
               style: const TextStyle(fontSize: 15),
             ),
             const SizedBox(height: 24),
 
             // Блок "Как практиковать'
-            const Text(
-              'Как практиковать',
+            Text(
+              l.skillOverview_section_practice,
               style: AppTypography.sectionTitle,
             ),
             const SizedBox(height: 8),
             Text(
-              skill.textPractice ??
-                  'Здесь будут шаги практики: что делать сначала, что потом, как применять навык в жизни.',
+              skill.texts.textPractice ??
+                  l.skillOverview_section_practice_placeholder,
               style: const TextStyle(fontSize: 15),
             ),
             const SizedBox(height: 16),
@@ -456,18 +475,17 @@ class _SkillOverviewScreenState extends State<SkillOverviewScreen> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => FullSkillPracticeScreen(
-                      skillTitle: skill.name,
-                      categoryTitle: skill.module.title,
-                      practiceTitle: 'Практика: ${skill.name}',
-                      fullPractice: skill.fullPractice ??
-                          'Здесь появится подробная практика по навыку «${skill.name}» '
-                              'и рабочие листы. Пока это заглушка.',
+                      skillTitle: skill.texts.name,
+                      categoryTitle: skill.meta.module.title,
+                      practiceTitle: l.skillPractice_titlePattern(skill.texts.name),
+                      fullPractice: skill.texts.fullPractice ??
+                          l.skillOverview_fullPractice_placeholder(skill.texts.name),
                     ),
                   ),
                 );
               },
               icon: const Icon(Icons.checklist),
-              label: const Text('Подробнее о практике'),
+              label: Text(l.skillOverview_morePractice_button),
             ),
           ],
         ),
@@ -508,6 +526,7 @@ class _FullSkillInfoScreenState extends State<FullSkillInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -529,7 +548,7 @@ class _FullSkillInfoScreenState extends State<FullSkillInfoScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Полная информация о навыке',
+                    l.skillFullInfo_title,
                     style: AppTypography.screenTitle,
                   ),
                   const SizedBox(height: 12),
@@ -618,6 +637,7 @@ class _FullSkillPracticeScreenState extends State<FullSkillPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Scaffold(

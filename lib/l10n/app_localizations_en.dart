@@ -1084,4 +1084,123 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stateEntryDetailNoData => 'No entries';
+
+  @override
+  String get aboutAppBarTitle => 'About the app';
+
+  @override
+  String get aboutPrivacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get aboutPersonalDataPolicyTitle => 'Personal Data Policy';
+
+  @override
+  String get aboutPrivacyPolicyUrl =>
+      'https://tyronel183.github.io/wisemind-legal/privacy-policy-en.html';
+
+  @override
+  String get aboutPersonalDataPolicyUrl =>
+      'https://tyronel183.github.io/wisemind-legal/personal-data-policy-en.html';
+
+  @override
+  String aboutAppVersionLabel(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get skillsRoot_title => 'DBT skills';
+
+  @override
+  String get skillsRoot_dbtIntro_title => 'Dialectical Behavior Therapy';
+
+  @override
+  String get skillsRoot_dbtIntro_subtitle =>
+      'What DBT is, what it consists of, and how to work with it in this app.';
+
+  @override
+  String get dbtModule_mindfulness => 'Mindfulness';
+
+  @override
+  String get dbtModule_distressTolerance => 'Distress tolerance';
+
+  @override
+  String get dbtModule_emotionRegulation => 'Emotion regulation';
+
+  @override
+  String get dbtModule_interpersonalEffectiveness =>
+      'Interpersonal effectiveness';
+
+  @override
+  String get dbtIntro_appBar_title => 'What is DBT';
+
+  @override
+  String get dbtIntro_header => 'Dialectical Behavior Therapy';
+
+  @override
+  String get dbtIntro_body =>
+      'Later here you will see a full text about what DBT is, which modules it includes, and how to use this app as a companion to therapy.';
+
+  @override
+  String get dbtIntro_section_start => 'Where to start';
+
+  @override
+  String get dbtIntro_howToStart =>
+      'Usually DBT starts with Mindfulness: the “what” and “how” skills of being in the moment. Tap the button below to go to the Mindfulness module and start exploring the skills step by step.';
+
+  @override
+  String get dbtIntro_startMindfulness_button => 'Start with mindfulness';
+
+  @override
+  String get skillsList_error_prefix => 'Error loading skills:';
+
+  @override
+  String get skillsList_empty => 'There are no skills in this section yet.';
+
+  @override
+  String get skillOverview_section_what => 'What it is';
+
+  @override
+  String get skillOverview_section_what_placeholder =>
+      'A description of what this skill is will appear here — we’ll add it from your materials later.';
+
+  @override
+  String get skillOverview_fullInfo_button => 'Full info about the skill';
+
+  @override
+  String skillOverview_fullInfo_placeholder(String skillName) {
+    return 'A full text description of the skill “$skillName” will appear here. For now, this is a placeholder.';
+  }
+
+  @override
+  String get skillOverview_section_why => 'Why it matters';
+
+  @override
+  String get skillOverview_section_why_placeholder =>
+      'Later you’ll see here when this skill is especially useful and how it helps.';
+
+  @override
+  String get skillOverview_section_practice => 'How to practice';
+
+  @override
+  String get skillOverview_section_practice_placeholder =>
+      'This section will describe practice steps: what to do first, what next, and how to apply the skill in real life.';
+
+  @override
+  String get skillOverview_morePractice_button => 'More about practice';
+
+  @override
+  String skillOverview_fullPractice_placeholder(String skillName) {
+    return 'A detailed practice description for the skill “$skillName” and worksheets will appear here. For now, this is a placeholder.';
+  }
+
+  @override
+  String get skillOverview_meta_separator => ' · ';
+
+  @override
+  String get skillFullInfo_title => 'Full information about the skill';
+
+  @override
+  String skillPractice_titlePattern(String skillName) {
+    return 'Practice: $skillName';
+  }
 }

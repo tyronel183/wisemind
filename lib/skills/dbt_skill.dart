@@ -85,13 +85,10 @@ extension DbtModuleX on DbtModule {
   }
 }
 
-/// Модель навыка DBT
-class DbtSkill {
+/// Метаданные навыка DBT (общие для всех языков)
+class DbtSkillMeta {
   /// ID навыка (внутренний ключ)
   final String id;
-
-  /// Название навыка
-  final String name;
 
   /// Модуль DBT
   final DbtModule module;
@@ -102,10 +99,7 @@ class DbtSkill {
   /// Порядок внутри модуля/секции
   final int order;
 
-  /// Краткое описание
-  final String shortDescription;
-
-  /// Картинка (на будущее)
+  /// Картинка
   final String? imageAsset;
 
   /// Эмодзи для отображения навыка
@@ -113,6 +107,63 @@ class DbtSkill {
 
   /// Есть ли у навыка рабочий лист
   final bool hasWorksheet;
+
+  /// Является ли навык премиальным (попадает за paywall)
+  final bool isPremium;
+
+  const DbtSkillMeta({
+    required this.id,
+    required this.module,
+    required this.order,
+    this.section,
+    this.imageAsset,
+    this.emoji,
+    this.hasWorksheet = false,
+    this.isPremium = false,
+  });
+
+  /// JSON → объект (для файла skills_base.json)
+  factory DbtSkillMeta.fromJson(Map<String, dynamic> json) {
+    return DbtSkillMeta(
+      id: json['id']?.toString() ?? '',
+      module: DbtModuleX.fromString(json['module'] ?? ''),
+      section: json['section'],
+      order: int.tryParse(json['order']?.toString() ?? '') ?? 0,
+      imageAsset: json['imageAsset'],
+      emoji: json['emoji'] as String?,
+      hasWorksheet:
+          json['hasWorksheet'] == true || json['hasWorksheet'] == 'true',
+      isPremium: json['isPremium'] == true || json['isPremium'] == 'true',
+    );
+  }
+
+  /// объект → JSON (для возможной сериализации обратно)
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      // для хранения в JSON удобнее использовать слаг/ключ,
+      // но сейчас используем строковое имя модуля как раньше
+      'module': module.toString(),
+      'section': section,
+      'order': order,
+      'imageAsset': imageAsset,
+      'emoji': emoji,
+      'hasWorksheet': hasWorksheet,
+      'isPremium': isPremium,
+    };
+  }
+}
+
+/// Текстовая часть навыка DBT (зависит от языка)
+class DbtSkillTexts {
+  /// ID навыка (должен совпадать с meta.id)
+  final String id;
+
+  /// Название навыка
+  final String name;
+
+  /// Краткое описание
+  final String shortDescription;
 
   /// Что это за навык (короткий блок)
   final String? textWhat;
@@ -129,16 +180,10 @@ class DbtSkill {
   /// Подробная практика (HTML)
   final String? fullPractice;
 
-  const DbtSkill({
+  const DbtSkillTexts({
     required this.id,
     required this.name,
-    required this.module,
     required this.shortDescription,
-    required this.order,
-    this.section,
-    this.imageAsset,
-    this.emoji,
-    this.hasWorksheet = false,
     this.textWhat,
     this.textWhy,
     this.textPractice,
@@ -146,19 +191,12 @@ class DbtSkill {
     this.fullPractice,
   });
 
-  /// ---------- JSON → объект ----------
-  factory DbtSkill.fromJson(Map<String, dynamic> json) {
-    return DbtSkill(
+  /// JSON → объект (для файлов skills_ru.json / skills_en.json)
+  factory DbtSkillTexts.fromJson(Map<String, dynamic> json) {
+    return DbtSkillTexts(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
-      module: DbtModuleX.fromString(json['module'] ?? ''),
-      section: json['section'],
-      order: int.tryParse(json['order']?.toString() ?? '') ?? 0,
       shortDescription: json['shortDescription'] ?? '',
-      imageAsset: json['imageAsset'],
-      emoji: json['emoji'] as String?,
-      hasWorksheet:
-          json['hasWorksheet'] == true || json['hasWorksheet'] == 'true',
       textWhat: json['textWhat'],
       textWhy: json['textWhy'],
       textPractice: json['textPractice'],
@@ -167,19 +205,12 @@ class DbtSkill {
     );
   }
 
-  /// ---------- объект → JSON ----------
+  /// объект → JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      // здесь можно сохранить либо title, либо свой slug — пока оставим title
-      'module': module.title,
-      'section': section,
-      'order': order,
       'shortDescription': shortDescription,
-      'imageAsset': imageAsset,
-      'emoji': emoji,
-      'hasWorksheet': hasWorksheet,
       'textWhat': textWhat,
       'textWhy': textWhy,
       'textPractice': textPractice,
@@ -187,4 +218,50 @@ class DbtSkill {
       'fullPractice': fullPractice,
     };
   }
+}
+
+/// Собранный навык DBT = метаданные + тексты для конкретного языка
+class DbtSkill {
+  final DbtSkillMeta meta;
+  final DbtSkillTexts texts;
+
+  const DbtSkill({
+    required this.meta,
+    required this.texts,
+  });
+
+  /// Удобный конструктор из двух JSON-объектов
+  factory DbtSkill.fromMetaAndTexts(
+    Map<String, dynamic> metaJson,
+    Map<String, dynamic> textsJson,
+  ) {
+    final meta = DbtSkillMeta.fromJson(metaJson);
+    final texts = DbtSkillTexts.fromJson(textsJson);
+
+    if (meta.id != texts.id) {
+      throw Exception(
+        'DbtSkill id mismatch: meta.id=${meta.id}, texts.id=${texts.id}',
+      );
+    }
+
+    return DbtSkill(meta: meta, texts: texts);
+  }
+
+  /// ---------- Геттеры для обратной совместимости ----------
+  String get id => meta.id;
+  DbtModule get module => meta.module;
+  String? get section => meta.section;
+  int get order => meta.order;
+  String? get imageAsset => meta.imageAsset;
+  String? get emoji => meta.emoji;
+  bool get hasWorksheet => meta.hasWorksheet;
+  bool get isPremium => meta.isPremium;
+
+  String get name => texts.name;
+  String get shortDescription => texts.shortDescription;
+  String? get textWhat => texts.textWhat;
+  String? get textWhy => texts.textWhy;
+  String? get textPractice => texts.textPractice;
+  String? get fullInfo => texts.fullInfo;
+  String? get fullPractice => texts.fullPractice;
 }

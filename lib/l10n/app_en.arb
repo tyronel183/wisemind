@@ -597,5 +597,180 @@
     }
   },
 
-  "stateEntryDetailNoData": "No entries"
+  "stateEntryDetailNoData": "No entries",
+
+  "aboutAppBarTitle": "About the app",
+
+  "aboutPrivacyPolicyTitle": "Privacy Policy",
+  "aboutPersonalDataPolicyTitle": "Personal Data Policy",
+
+  "aboutPrivacyPolicyUrl": "https://tyronel183.github.io/wisemind-legal/privacy-policy-en.html",
+  "aboutPersonalDataPolicyUrl": "https://tyronel183.github.io/wisemind-legal/personal-data-policy-en.html",
+
+  "aboutAppVersionLabel": "Version {version}",
+  "@aboutAppVersionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+
+  "skillsRoot_title": "DBT skills",
+  "@skillsRoot_title": {
+    "description": "Title of the root skills screen"
+  },
+
+  "skillsRoot_dbtIntro_title": "Dialectical Behavior Therapy",
+  "@skillsRoot_dbtIntro_title": {
+    "description": "Title of the DBT intro card"
+  },
+
+  "skillsRoot_dbtIntro_subtitle": "What DBT is, what it consists of, and how to work with it in this app.",
+  "@skillsRoot_dbtIntro_subtitle": {
+    "description": "Subtitle of the DBT intro card"
+  },
+
+  "dbtModule_mindfulness": "Mindfulness",
+  "@dbtModule_mindfulness": {
+    "description": "Module name Mindfulness"
+  },
+
+  "dbtModule_distressTolerance": "Distress tolerance",
+  "@dbtModule_distressTolerance": {
+    "description": "Module name Distress tolerance"
+  },
+
+  "dbtModule_emotionRegulation": "Emotion regulation",
+  "@dbtModule_emotionRegulation": {
+    "description": "Module name Emotion regulation"
+  },
+
+  "dbtModule_interpersonalEffectiveness": "Interpersonal effectiveness",
+  "@dbtModule_interpersonalEffectiveness": {
+    "description": "Module name Interpersonal effectiveness"
+  },
+
+  "dbtIntro_appBar_title": "What is DBT",
+  "@dbtIntro_appBar_title": {
+    "description": "App bar title of the DBT intro screen"
+  },
+
+  "dbtIntro_header": "Dialectical Behavior Therapy",
+  "@dbtIntro_header": {
+    "description": "Header text on the DBT intro screen"
+  },
+
+  "dbtIntro_body": "Later here you will see a full text about what DBT is, which modules it includes, and how to use this app as a companion to therapy.",
+  "@dbtIntro_body": {
+    "description": "Placeholder text about DBT"
+  },
+
+  "dbtIntro_section_start": "Where to start",
+  "@dbtIntro_section_start": {
+    "description": "Subheading for the 'Where to start' section on the intro screen"
+  },
+
+  "dbtIntro_howToStart": "Usually DBT starts with Mindfulness: the “what” and “how” skills of being in the moment. Tap the button below to go to the Mindfulness module and start exploring the skills step by step.",
+  "@dbtIntro_howToStart": {
+    "description": "Instructions on where to start with DBT"
+  },
+
+  "dbtIntro_startMindfulness_button": "Start with mindfulness",
+  "@dbtIntro_startMindfulness_button": {
+    "description": "Button text to navigate to the Mindfulness module"
+  },
+
+  "skillsList_error_prefix": "Error loading skills:",
+  "@skillsList_error_prefix": {
+    "description": "Error text prefix before the exception message when loading skills fails"
+  },
+
+  "skillsList_empty": "There are no skills in this section yet.",
+  "@skillsList_empty": {
+    "description": "Placeholder text when a module has no skills"
+  },
+
+  "skillOverview_section_what": "What it is",
+  "@skillOverview_section_what": {
+    "description": "Section title for basic description of the skill"
+  },
+
+  "skillOverview_section_what_placeholder": "A description of what this skill is will appear here — we’ll add it from your materials later.",
+  "@skillOverview_section_what_placeholder": {
+    "description": "Placeholder when there is no textWhat"
+  },
+
+  "skillOverview_fullInfo_button": "Full info about the skill",
+  "@skillOverview_fullInfo_button": {
+    "description": "Label of the button that opens full skill description"
+  },
+
+  "skillOverview_fullInfo_placeholder": "A full text description of the skill “{skillName}” will appear here. For now, this is a placeholder.",
+  "@skillOverview_fullInfo_placeholder": {
+    "description": "Placeholder for full skill description",
+    "placeholders": {
+      "skillName": {
+        "type": "String",
+        "example": "Validation"
+      }
+    }
+  },
+
+  "skillOverview_section_why": "Why it matters",
+  "@skillOverview_section_why": {
+    "description": "Section title 'Why it matters'"
+  },
+
+  "skillOverview_section_why_placeholder": "Later you’ll see here when this skill is especially useful and how it helps.",
+  "@skillOverview_section_why_placeholder": {
+    "description": "Placeholder when there is no textWhy"
+  },
+
+  "skillOverview_section_practice": "How to practice",
+  "@skillOverview_section_practice": {
+    "description": "Section title 'How to practice'"
+  },
+
+  "skillOverview_section_practice_placeholder": "This section will describe practice steps: what to do first, what next, and how to apply the skill in real life.",
+  "@skillOverview_section_practice_placeholder": {
+    "description": "Placeholder when there is no textPractice"
+  },
+
+  "skillOverview_morePractice_button": "More about practice",
+  "@skillOverview_morePractice_button": {
+    "description": "Button label to open full practice description"
+  },
+
+  "skillOverview_fullPractice_placeholder": "A detailed practice description for the skill “{skillName}” and worksheets will appear here. For now, this is a placeholder.",
+  "@skillOverview_fullPractice_placeholder": {
+    "description": "Placeholder for full practice description",
+    "placeholders": {
+      "skillName": {
+        "type": "String",
+        "example": "Validation"
+      }
+    }
+  },
+
+  "skillOverview_meta_separator": " · ",
+  "@skillOverview_meta_separator": {
+    "description": "Separator between module name and section; may differ per locale"
+  },
+
+  "skillFullInfo_title": "Full information about the skill",
+  "@skillFullInfo_title": {
+    "description": "Title of the full skill info screen"
+  },
+
+  "skillPractice_titlePattern": "Practice: {skillName}",
+  "@skillPractice_titlePattern": {
+    "description": "Title pattern for the skill practice screen",
+    "placeholders": {
+      "skillName": {
+        "type": "String",
+        "example": "Validation"
+      }
+    }
+  }
 }

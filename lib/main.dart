@@ -21,10 +21,7 @@ import 'worksheets/fact_check.dart';
 import 'notifications/notification_service.dart';
 import 'navigation/app_navigator.dart';
 import 'theme/app_theme.dart';
-
 import 'onboarding/onboarding_screen.dart';
-
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 // Подключение локализации
 import 'l10n/app_localizations.dart';

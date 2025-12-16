@@ -1094,4 +1094,125 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stateEntryDetailNoData => 'Нет записей';
+
+  @override
+  String get aboutAppBarTitle => 'О приложении';
+
+  @override
+  String get aboutPrivacyPolicyTitle => 'Политика конфиденциальности';
+
+  @override
+  String get aboutPersonalDataPolicyTitle =>
+      'Политика обработки персональных данных';
+
+  @override
+  String get aboutPrivacyPolicyUrl =>
+      'https://tyronel183.github.io/wisemind-legal/privacy-policy.html';
+
+  @override
+  String get aboutPersonalDataPolicyUrl =>
+      'https://tyronel183.github.io/wisemind-legal/personal-data-policy.html';
+
+  @override
+  String aboutAppVersionLabel(String version) {
+    return 'Версия $version';
+  }
+
+  @override
+  String get skillsRoot_title => 'Навыки DBT';
+
+  @override
+  String get skillsRoot_dbtIntro_title =>
+      'Диалектическая поведенческая терапия';
+
+  @override
+  String get skillsRoot_dbtIntro_subtitle =>
+      'Что такое DBT, из чего она состоит и как с ней работать в этом приложении.';
+
+  @override
+  String get dbtModule_mindfulness => 'Осознанность';
+
+  @override
+  String get dbtModule_distressTolerance => 'Устойчивость к стрессу';
+
+  @override
+  String get dbtModule_emotionRegulation => 'Регуляция эмоций';
+
+  @override
+  String get dbtModule_interpersonalEffectiveness =>
+      'Межличностная эффективность';
+
+  @override
+  String get dbtIntro_appBar_title => 'Что такое DBT';
+
+  @override
+  String get dbtIntro_header => 'Диалектическая поведенческая терапия';
+
+  @override
+  String get dbtIntro_body =>
+      'Здесь позже появится полный текст о том, что такое DBT, из каких модулей она состоит и как использовать это приложение как сопровождение к терапии.';
+
+  @override
+  String get dbtIntro_section_start => 'С чего начать';
+
+  @override
+  String get dbtIntro_howToStart =>
+      'Обычно знакомство с DBT начинается с блока осознанности: навыков «что» и «как» быть в моменте. Нажми на кнопку ниже, чтобы перейти к модулю Осознанность и начать разбирать навыки по шагам.';
+
+  @override
+  String get dbtIntro_startMindfulness_button => 'Начнём с осознанности';
+
+  @override
+  String get skillsList_error_prefix => 'Ошибка при загрузке навыков:';
+
+  @override
+  String get skillsList_empty => 'Навыков в этом разделе пока нет.';
+
+  @override
+  String get skillOverview_section_what => 'Что это такое';
+
+  @override
+  String get skillOverview_section_what_placeholder =>
+      'Здесь будет описание того, что это за навык — мы добавим его из материалов позже.';
+
+  @override
+  String get skillOverview_fullInfo_button => 'Полная информация о навыке';
+
+  @override
+  String skillOverview_fullInfo_placeholder(String skillName) {
+    return 'Здесь будет полное текстовое описание навыка «$skillName» из твоих материалов. Пока это заглушка.';
+  }
+
+  @override
+  String get skillOverview_section_why => 'Зачем это нужно';
+
+  @override
+  String get skillOverview_section_why_placeholder =>
+      'Позже здесь появится текст о том, в каких ситуациях навык особенно полезен и как он помогает.';
+
+  @override
+  String get skillOverview_section_practice => 'Как практиковать';
+
+  @override
+  String get skillOverview_section_practice_placeholder =>
+      'Здесь будут шаги практики: что делать сначала, что потом, как применять навык в жизни.';
+
+  @override
+  String get skillOverview_morePractice_button => 'Подробнее о практике';
+
+  @override
+  String skillOverview_fullPractice_placeholder(String skillName) {
+    return 'Здесь появится подробная практика по навыку «$skillName» и рабочие листы. Пока это заглушка.';
+  }
+
+  @override
+  String get skillOverview_meta_separator => ' · ';
+
+  @override
+  String get skillFullInfo_title => 'Полная информация о навыке';
+
+  @override
+  String skillPractice_titlePattern(String skillName) {
+    return 'Практика: $skillName';
+  }
 }

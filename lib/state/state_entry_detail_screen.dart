@@ -381,7 +381,7 @@ class _SectionCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              displayText!,
+              displayText,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: isEmpty ? Colors.grey : null,
               ),

@@ -69,6 +69,23 @@
     "settingsMailError": "Не удалось открыть почтовое приложение",
     "settingsFeedbackEmailSubject": "Обратная связь по приложению Wisemind",
 
+    "aboutAppBarTitle": "О приложении",
+
+    "aboutPrivacyPolicyTitle": "Политика конфиденциальности",
+    "aboutPersonalDataPolicyTitle": "Политика обработки персональных данных",
+
+    "aboutPrivacyPolicyUrl": "https://tyronel183.github.io/wisemind-legal/privacy-policy.html",
+    "aboutPersonalDataPolicyUrl": "https://tyronel183.github.io/wisemind-legal/personal-data-policy.html",
+
+    "aboutAppVersionLabel": "Версия {version}",
+    "@aboutAppVersionLabel": {
+      "placeholders": {
+        "version": {
+          "type": "String"
+        }
+      }
+    },
+
     "homeAppBarTitle": "Моё состояние",
     "homeSettingsTooltip": "Настройки",
 
@@ -595,5 +612,145 @@
       }
     },
 
-    "stateEntryDetailNoData": "Нет записей"
-  }
+    "stateEntryDetailNoData": "Нет записей",
+
+    
+      "skillsRoot_title": "Навыки DBT",
+      "@skillsRoot_title": {
+        "description": "Заголовок корневого экрана навыков"
+      },
+    
+      "skillsRoot_dbtIntro_title": "Диалектическая поведенческая терапия",
+      "@skillsRoot_dbtIntro_title": {
+        "description": "Название интро-карточки DBT"
+      },
+    
+      "skillsRoot_dbtIntro_subtitle": "Что такое DBT, из чего она состоит и как с ней работать в этом приложении.",
+      "@skillsRoot_dbtIntro_subtitle": {
+        "description": "Подзаголовок интро-карточки DBT"
+      },
+    
+      "dbtModule_mindfulness": "Осознанность",
+      "@dbtModule_mindfulness": { "description": "Название модуля Осознанность" },
+    
+      "dbtModule_distressTolerance": "Устойчивость к стрессу",
+      "@dbtModule_distressTolerance": { "description": "Название модуля Устойчивость к стрессу" },
+    
+      "dbtModule_emotionRegulation": "Регуляция эмоций",
+      "@dbtModule_emotionRegulation": { "description": "Название модуля Регуляция эмоций" },
+    
+      "dbtModule_interpersonalEffectiveness": "Межличностная эффективность",
+      "@dbtModule_interpersonalEffectiveness": { "description": "Название модуля Межличностная эффективность" },
+  
+      "dbtIntro_appBar_title": "Что такое DBT",
+      "@dbtIntro_appBar_title": { "description": "Заголовок app bar экрана интро DBT" },
+    
+      "dbtIntro_header": "Диалектическая поведенческая терапия",
+      "@dbtIntro_header": { "description": "Заголовок текста на экране интро DBT" },
+    
+      "dbtIntro_body": "Здесь позже появится полный текст о том, что такое DBT, из каких модулей она состоит и как использовать это приложение как сопровождение к терапии.",
+      "@dbtIntro_body": { "description": "Плейсхолдерный текст о DBT" },
+    
+      "dbtIntro_section_start": "С чего начать",
+      "@dbtIntro_section_start": { "description": "Подзаголовок блока 'С чего начать' на интро-экране" },
+    
+      "dbtIntro_howToStart": "Обычно знакомство с DBT начинается с блока осознанности: навыков «что» и «как» быть в моменте. Нажми на кнопку ниже, чтобы перейти к модулю Осознанность и начать разбирать навыки по шагам.",
+      "@dbtIntro_howToStart": { "description": "Текст инструкции, с чего начать знакомство с DBT" },
+    
+      "dbtIntro_startMindfulness_button": "Начнём с осознанности",
+      "@dbtIntro_startMindfulness_button": { "description": "Текст кнопки перехода к модулю Осознанность" },
+    
+      "skillsList_error_prefix": "Ошибка при загрузке навыков:",
+      "@skillsList_error_prefix": {
+        "description": "Текст ошибки перед сообщением об исключении при загрузке навыков"
+      },
+    
+      "skillsList_empty": "Навыков в этом разделе пока нет.",
+      "@skillsList_empty": {
+        "description": "Текст-заглушка, если в модуле нет ни одного навыка"
+      },
+    
+      "skillOverview_section_what": "Что это такое",
+      "@skillOverview_section_what": {
+        "description": "Заголовок секции с описанием навыка"
+      },
+    
+      "skillOverview_section_what_placeholder": "Здесь будет описание того, что это за навык — мы добавим его из материалов позже.",
+      "@skillOverview_section_what_placeholder": {
+        "description": "Плейсхолдер, если нет textWhat"
+      },
+    
+      "skillOverview_fullInfo_button": "Полная информация о навыке",
+      "@skillOverview_fullInfo_button": {
+        "description": "Подпись кнопки перехода к полному описанию навыка"
+      },
+    
+      "skillOverview_fullInfo_placeholder": "Здесь будет полное текстовое описание навыка «{skillName}» из твоих материалов. Пока это заглушка.",
+      "@skillOverview_fullInfo_placeholder": {
+        "description": "Плейсхолдер полного описания навыка",
+        "placeholders": {
+          "skillName": {
+            "type": "String",
+            "example": "Валидация"
+          }
+        }
+      },
+    
+      "skillOverview_section_why": "Зачем это нужно",
+      "@skillOverview_section_why": {
+        "description": "Заголовок секции 'Зачем это нужно'"
+      },
+    
+      "skillOverview_section_why_placeholder": "Позже здесь появится текст о том, в каких ситуациях навык особенно полезен и как он помогает.",
+      "@skillOverview_section_why_placeholder": {
+        "description": "Плейсхолдер, если нет textWhy"
+      },
+    
+      "skillOverview_section_practice": "Как практиковать",
+      "@skillOverview_section_practice": {
+        "description": "Заголовок секции 'Как практиковать'"
+      },
+    
+      "skillOverview_section_practice_placeholder": "Здесь будут шаги практики: что делать сначала, что потом, как применять навык в жизни.",
+      "@skillOverview_section_practice_placeholder": {
+        "description": "Плейсхолдер, если нет textPractice"
+      },
+    
+      "skillOverview_morePractice_button": "Подробнее о практике",
+      "@skillOverview_morePractice_button": {
+        "description": "Подпись кнопки перехода к полному описанию практики"
+      },
+    
+      "skillOverview_fullPractice_placeholder": "Здесь появится подробная практика по навыку «{skillName}» и рабочие листы. Пока это заглушка.",
+      "@skillOverview_fullPractice_placeholder": {
+        "description": "Плейсхолдер полного описания практики",
+        "placeholders": {
+          "skillName": {
+            "type": "String",
+            "example": "Валидация"
+          }
+        }
+      },
+    
+      "skillOverview_meta_separator": " · ",
+      "@skillOverview_meta_separator": {
+        "description": "Разделитель между названием модуля и секцией (может отличаться в других языках)"
+      },
+    
+      "skillFullInfo_title": "Полная информация о навыке",
+      "@skillFullInfo_title": {
+        "description": "Заголовок на экране полного описания навыка"
+      },
+    
+      "skillPractice_titlePattern": "Практика: {skillName}",
+      "@skillPractice_titlePattern": {
+        "description": "Шаблон заголовка для экрана практики навыка",
+        "placeholders": {
+          "skillName": {
+            "type": "String",
+            "example": "Валидация"
+          }
+        }
+      }
+    
+}

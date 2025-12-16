@@ -1,5 +1,6 @@
 // lib/settings/about_screen.dart
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 import 'settings_webview_screen.dart';
 import '../theme/app_card_tile.dart';
@@ -10,14 +11,13 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const privacyUrl =
-        'https://tyronel183.github.io/wisemind-legal/privacy-policy.html';
-    const personalDataUrl =
-        'https://tyronel183.github.io/wisemind-legal/personal-data-policy.html';
+    final l10n = AppLocalizations.of(context)!;
+    final privacyUrl = l10n.aboutPrivacyPolicyUrl;
+    final personalDataUrl = l10n.aboutPersonalDataPolicyUrl;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('О приложении'),
+        title: Text(l10n.aboutAppBarTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
@@ -31,12 +31,12 @@ class AboutScreen extends StatelessWidget {
               child: ListView(
                 children: [
                   AppCardTile(
-                    title: 'Политика конфиденциальности',
+                    title: l10n.aboutPrivacyPolicyTitle,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const SettingsWebViewScreen(
-                            title: 'Политика конфиденциальности',
+                          builder: (_) => SettingsWebViewScreen(
+                            title: l10n.aboutPrivacyPolicyTitle,
                             url: privacyUrl,
                           ),
                         ),
@@ -45,12 +45,12 @@ class AboutScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.gapMedium),
                   AppCardTile(
-                    title: 'Политика обработки персональных данных',
+                    title: l10n.aboutPersonalDataPolicyTitle,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const SettingsWebViewScreen(
-                            title: 'Политика обработки персональных данных',
+                          builder: (_) => SettingsWebViewScreen(
+                            title: l10n.aboutPersonalDataPolicyTitle,
                             url: personalDataUrl,
                           ),
                         ),
@@ -73,7 +73,7 @@ class AboutScreen extends StatelessWidget {
                       color: Colors.grey,
                     );
                 return Text(
-                  'Версия 1.0.0',
+                  l10n.aboutAppVersionLabel('1.0.0'),
                   textAlign: TextAlign.center,
                   style: style,
                 );

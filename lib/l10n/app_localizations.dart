@@ -2023,6 +2023,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No entries'**
   String get stateEntryDetailNoData;
+
+  /// No description provided for @aboutAppBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About the app'**
+  String get aboutAppBarTitle;
+
+  /// No description provided for @aboutPrivacyPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get aboutPrivacyPolicyTitle;
+
+  /// No description provided for @aboutPersonalDataPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Data Policy'**
+  String get aboutPersonalDataPolicyTitle;
+
+  /// No description provided for @aboutPrivacyPolicyUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'https://tyronel183.github.io/wisemind-legal/privacy-policy-en.html'**
+  String get aboutPrivacyPolicyUrl;
+
+  /// No description provided for @aboutPersonalDataPolicyUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'https://tyronel183.github.io/wisemind-legal/personal-data-policy-en.html'**
+  String get aboutPersonalDataPolicyUrl;
+
+  /// No description provided for @aboutAppVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String aboutAppVersionLabel(String version);
+
+  /// Title of the root skills screen
+  ///
+  /// In en, this message translates to:
+  /// **'DBT skills'**
+  String get skillsRoot_title;
+
+  /// Title of the DBT intro card
+  ///
+  /// In en, this message translates to:
+  /// **'Dialectical Behavior Therapy'**
+  String get skillsRoot_dbtIntro_title;
+
+  /// Subtitle of the DBT intro card
+  ///
+  /// In en, this message translates to:
+  /// **'What DBT is, what it consists of, and how to work with it in this app.'**
+  String get skillsRoot_dbtIntro_subtitle;
+
+  /// Module name Mindfulness
+  ///
+  /// In en, this message translates to:
+  /// **'Mindfulness'**
+  String get dbtModule_mindfulness;
+
+  /// Module name Distress tolerance
+  ///
+  /// In en, this message translates to:
+  /// **'Distress tolerance'**
+  String get dbtModule_distressTolerance;
+
+  /// Module name Emotion regulation
+  ///
+  /// In en, this message translates to:
+  /// **'Emotion regulation'**
+  String get dbtModule_emotionRegulation;
+
+  /// Module name Interpersonal effectiveness
+  ///
+  /// In en, this message translates to:
+  /// **'Interpersonal effectiveness'**
+  String get dbtModule_interpersonalEffectiveness;
+
+  /// App bar title of the DBT intro screen
+  ///
+  /// In en, this message translates to:
+  /// **'What is DBT'**
+  String get dbtIntro_appBar_title;
+
+  /// Header text on the DBT intro screen
+  ///
+  /// In en, this message translates to:
+  /// **'Dialectical Behavior Therapy'**
+  String get dbtIntro_header;
+
+  /// Placeholder text about DBT
+  ///
+  /// In en, this message translates to:
+  /// **'Later here you will see a full text about what DBT is, which modules it includes, and how to use this app as a companion to therapy.'**
+  String get dbtIntro_body;
+
+  /// Subheading for the 'Where to start' section on the intro screen
+  ///
+  /// In en, this message translates to:
+  /// **'Where to start'**
+  String get dbtIntro_section_start;
+
+  /// Instructions on where to start with DBT
+  ///
+  /// In en, this message translates to:
+  /// **'Usually DBT starts with Mindfulness: the “what” and “how” skills of being in the moment. Tap the button below to go to the Mindfulness module and start exploring the skills step by step.'**
+  String get dbtIntro_howToStart;
+
+  /// Button text to navigate to the Mindfulness module
+  ///
+  /// In en, this message translates to:
+  /// **'Start with mindfulness'**
+  String get dbtIntro_startMindfulness_button;
+
+  /// Error text prefix before the exception message when loading skills fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading skills:'**
+  String get skillsList_error_prefix;
+
+  /// Placeholder text when a module has no skills
+  ///
+  /// In en, this message translates to:
+  /// **'There are no skills in this section yet.'**
+  String get skillsList_empty;
+
+  /// Section title for basic description of the skill
+  ///
+  /// In en, this message translates to:
+  /// **'What it is'**
+  String get skillOverview_section_what;
+
+  /// Placeholder when there is no textWhat
+  ///
+  /// In en, this message translates to:
+  /// **'A description of what this skill is will appear here — we’ll add it from your materials later.'**
+  String get skillOverview_section_what_placeholder;
+
+  /// Label of the button that opens full skill description
+  ///
+  /// In en, this message translates to:
+  /// **'Full info about the skill'**
+  String get skillOverview_fullInfo_button;
+
+  /// Placeholder for full skill description
+  ///
+  /// In en, this message translates to:
+  /// **'A full text description of the skill “{skillName}” will appear here. For now, this is a placeholder.'**
+  String skillOverview_fullInfo_placeholder(String skillName);
+
+  /// Section title 'Why it matters'
+  ///
+  /// In en, this message translates to:
+  /// **'Why it matters'**
+  String get skillOverview_section_why;
+
+  /// Placeholder when there is no textWhy
+  ///
+  /// In en, this message translates to:
+  /// **'Later you’ll see here when this skill is especially useful and how it helps.'**
+  String get skillOverview_section_why_placeholder;
+
+  /// Section title 'How to practice'
+  ///
+  /// In en, this message translates to:
+  /// **'How to practice'**
+  String get skillOverview_section_practice;
+
+  /// Placeholder when there is no textPractice
+  ///
+  /// In en, this message translates to:
+  /// **'This section will describe practice steps: what to do first, what next, and how to apply the skill in real life.'**
+  String get skillOverview_section_practice_placeholder;
+
+  /// Button label to open full practice description
+  ///
+  /// In en, this message translates to:
+  /// **'More about practice'**
+  String get skillOverview_morePractice_button;
+
+  /// Placeholder for full practice description
+  ///
+  /// In en, this message translates to:
+  /// **'A detailed practice description for the skill “{skillName}” and worksheets will appear here. For now, this is a placeholder.'**
+  String skillOverview_fullPractice_placeholder(String skillName);
+
+  /// Separator between module name and section; may differ per locale
+  ///
+  /// In en, this message translates to:
+  /// **' · '**
+  String get skillOverview_meta_separator;
+
+  /// Title of the full skill info screen
+  ///
+  /// In en, this message translates to:
+  /// **'Full information about the skill'**
+  String get skillFullInfo_title;
+
+  /// Title pattern for the skill practice screen
+  ///
+  /// In en, this message translates to:
+  /// **'Practice: {skillName}'**
+  String skillPractice_titlePattern(String skillName);
 }
 
 class _AppLocalizationsDelegate

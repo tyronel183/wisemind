@@ -50,7 +50,12 @@ flutter:
   generate: true
 
   assets:
-    - assets/data/dbt_skills.json
-    - assets/images/skills/
+    - assets/images/skills/ru/
+    - assets/images/skills/en/
     - assets/images/onboarding/
     - assets/images/usage_guide/
+    - assets/data/meditations-ru.json
+    - assets/data/meditations-en.json
+    - assets/data/skills_base.json
+    - assets/data/skills_ru.json
+    - assets/data/skills_en.json

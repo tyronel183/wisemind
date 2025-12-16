@@ -31,58 +31,6 @@ class _MeditationsScreenState extends State<MeditationsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final meditations = MeditationRepository.getAll();
-
-    // Группируем медитации по "разделам" (категориям)
-    final Map<String, List<Meditation>> grouped = {};
-    for (final m in meditations) {
-      final rawCategory = m.category;
-      final header = _mapCategoryToHeader(context, rawCategory);
-      grouped.putIfAbsent(header, () => []).add(m);
-    }
-
-    // Задаём порядок разделов
-    final sectionOrder = <String>[
-      l10n.meditationsSectionMindfulness,
-      l10n.meditationsSectionDistressTolerance,
-      l10n.meditationsSectionEmotionRegulation,
-      l10n.meditationsSectionInterpersonalEffectiveness,
-    ];
-
-    final listChildren = <Widget>[];
-
-    for (final section in sectionOrder) {
-      final items = grouped[section];
-      if (items == null || items.isEmpty) continue;
-
-      // Заголовок раздела
-      listChildren.add(
-        Padding(
-          padding: const EdgeInsets.only(
-            top: AppSpacing.sectionTitleTop,
-            bottom: AppSpacing.sectionTitleBottom,
-          ),
-          child: Text(
-            section,
-            style: AppTypography.sectionTitle,
-          ),
-        ),
-      );
-
-      // Карточки медитаций раздела
-      for (final m in items) {
-        listChildren.add(_MeditationCard(meditation: m));
-      }
-    }
-
-    // Если по каким‑то причинам ни один раздел не собрался (например,
-    // изменились категории в данных), показываем все медитации подряд,
-    // чтобы экран не был пустым.
-    if (listChildren.isEmpty) {
-      for (final m in meditations) {
-        listChildren.add(_MeditationCard(meditation: m));
-      }
-    }
 
     return SafeArea(
       child: Column(
@@ -94,21 +42,90 @@ class _MeditationsScreenState extends State<MeditationsScreen> {
               horizontal: AppSpacing.screenTitleHorizontal,
               vertical: AppSpacing.screenTitleVertical,
             ),
-          child: Center(
-            child: Text(
-              l10n.meditationsAppBarTitle,
-              style: AppTypography.screenTitle,
-              textAlign: TextAlign.center,
+            child: Center(
+              child: Text(
+                l10n.meditationsAppBarTitle,
+                style: AppTypography.screenTitle,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-          ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenPadding,
-                vertical: AppSpacing.gapMedium,
-              ),
-              children: listChildren,
+            child: FutureBuilder<List<Meditation>>(
+              future: MeditationRepository.loadForLocale(Localizations.localeOf(context)),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  final locale = Localizations.localeOf(context);
+                  final lang = locale.languageCode;
+                  final errorText = lang == 'ru'
+                      ? 'Не удалось загрузить медитации'
+                      : 'Failed to load meditations';
+                  return Center(child: Text(errorText));
+                }
+                final meditations = snapshot.data ?? MeditationRepository.getAll();
+
+                // Группируем медитации по "разделам" (категориям)
+                final Map<String, List<Meditation>> grouped = {};
+                for (final m in meditations) {
+                  final rawCategory = m.category;
+                  final header = _mapCategoryToHeader(context, rawCategory);
+                  grouped.putIfAbsent(header, () => []).add(m);
+                }
+
+                // Задаём порядок разделов
+                final sectionOrder = <String>[
+                  l10n.meditationsSectionMindfulness,
+                  l10n.meditationsSectionDistressTolerance,
+                  l10n.meditationsSectionEmotionRegulation,
+                  l10n.meditationsSectionInterpersonalEffectiveness,
+                ];
+
+                final listChildren = <Widget>[];
+
+                for (final section in sectionOrder) {
+                  final items = grouped[section];
+                  if (items == null || items.isEmpty) continue;
+
+                  // Заголовок раздела
+                  listChildren.add(
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: AppSpacing.sectionTitleTop,
+                        bottom: AppSpacing.sectionTitleBottom,
+                      ),
+                      child: Text(
+                        section,
+                        style: AppTypography.sectionTitle,
+                      ),
+                    ),
+                  );
+
+                  // Карточки медитаций раздела
+                  for (final m in items) {
+                    listChildren.add(_MeditationCard(meditation: m));
+                  }
+                }
+
+                // Если по каким‑то причинам ни один раздел не собрался (например,
+                // изменились категории в данных), показываем все медитации подряд,
+                // чтобы экран не был пустым.
+                if (listChildren.isEmpty) {
+                  for (final m in meditations) {
+                    listChildren.add(_MeditationCard(meditation: m));
+                  }
+                }
+
+                return ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.screenPadding,
+                    vertical: AppSpacing.gapMedium,
+                  ),
+                  children: listChildren,
+                );
+              },
             ),
           ),
         ],
@@ -342,13 +359,14 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                   height: 96, // такая же высота, как у обложки
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       // Верх — описание ситуации
                       Text(
                         meditation.situation,
                         style: AppTypography.body,
                       ),
+                      const SizedBox(height: AppSpacing.gapSmall),
                       // Низ — чипы
                       Builder(
                         builder: (context) {
