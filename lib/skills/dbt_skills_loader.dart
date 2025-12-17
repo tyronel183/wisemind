@@ -1,4 +1,3 @@
-// lib/skills/dbt_skills_loader.dart
 import 'dart:convert';
 import 'dart:ui' as ui;
 
@@ -24,11 +23,13 @@ class DbtSkillsLoader {
     final List<dynamic> baseList =
         json.decode(baseJsonString) as List<dynamic>;
 
-    final Map<String, DbtSkillMeta> metaById = {
-      for (final item in baseList)
-        (item as Map<String, dynamic>)['id'] as String:
-            DbtSkillMeta.fromJson(item as Map<String, dynamic>),
-    };
+    final Map<String, DbtSkillMeta> metaById = {};
+
+    for (final item in baseList) {
+      final map = item as Map<String, dynamic>;
+      final id = map['id'] as String;
+      metaById[id] = DbtSkillMeta.fromJson(map);
+    }
 
     // 2. Определяем язык и выбираем файл с текстами
     final locale = ui.PlatformDispatcher.instance.locale;
@@ -91,11 +92,15 @@ class DbtSkillsLoader {
       final List<dynamic> jsonList =
           json.decode(jsonString) as List<dynamic>;
 
-      return {
-        for (final item in jsonList)
-          (item as Map<String, dynamic>)['id'] as String:
-              DbtSkillTexts.fromJson(item as Map<String, dynamic>),
-      };
+      final Map<String, DbtSkillTexts> result = {};
+
+      for (final item in jsonList) {
+        final map = item as Map<String, dynamic>;
+        final id = map['id'] as String;
+        result[id] = DbtSkillTexts.fromJson(map);
+      }
+
+      return result;
     } catch (_) {
       // Можно добавить логирование, если используешь какой-то logger
       return {};

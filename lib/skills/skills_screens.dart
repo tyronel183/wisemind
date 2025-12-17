@@ -26,6 +26,186 @@ String localizedModuleTitle(BuildContext context, DbtModule module) {
   }
 }
 
+// Workaround (TEMP): derive subsection headers for a couple of DBT modules in code
+// to avoid manual upkeep of `meta.section` inside dbt_skills.json.
+// NOTE: Move this to stable section keys in JSON + l10n once the content settles.
+bool _isRuLocale(BuildContext context) {
+  final l = AppLocalizations.of(context)!;
+  return l.localeName.toLowerCase().startsWith('ru');
+}
+
+String _whatSectionTitle(BuildContext context) {
+  return _isRuLocale(context) ? 'Навыки «Что»' : 'Skills “What”';
+}
+
+String _howSectionTitle(BuildContext context) {
+  return _isRuLocale(context) ? 'Навыки «Как»' : 'Skills “How”';
+}
+
+String _stressCopingSectionTitle(BuildContext context) {
+  return _isRuLocale(context)
+      ? 'Навыки справления со стрессом'
+      : 'Crisis survival skills';
+}
+
+String _realityAcceptanceSectionTitle(BuildContext context) {
+  return _isRuLocale(context)
+      ? 'Навыки принятия реальности'
+      : 'Reality acceptance skills';
+}
+
+String _additionalSectionTitle(BuildContext context) {
+  return _isRuLocale(context) ? 'Дополнительно' : 'Additional';
+}
+
+int _mindfulnessRank(String name) {
+  // 0: Wise Mind (no header)
+  if (_containsAny(name, ['мудрый разум', 'wise mind'])) return 0;
+
+  // 1..3: WHAT skills
+  if (_containsAny(name, ['наблюд', 'observe', 'observation'])) return 1;
+  if (_containsAny(name, ['опис', 'describe', 'description'])) return 2;
+  if (_containsAny(name, ['участв', 'participate', 'participation'])) return 3;
+
+  // 4..6: HOW skills
+  if (_containsAny(name, ['безоцен', 'non-judgment', 'nonjudgment'])) return 4;
+  if (_containsAny(name, [
+    'однозадач',
+    'однонаправ',
+    'one-mind',
+    'onemind',
+    'single-tasking',
+    'single tasking',
+  ])) return 5;
+  if (_containsAny(name, ['эффектив', 'effectively', 'effectiveness'])) return 6;
+
+  // 7..8: Additional
+  if (_containsAny(name, ['осознанное питание', 'mindful eating'])) return 7;
+  if (_containsAny(name, ['серфинг', 'urge surfing'])) return 8;
+
+  return 999;
+}
+
+int _distressToleranceRank(String name) {
+  // 0..5: Crisis survival skills
+  if (_containsAny(name, ['за и против', 'pros and cons', 'pros & cons'])) return 0;
+  if (_containsAny(name, ['стоп', 'stop'])) return 1;
+  if (_containsAny(name, ['тип', 'tip'])) return 2;
+  if (_containsAny(name, ['accepts'])) return 3;
+  if (_containsAny(name, ['5 чувств', 'пять чувств', '5 senses', 'five senses'])) return 4;
+  if (_containsAny(name, ['improve'])) return 5;
+
+  // 100..103: Reality acceptance skills
+  if (_containsAny(name, ['радикаль', 'radical acceptance'])) return 100;
+  if (_containsAny(name, ['полуулыб', 'half-smile', 'half smile'])) return 101;
+  if (_containsAny(name, ['готовност', 'willingness'])) return 102;
+  if (_containsAny(name, ['осознанность мыслей', 'mindfulness of thoughts'])) return 103;
+
+  return 999;
+}
+
+String _normalizeSkillName(String? name) {
+  return (name ?? '').trim().toLowerCase();
+}
+
+bool _containsAny(String haystack, List<String> needles) {
+  for (final n in needles) {
+    if (haystack.contains(n)) return true;
+  }
+  return false;
+}
+
+/// Returns a localized subsection title for the given skill.
+/// - If `meta.section` is set, uses it.
+/// - Otherwise, for Mindfulness and Distress Tolerance, derives section from the skill name.
+/// - For other modules returns empty string.
+String _sectionTitleForSkill(BuildContext context, DbtSkill skill) {
+  final explicit = (skill.meta.section ?? '').trim();
+  if (explicit.isNotEmpty) return explicit;
+
+  final module = skill.meta.module;
+  final name = _normalizeSkillName(skill.texts.name);
+
+  // Mindfulness: Wise Mind (no header) + WHAT / HOW + Additional
+  if (module == DbtModule.mindfulness) {
+    // "Wise Mind" should be shown at the very top, without any section header.
+    if (_containsAny(name, ['мудрый разум', 'wise mind'])) {
+      return '';
+    }
+
+    // Additional skills
+    if (_containsAny(name, ['осознанное питание', 'mindful eating', 'серфинг', 'urge surfing'])) {
+      return _additionalSectionTitle(context);
+    }
+
+    // WHAT skills
+    if (_containsAny(name, [
+      'наблюд',
+      'опис',
+      'участв',
+      'observe',
+      'observation',
+      'describe',
+      'description',
+      'participate',
+      'participation',
+    ])) {
+      return _whatSectionTitle(context);
+    }
+
+    // HOW skills
+    if (_containsAny(name, [
+      'безоцен',
+      'однозадач',
+      'однонаправ',
+      'эффектив',
+      'non-judgment',
+      'nonjudgment',
+      'one-mind',
+      'onemind',
+      'single-tasking',
+      'single tasking',
+      'effectively',
+      'effectiveness',
+    ])) {
+      return _howSectionTitle(context);
+    }
+
+    // Everything else: no header.
+    return '';
+  }
+
+  // Distress tolerance: crisis survival vs reality acceptance
+  if (module == DbtModule.distressTolerance) {
+    final isAcceptance = _containsAny(name, [
+      // RU
+      'радикаль',
+      'приняти',
+      'поворот разума',
+      'поворот',
+      'готовност',
+      'полуулыб',
+      'улыб',
+      'готовые руки',
+      'осознанность мыслей',
+      // EN
+      'radical acceptance',
+      'turning the mind',
+      'willingness',
+      'half-smile',
+      'half smile',
+      'willing hands',
+      'mindfulness of thoughts',
+    ]);
+
+    return isAcceptance
+        ? _realityAcceptanceSectionTitle(context)
+        : _stressCopingSectionTitle(context);
+  }
+
+  return '';
+}
+
 /// Корневой экран вкладки "Навыки DBT":
 /// показывает интро DBT и 4 модуля
 class SkillsRootScreen extends StatefulWidget {
@@ -254,10 +434,27 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
 
           final allSkills = snapshot.data ?? [];
 
-          final skills = allSkills
-              .where((s) => s.meta.module == module)
-              .toList()
-            ..sort((a, b) => a.meta.order.compareTo(b.meta.order));
+          final skills = allSkills.where((s) => s.meta.module == module).toList();
+
+          // WORKAROUND (TEMP): enforce the intended teaching sequence for Mindfulness
+          // and Distress Tolerance.
+          skills.sort((a, b) {
+            if (module == DbtModule.mindfulness) {
+              final ar = _mindfulnessRank(_normalizeSkillName(a.texts.name));
+              final br = _mindfulnessRank(_normalizeSkillName(b.texts.name));
+              if (ar != br) return ar.compareTo(br);
+            }
+
+            if (module == DbtModule.distressTolerance) {
+              final ar =
+                  _distressToleranceRank(_normalizeSkillName(a.texts.name));
+              final br =
+                  _distressToleranceRank(_normalizeSkillName(b.texts.name));
+              if (ar != br) return ar.compareTo(br);
+            }
+
+            return a.meta.order.compareTo(b.meta.order);
+          });
 
           if (skills.isEmpty) {
             return Center(
@@ -271,7 +468,7 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
           // Группируем по section
           final Map<String, List<DbtSkill>> bySection = {};
           for (final skill in skills) {
-            final key = skill.meta.section ?? '';
+            final key = _sectionTitleForSkill(context, skill);
             bySection.putIfAbsent(key, () => []).add(skill);
           }
 
@@ -372,10 +569,10 @@ class _SkillOverviewScreenState extends State<SkillOverviewScreen> {
     final l = AppLocalizations.of(context)!;
     final skill = widget.skill;
     final categoryTitle = localizedModuleTitle(context, skill.meta.module);
-    final section = skill.meta.section;
-    final meta = section == null || section.isEmpty
+    final sectionTitle = _sectionTitleForSkill(context, skill);
+    final meta = sectionTitle.isEmpty
         ? categoryTitle
-        : '$categoryTitle${l.skillOverview_meta_separator}$section';
+        : '$categoryTitle${l.skillOverview_meta_separator}$sectionTitle';
 
     return Scaffold(
       appBar: AppBar(
@@ -637,7 +834,6 @@ class _FullSkillPracticeScreenState extends State<FullSkillPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Scaffold(

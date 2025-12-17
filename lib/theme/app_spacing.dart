@@ -6,7 +6,8 @@ class AppSpacing {
 
   // Заголовок раздела
   static const double sectionTitleHorizontal = 16;
-  static const double sectionTitleTop = 0;
+  // Add a little air above section titles so they don't stick to the previous card.
+  static const double sectionTitleTop = 12;
   static const double sectionTitleBottom = 12;
 
   // Паддинги

@@ -108,6 +108,15 @@
     "isPremium": false
   },
   {
+    "id": "accepts",
+    "module": "distress_tolerance",
+    "order": 700,
+    "imageAsset": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/EdHBi0YbKHhuXMfjjrzS/pub/V8urMtaBZ0np030xBigW.jpg",
+    "hasWorksheet": false,
+    "emoji": "🧩",
+    "isPremium": false
+  },
+  {
     "id": "five_senses",
     "module": "distress_tolerance",
     "order": 800,
