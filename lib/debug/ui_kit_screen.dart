@@ -52,12 +52,34 @@ class UiKitScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Debug: открыть paywall (RevenueCat)
+          // Debug: открыть paywall (BillingService)
           ElevatedButton(
             onPressed: () async {
-              await BillingService.ensureProOrShowPaywall(context);
+              try {
+                final hasPro = await BillingService.ensureProOrShowPaywall(context);
+
+                if (!context.mounted) return;
+
+                // Чтобы не было ощущения, что "ничего не произошло", даём фидбек.
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      hasPro
+                          ? 'Pro активен ✅'
+                          : 'Paywall закрыт / покупка не активна',
+                    ),
+                  ),
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Ошибка открытия paywall: $e'),
+                  ),
+                );
+              }
             },
-            child: const Text('Open paywall (debug)'),
+            child: const Text('Open paywall (billing debug)'),
           ),
           const SizedBox(height: 8),
 

@@ -124,6 +124,11 @@ class _WisemindPaywallScreenState extends State<WisemindPaywallScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _isPresenting ? null : () => Navigator.of(context).maybePop(),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+        ),
         title: Text(_paywallTitle(context)),
         centerTitle: true,
       ),

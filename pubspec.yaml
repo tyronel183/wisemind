@@ -53,7 +53,8 @@ flutter:
     - assets/images/skills/ru/
     - assets/images/skills/en/
     - assets/images/onboarding/
-    - assets/images/usage_guide/
+    - assets/images/usage_guide/en/
+    - assets/images/usage_guide/ru/
     - assets/data/meditations-ru.json
     - assets/data/meditations-en.json
     - assets/data/skills_base.json
