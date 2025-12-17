@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+
+import '../billing/billing_service.dart';
 import '../theme/app_components.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_theme.dart';
 
 class UiKitScreen extends StatelessWidget {
   const UiKitScreen({super.key});
@@ -49,6 +51,16 @@ class UiKitScreen extends StatelessWidget {
             child: const Text('Primary button'),
           ),
           const SizedBox(height: 8),
+
+          // Debug: открыть paywall (RevenueCat)
+          ElevatedButton(
+            onPressed: () async {
+              await BillingService.ensureProOrShowPaywall(context);
+            },
+            child: const Text('Open paywall (debug)'),
+          ),
+          const SizedBox(height: 8),
+
           OutlinedButton(
             onPressed: () {},
             child: const Text('Outlined button'),
@@ -104,7 +116,7 @@ class UiKitScreen extends StatelessWidget {
             title: 'Медитация: Дыхание',
             subtitle: '5 минут, чтобы вернуться в тело и в текущий момент.',
             image: Container(
-              color: AppColors.primary.withOpacity(0.15),
+              color: AppColors.primary.withValues(alpha: 0.15),
               child: const Center(
                 child: Icon(
                   Icons.self_improvement,

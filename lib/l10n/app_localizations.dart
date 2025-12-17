@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @mainNavState.
   ///
   /// In en, this message translates to:
-  /// **'State'**
+  /// **'My State'**
   String get mainNavState;
 
   /// No description provided for @mainNavWorksheets.
@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @tabState.
   ///
   /// In en, this message translates to:
-  /// **'State'**
+  /// **'My State'**
   String get tabState;
 
   /// No description provided for @tabWorksheets.
@@ -1454,6 +1454,24 @@ abstract class AppLocalizations {
   /// **'Meditations'**
   String get meditationsAppBarTitle;
 
+  /// Title for the info notice shown on the Meditations screen when English is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Meditations are currently available in Russian only'**
+  String get meditations_langNotice_title;
+
+  /// Body text for the info notice shown on the Meditations screen when English is selected
+  ///
+  /// In en, this message translates to:
+  /// **'We’re recording English voice meditations and will add them soon.\nFor now you can use background music mode — it’s already available.'**
+  String get meditations_langNotice_body;
+
+  /// CTA button label to switch to music-only mode from the language notice
+  ///
+  /// In en, this message translates to:
+  /// **'Use background music'**
+  String get meditations_langNotice_musicOnlyCta;
+
   /// No description provided for @meditationsSectionMindfulness.
   ///
   /// In en, this message translates to:
@@ -1531,6 +1549,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access to this meditation may require a subscription.'**
   String get meditationSubscriptionInfo;
+
+  /// No description provided for @paywall_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Wisemind Pro'**
+  String get paywall_title;
+
+  /// No description provided for @paywall_opening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the subscription screen…'**
+  String get paywall_opening;
+
+  /// No description provided for @paywall_open_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t open the subscription screen.'**
+  String get paywall_open_failed;
+
+  /// No description provided for @paywall_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get paywall_retry;
+
+  /// No description provided for @paywall_open_failed_with_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t open the subscription screen: {error}'**
+  String paywall_open_failed_with_error(String error);
 
   /// No description provided for @stateDashboardEmptyTitle.
   ///
@@ -2137,6 +2185,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start with mindfulness'**
   String get dbtIntro_startMindfulness_button;
+
+  /// DBT FAQ item 1 title
+  ///
+  /// In en, this message translates to:
+  /// **'Is DBT therapy or a set of skills?'**
+  String get dbtFaq_q1_title;
+
+  /// DBT FAQ item 1 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nDBT is a structured therapeutic approach where skills training is a core part.\n\n<strong>More detail:</strong>\nDBT (Dialectical Behavior Therapy) grew out of CBT (Cognitive Behavioral Therapy). It includes psychotherapy (individual and/or group), a skills system, and ways to stay on course when things get hard.\n\n📌 This app covers the skills part: read, review, practice, and bring it into real life.'**
+  String get dbtFaq_q1_body;
+
+  /// DBT FAQ item 2 title
+  ///
+  /// In en, this message translates to:
+  /// **'Who is it for / who is it not for?'**
+  String get dbtFaq_q2_title;
+
+  /// DBT FAQ item 2 body
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Good fit for:\n• people already in DBT/CBT who want practice \"between sessions\";\n• people with intense emotions → impulsive actions, conflicts, self-sabotage;\n• psychologists/therapists as an additional tool for clients.\n\n⚠️ May not be a good fit if:\n• you’re looking for a \"quick life hack\" instead of regular practice;\n• you’re in an acute crisis and need urgent help (people and emergency support matter more than an app);\n• you expect reading to replace therapy. The app is a tool, not a replacement.'**
+  String get dbtFaq_q2_body;
+
+  /// DBT FAQ item 3 title
+  ///
+  /// In en, this message translates to:
+  /// **'How is DBT different from CBT?'**
+  String get dbtFaq_q3_title;
+
+  /// DBT FAQ item 3 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nCBT focuses more on changing thoughts/behavior; DBT focuses on balancing acceptance and change + skills for emotion regulation.\n\n<strong>More detail:</strong>\nDBT came from CBT and keeps its logic, but adds a key layer: first stabilization (stress, impulses, relationships), then deeper change.\n\n📌 DBT is especially helpful when: \"I understand everything, but in the moment I get carried away.\"'**
+  String get dbtFaq_q3_body;
+
+  /// DBT FAQ item 4 title
+  ///
+  /// In en, this message translates to:
+  /// **'What is dialectics?'**
+  String get dbtFaq_q4_title;
+
+  /// DBT FAQ item 4 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nDialectics is the ability to hold two truths at the same time.\n\n<strong>More detail:</strong>\nFor example:\n• \"I feel terrible\" and \"I can cope\";\n• \"I accept myself\" and \"I want to change.\"\n\n📌 DBT keeps bringing you back to this balance: avoid extremes, look for a more accurate, workable position.'**
+  String get dbtFaq_q4_body;
+
+  /// DBT FAQ item 5 title
+  ///
+  /// In en, this message translates to:
+  /// **'What is Wise Mind?'**
+  String get dbtFaq_q5_title;
+
+  /// DBT FAQ item 5 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nWise Mind is the state where emotions and logic meet.\n\n<strong>More detail:</strong>\nThere’s:\n• Emotion Mind (impulsive reactions)\n• Reasonable Mind (dry logic)\n\n✨ Wise Mind isn’t \"being calm all the time\" — it’s making decisions that consider both feelings and facts.\n\n📌 In this app, it makes sense to start here.'**
+  String get dbtFaq_q5_body;
+
+  /// DBT FAQ item 6 title
+  ///
+  /// In en, this message translates to:
+  /// **'What is the biosocial theory about?'**
+  String get dbtFaq_q6_title;
+
+  /// DBT FAQ item 6 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nBiology and environment together shape emotional vulnerability.\n\n<strong>More detail:</strong>\nSome people have more sensitive nervous systems (they \"ignite\" faster and calm down slower).\nIf, on top of that, emotions weren’t validated in their environment — were shamed or punished — people often learn to survive through extremes:\n• explosions\n• avoidance\n• shutting down\n\n📌 DBT doesn’t blame; it offers skills to live with more stability.'**
+  String get dbtFaq_q6_body;
+
+  /// DBT FAQ item 7 title
+  ///
+  /// In en, this message translates to:
+  /// **'Is there an evidence base?'**
+  String get dbtFaq_q7_title;
+
+  /// DBT FAQ item 7 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nYes — DBT is one of the most researched approaches for emotion regulation.\n\n<strong>More detail:</strong>\nDBT was designed as a protocol with measurable goals and tested effectiveness. There are studies and meta-analyses, especially around:\n• suicidality / self-harm\n• borderline symptoms\n• addictive behavior\n• emotional instability\n\n⚠️ Important: \"evidence-based\" doesn’t mean \"just know it\" — you still have to practice the skills.'**
+  String get dbtFaq_q7_body;
+
+  /// DBT FAQ item 8 title
+  ///
+  /// In en, this message translates to:
+  /// **'How long does it take to feel results?'**
+  String get dbtFaq_q8_title;
+
+  /// DBT FAQ item 8 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nEarly changes are often noticeable after 2–4 weeks of practice; lasting change takes months.\n\n<strong>More detail:</strong>\nThis isn’t a motivation marathon — it’s training.\n• Some effects show up quickly (e.g., STOP/TIP in crisis).\n• Others take longer (emotion regulation, relationships).\n\n✅ A key progress marker: you still feel things, but you destroy yourself and your relationships less often.'**
+  String get dbtFaq_q8_body;
+
+  /// DBT FAQ item 9 title
+  ///
+  /// In en, this message translates to:
+  /// **'How do you learn the skills effectively?'**
+  String get dbtFaq_q9_title;
+
+  /// DBT FAQ item 9 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nOne skill → in a real situation → repetition.\n\n<strong>More detail (a practical plan):</strong>\n1) Choose the module that fits your current need (\"what do I need right now?\").\n2) Pick one skill and stick with it for 5–7 days.\n3) Practice in the moment + practice ahead of time when you’re calm.\n4) Track what worked / didn’t work — without self-blame, like a researcher.\n\n📌 Knowledge without practice changes almost nothing.'**
+  String get dbtFaq_q9_body;
+
+  /// DBT FAQ item 10 title
+  ///
+  /// In en, this message translates to:
+  /// **'What if I keep forgetting to practice?'**
+  String get dbtFaq_q10_title;
+
+  /// DBT FAQ item 10 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nMake it easier and tie it to a trigger.\n\n<strong>More detail:</strong>\nNot \"an hour of meditation\", but 30–60 seconds of a skill — consistently. Triggers beat motivation:\n• after brushing your teeth → 3 breaths + name the emotion;\n• before replying in a chat → STOP;\n• after a conflict → a quick note: \"what happened / what I feel\".\n\n📌 The goal is to integrate the skill into life, not turn it into another chore.\n\n✅ Result: at first you spend some effort to learn the skill, and later you’ll use it automatically (not necessarily in writing). This helps you respond more consciously and make more balanced decisions that consider both facts and feelings.'**
+  String get dbtFaq_q10_body;
+
+  /// DBT FAQ item 11 title
+  ///
+  /// In en, this message translates to:
+  /// **'Can I use it without a therapist?'**
+  String get dbtFaq_q11_title;
+
+  /// DBT FAQ item 11 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nYes, as self-help — but it’s a limited format.\n\n<strong>More detail:</strong>\nSkills alone can be very useful: they reduce impulsivity and increase stability.\n\n⚠️ If you’re dealing with severe symptoms, self-harm, addictions, trauma, or major depression, outcomes are usually better with professional support.\n\n📌 The app can be great \"homework\", but it doesn’t replace therapy.'**
+  String get dbtFaq_q11_body;
+
+  /// DBT FAQ item 12 title
+  ///
+  /// In en, this message translates to:
+  /// **'How is the app structured: skills, practices, worksheets?'**
+  String get dbtFaq_q12_title;
+
+  /// DBT FAQ item 12 body
+  ///
+  /// In en, this message translates to:
+  /// **'<strong>Short:</strong>\nA skills library + practice + state tracking.\n\n<strong>More detail:</strong>\n• Skills: concise \"what it is / why / how\".\n• Full descriptions: deeper structure, examples, context.\n• Practices: concrete exercises to do, not just read.\n• Worksheets/entries: bring the skill into real situations and see your progress.\n\n✅ Best start:\nMindfulness → Wise Mind → then \"What/How\" skills.\n\n🆘 In parallel: keep crisis skills handy for when you feel overwhelmed.\n\n📌 If you’re currently in DBT therapy, follow the path your therapist sets — and let the app be a convenient tool that’s (let’s be honest) less \"dry\" than standard handouts.'**
+  String get dbtFaq_q12_body;
 
   /// Error text prefix before the exception message when loading skills fails
   ///

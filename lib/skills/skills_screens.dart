@@ -10,6 +10,7 @@ import '../theme/app_components.dart';
 import '../analytics/amplitude_service.dart';
 import 'dbt_skill.dart';
 import 'dbt_skills_loader.dart';
+import 'dbt_faq_screen.dart';
 
 // Helper: Localize module title
 String localizedModuleTitle(BuildContext context, DbtModule module) {
@@ -65,7 +66,7 @@ int _mindfulnessRank(String name) {
   // 1..3: WHAT skills
   if (_containsAny(name, ['наблюд', 'observe', 'observation'])) return 1;
   if (_containsAny(name, ['опис', 'describe', 'description'])) return 2;
-  if (_containsAny(name, ['участв', 'participate', 'participation'])) return 3;
+  if (_containsAny(name, ['участ', 'участие', 'participate', 'participation'])) return 3;
 
   // 4..6: HOW skills
   if (_containsAny(name, ['безоцен', 'non-judgment', 'nonjudgment'])) return 4;
@@ -142,7 +143,8 @@ String _sectionTitleForSkill(BuildContext context, DbtSkill skill) {
     if (_containsAny(name, [
       'наблюд',
       'опис',
-      'участв',
+      'участ',
+      'участие',
       'observe',
       'observation',
       'describe',
@@ -259,7 +261,7 @@ class _SkillsRootScreenState extends State<SkillsRootScreen> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const DbtIntroScreen(),
+                          builder: (_) => const DbtFaqScreen(),
                         ),
                       );
                     },
@@ -391,6 +393,8 @@ class SkillsListScreen extends StatefulWidget {
 }
 
 class _SkillsListScreenState extends State<SkillsListScreen> {
+  Future<List<DbtSkill>>? _skillsFuture;
+  String? _lastLocaleName;
   @override
   void initState() {
     super.initState();
@@ -399,6 +403,19 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
       'skill_list',
       properties: {'category': widget.module.title},
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
+
+    // При смене языка пересоздаём Future, чтобы список реально перезагрузился.
+    if (_skillsFuture == null || _lastLocaleName != l10n.localeName) {
+      _lastLocaleName = l10n.localeName;
+      _skillsFuture = DbtSkillsLoader.loadSkills(localeOverride: locale);
+    }
   }
 
   @override
@@ -416,7 +433,7 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
         ),
       ),
       body: FutureBuilder<List<DbtSkill>>(
-        future: DbtSkillsLoader.loadSkills(),
+        future: _skillsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Пока грузим JSON — показываем крутилку

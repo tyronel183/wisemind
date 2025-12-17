@@ -31,104 +31,158 @@ class _MeditationsScreenState extends State<MeditationsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
+    final isEn = locale.languageCode == 'en';
 
     return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Заголовок экрана
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.screenTitleHorizontal,
-              vertical: AppSpacing.screenTitleVertical,
-            ),
-            child: Center(
-              child: Text(
-                l10n.meditationsAppBarTitle,
-                style: AppTypography.screenTitle,
-                textAlign: TextAlign.center,
+      child: FutureBuilder<List<Meditation>>(
+        future: MeditationRepository.loadForLocale(locale),
+        builder: (context, snapshot) {
+          final children = <Widget>[
+            // Заголовок экрана
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppSpacing.screenTitleVertical,
+              ),
+              child: Center(
+                child: Text(
+                  l10n.meditationsAppBarTitle,
+                  style: AppTypography.screenTitle,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<Meditation>>(
-              future: MeditationRepository.loadForLocale(Localizations.localeOf(context)),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  final locale = Localizations.localeOf(context);
-                  final lang = locale.languageCode;
-                  final errorText = lang == 'ru'
-                      ? 'Не удалось загрузить медитации'
-                      : 'Failed to load meditations';
-                  return Center(child: Text(errorText));
-                }
-                final meditations = snapshot.data ?? MeditationRepository.getAll();
 
-                // Группируем медитации по "разделам" (категориям)
-                final Map<String, List<Meditation>> grouped = {};
-                for (final m in meditations) {
-                  final rawCategory = m.category;
-                  final header = _mapCategoryToHeader(context, rawCategory);
-                  grouped.putIfAbsent(header, () => []).add(m);
-                }
-
-                // Задаём порядок разделов
-                final sectionOrder = <String>[
-                  l10n.meditationsSectionMindfulness,
-                  l10n.meditationsSectionDistressTolerance,
-                  l10n.meditationsSectionEmotionRegulation,
-                  l10n.meditationsSectionInterpersonalEffectiveness,
-                ];
-
-                final listChildren = <Widget>[];
-
-                for (final section in sectionOrder) {
-                  final items = grouped[section];
-                  if (items == null || items.isEmpty) continue;
-
-                  // Заголовок раздела
-                  listChildren.add(
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: AppSpacing.sectionTitleTop,
-                        bottom: AppSpacing.sectionTitleBottom,
-                      ),
-                      child: Text(
-                        section,
-                        style: AppTypography.sectionTitle,
+            // Плашка-предупреждение: английская локаль (медитации с голосом пока только на русском)
+            if (isEn)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                decoration: BoxDecoration(
+                  color: AppColors.greyLight,
+                  borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.meditations_langNotice_title,
+                      style: AppTypography.body.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                  );
+                    const SizedBox(height: AppSpacing.gapSmall),
+                    Text(
+                      l10n.meditations_langNotice_body,
+                      style: AppTypography.bodySecondary,
+                    ),
+                  ],
+                ),
+              ),
 
-                  // Карточки медитаций раздела
-                  for (final m in items) {
-                    listChildren.add(_MeditationCard(meditation: m));
-                  }
-                }
+            const SizedBox(height: AppSpacing.gapMedium),
+          ];
 
-                // Если по каким‑то причинам ни один раздел не собрался (например,
-                // изменились категории в данных), показываем все медитации подряд,
-                // чтобы экран не был пустым.
-                if (listChildren.isEmpty) {
-                  for (final m in meditations) {
-                    listChildren.add(_MeditationCard(meditation: m));
-                  }
-                }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            children.add(
+              const Padding(
+                padding: EdgeInsets.only(top: AppSpacing.gapXL),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            );
+            return ListView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.screenPadding,
+                vertical: AppSpacing.gapMedium,
+              ),
+              children: children,
+            );
+          }
 
-                return ListView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.screenPadding,
-                    vertical: AppSpacing.gapMedium,
-                  ),
-                  children: listChildren,
-                );
-              },
+          if (snapshot.hasError) {
+            final lang = locale.languageCode;
+            final errorText = lang == 'ru'
+                ? 'Не удалось загрузить медитации'
+                : 'Failed to load meditations';
+            children.add(
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.gapXL),
+                child: Center(child: Text(errorText)),
+              ),
+            );
+            return ListView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.screenPadding,
+                vertical: AppSpacing.gapMedium,
+              ),
+              children: children,
+            );
+          }
+
+          final meditations =
+              snapshot.data ?? MeditationRepository.getAll();
+
+          // Группируем медитации по "разделам" (категориям)
+          final Map<String, List<Meditation>> grouped = {};
+          for (final m in meditations) {
+            final rawCategory = m.category;
+            final header = _mapCategoryToHeader(context, rawCategory);
+            grouped.putIfAbsent(header, () => []).add(m);
+          }
+
+          // Задаём порядок разделов
+          final sectionOrder = <String>[
+            l10n.meditationsSectionMindfulness,
+            l10n.meditationsSectionDistressTolerance,
+            l10n.meditationsSectionEmotionRegulation,
+            l10n.meditationsSectionInterpersonalEffectiveness,
+          ];
+
+          final listChildren = <Widget>[];
+
+          for (final section in sectionOrder) {
+            final items = grouped[section];
+            if (items == null || items.isEmpty) continue;
+
+            // Заголовок раздела
+            listChildren.add(
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.sectionTitleTop,
+                  bottom: AppSpacing.sectionTitleBottom,
+                ),
+                child: Text(
+                  section,
+                  style: AppTypography.sectionTitle,
+                ),
+              ),
+            );
+
+            // Карточки медитаций раздела
+            for (final m in items) {
+              listChildren.add(_MeditationCard(meditation: m));
+            }
+          }
+
+          // Если по каким‑то причинам ни один раздел не собрался (например,
+          // изменились категории в данных), показываем все медитации подряд,
+          // чтобы экран не был пустым.
+          if (listChildren.isEmpty) {
+            for (final m in meditations) {
+              listChildren.add(_MeditationCard(meditation: m));
+            }
+          }
+
+          children.addAll(listChildren);
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenPadding,
+              vertical: AppSpacing.gapMedium,
             ),
-          ),
-        ],
+            children: children,
+          );
+        },
       ),
     );
   }
@@ -228,9 +282,10 @@ class MeditationPlayerScreen extends StatefulWidget {
 
 class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
   late AudioPlayer _player;
-  bool _useVoice = true;
+  bool _useVoice = true; // по умолчанию; для EN переключим после initState
   bool _loadFailed = false;
   bool _isLoading = false;
+  bool _didInitLocaleDefaults = false;
 
   @override
   void initState() {
@@ -241,6 +296,21 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
       'meditation_viewed',
       properties: {'meditation': widget.meditation.title},
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didInitLocaleDefaults) return;
+    _didInitLocaleDefaults = true;
+
+    // Нельзя читать Localizations/Theme в initState — делаем это тут.
+    final lang = Localizations.localeOf(context).languageCode;
+    // Для английской локали пока включаем "Music only" по умолчанию
+    // (голосовые медитации на EN будут добавлены позже).
+    if (lang == 'en') {
+      _useVoice = false;
+    }
 
     _init();
   }

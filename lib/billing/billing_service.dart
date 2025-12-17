@@ -1,15 +1,14 @@
 // lib/billing/billing_service.dart
 import 'package:flutter/material.dart';
 import '../config/build_config.dart';
+import '../revenuecat/revenuecat_service.dart';
 
 /// Единая обёртка над платёжной логикой.
 ///
 /// Сейчас:
 ///   - при [BuildConfig.useRuStoreBilling == true]
-///     ничего не покупаем, считаем всех Pro.
-///   - позже сюда добавим:
-///     * RuStore SDK
-///     * и ветку с RevenueCat для глобального релиза.
+///     пока ничего не покупаем, считаем всех Pro (заглушка под RuStore).
+///   - иначе используем RevenueCat (Google Play / App Store).
 ///
 /// Важно: UI должен ходить ТОЛЬКО сюда, а не напрямую к RevenueCat.
 class BillingService {
@@ -22,10 +21,8 @@ class BillingService {
       debugPrint('[Billing] RuStore mode: skip store SDK init for now');
       return;
     } else {
-      // TODO: когда будем делать глобальный релиз,
-      // сюда вернём инициализацию RevenueCat:
-      //
-      // await RevenueCatService.instance.init();
+      // Глобальный релиз (Google Play / App Store): RevenueCat.
+      await RevenueCatService.instance.init();
       return;
     }
   }
@@ -37,10 +34,7 @@ class BillingService {
       // TODO: сюда придёт RuStore-пейволл.
       return true;
     } else {
-      // TODO: сюда вернём RevenueCat paywall:
-      //
-      // return RevenueCatService.instance.ensureProOrShowPaywall(context);
-      return true;
+      return RevenueCatService.instance.ensureProOrShowPaywall(context);
     }
   }
 
@@ -49,10 +43,7 @@ class BillingService {
     if (BuildConfig.useRuStoreBilling) {
       return true; // всё Pro
     } else {
-      // TODO: вернём сюда RevenueCat:
-      //
-      // return RevenueCatService.instance.isPro;
-      return true;
+      return RevenueCatService.instance.isPro;
     }
   }
 
@@ -61,10 +52,7 @@ class BillingService {
     if (BuildConfig.useRuStoreBilling) {
       return true;
     } else {
-      // TODO: вернём сюда RevenueCat:
-      //
-      // return RevenueCatService.instance.isProSync;
-      return true;
+      return RevenueCatService.instance.isProSync;
     }
   }
 
@@ -80,9 +68,7 @@ class BillingService {
         ),
       );
     } else {
-      // TODO: вернуть сюда:
-      //
-      // await RevenueCatService.instance.restorePurchases(context);
+      await RevenueCatService.instance.restorePurchases(context);
     }
   }
 
@@ -100,9 +86,7 @@ class BillingService {
         ),
       );
     } else {
-      // TODO: вернуть сюда:
-      //
-      // await RevenueCatService.instance.openCustomerCenter(context);
+      await RevenueCatService.instance.openCustomerCenter(context);
     }
   }
 }

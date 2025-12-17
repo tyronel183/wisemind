@@ -59,6 +59,12 @@ Future<void> main() async {
   final bool hasCompletedOnboarding =
       settingsBox.get('hasCompletedOnboarding', defaultValue: false) as bool;
 
+  final String? savedLocaleCode =
+      settingsBox.get('app_locale', defaultValue: null) as String?;
+  final Locale? initialLocale = (savedLocaleCode == null || savedLocaleCode.isEmpty)
+      ? null
+      : Locale(savedLocaleCode);
+
   // Инициализация Amplitude с базовыми user properties
   await AmplitudeService.instance.init(
     apiKey: '184d3ba87a05255179cc9df84f22236b',
@@ -92,37 +98,110 @@ Future<void> main() async {
     WisemindApp(
       repository: repository,
       hasCompletedOnboarding: hasCompletedOnboarding,
+      initialLocale: initialLocale,
     ),
   );
 }
 
-class WisemindApp extends StatelessWidget {
+class WisemindApp extends StatefulWidget {
   final StateRepository repository;
   final bool hasCompletedOnboarding;
+  final Locale? initialLocale;
 
   const WisemindApp({
     super.key,
     required this.repository,
     required this.hasCompletedOnboarding,
+    this.initialLocale,
   });
 
   @override
+  State<WisemindApp> createState() => _WisemindAppState();
+}
+
+class _WisemindAppState extends State<WisemindApp> {
+  late final ValueNotifier<Locale?> _localeNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _localeNotifier = ValueNotifier<Locale?>(widget.initialLocale);
+  }
+
+  @override
+  void dispose() {
+    _localeNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: appNavigatorKey,
-      title: 'Wisemind',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      // locale: ... // позже, если сделаем ручной переключатель
-      routes: {
-        '/': (context) => WisemindRoot(
-              repository: repository,
-              hasCompletedOnboarding: hasCompletedOnboarding,
-            ),
-      },
+    return AppLocaleScope(
+      localeNotifier: _localeNotifier,
+      child: ValueListenableBuilder<Locale?>(
+        valueListenable: _localeNotifier,
+        builder: (context, locale, _) {
+          return MaterialApp(
+            navigatorKey: appNavigatorKey,
+            title: 'Wisemind',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: locale,
+            routes: {
+              '/': (context) => WisemindRoot(
+                    repository: widget.repository,
+                    hasCompletedOnboarding: widget.hasCompletedOnboarding,
+                  ),
+            },
+          );
+        },
+      ),
     );
+  }
+}
+
+/// Глобальный scope для ручного переключения языка приложения.
+///
+/// Как использовать из любого экрана (например, Settings):
+///   await AppLocaleScope.setLocale(context, const Locale('ru'));
+///   await AppLocaleScope.setLocale(context, const Locale('en'));
+///   await AppLocaleScope.setLocale(context, null); // вернуть системный язык
+class AppLocaleScope extends InheritedWidget {
+  final ValueNotifier<Locale?> localeNotifier;
+
+  const AppLocaleScope({
+    super.key,
+    required this.localeNotifier,
+    required Widget child,
+  }) : super(child: child);
+
+  static ValueNotifier<Locale?> of(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<AppLocaleScope>();
+    assert(scope != null, 'AppLocaleScope not found in widget tree');
+    return scope!.localeNotifier;
+  }
+
+  /// Установить язык и сохранить выбор в Hive (`app_settings` -> `app_locale`).
+  ///
+  /// locale == null: использовать системный язык.
+  static Future<void> setLocale(BuildContext context, Locale? locale) async {
+    final settingsBox = Hive.box('app_settings');
+
+    if (locale == null) {
+      await settingsBox.delete('app_locale');
+      AppLocaleScope.of(context).value = null;
+      return;
+    }
+
+    await settingsBox.put('app_locale', locale.languageCode);
+    AppLocaleScope.of(context).value = locale;
+  }
+
+  @override
+  bool updateShouldNotify(AppLocaleScope oldWidget) {
+    return oldWidget.localeNotifier != localeNotifier;
   }
 }
 
@@ -217,8 +296,8 @@ class _MainScaffoldState extends State<MainScaffold> {
         },
         items: [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined),
-            activeIcon: const Icon(Icons.home),
+            icon: const Icon(Icons.favorite_border),
+            activeIcon: const Icon(Icons.favorite),
             label: l10n.mainNavState,
           ),
           BottomNavigationBarItem(

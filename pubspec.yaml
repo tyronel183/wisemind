@@ -59,3 +59,5 @@ flutter:
     - assets/data/skills_base.json
     - assets/data/skills_ru.json
     - assets/data/skills_en.json
+    - assets/images/dbt_faq/ru/
+    - assets/images/dbt_faq/en/

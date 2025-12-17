@@ -16,6 +16,8 @@ class RevenueCatService {
 
   static final RevenueCatService instance = RevenueCatService._();
 
+  bool _initialized = false;
+
   final _customerInfoController = StreamController<CustomerInfo>.broadcast();
   CustomerInfo? _lastInfo;
 
@@ -24,17 +26,12 @@ class RevenueCatService {
 
   /// Инициализация RevenueCat. Вызывать один раз при старте приложения.
   Future<void> init() async {
-    // TODO: для продакшена завести отдельный боевой API-ключ RevenueCat
-    //       и убрать этот ранний выход в kReleaseMode.
-    if (kReleaseMode) {
-      debugPrint(
-        '[RevenueCatService] init() пропущен в релизной сборке из-за тестового API-ключа.',
-      );
-      return;
-    }
+    if (_initialized) return;
+    _initialized = true;
 
-    // В дев-режиме включаем подробный лог.
-    await Purchases.setLogLevel(LogLevel.debug);
+    if (!kReleaseMode) {
+      Purchases.setLogLevel(LogLevel.debug);
+    }
 
     final config = PurchasesConfiguration(RevenueCatConstants.apiKey);
 
@@ -145,6 +142,7 @@ class RevenueCatService {
 
   /// Очистка ресурсов (если когда-нибудь понадобится закрывать сервис).
   void dispose() {
+    _initialized = false;
     _customerInfoController.close();
   }
 }

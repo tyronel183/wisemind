@@ -1,13 +1,42 @@
-class RevenueCatConstants {
-  // Тестовый ключ, который ты дал
-  static const String apiKey = 'test_hgRrFFizBWwhGxKVyQLRcElkxpV';
+import 'dart:io' show Platform;
 
-  // Имена офферинга и энтайтла — такие же должны быть в RevenueCat Dashboard
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+class RevenueCatConstants {
+  // ВАЖНО:
+  // Public SDK key в RevenueCat зависит от платформы (обычно начинается с:
+  //  - Android: "goog_..."
+  //  - iOS:    "appl_..."
+  // Если пока выпускаем только Android — можно временно оставить оба ключа одинаковыми,
+  // но перед релизом на обе платформы обязательно подставь реальные ключи из RevenueCat Dashboard.
+
+  // ВРЕМЕННО (замени на реальный Android public SDK key из RevenueCat)
+  static const String apiKeyAndroid = 'test_hgRrFFizBWwhGxKVyQLRcElkxpV';
+
+  // ВРЕМЕННО (замени на реальный iOS public SDK key из RevenueCat)
+  static const String apiKeyIos = 'test_hgRrFFizBWwhGxKVyQLRcElkxpV';
+
+  /// API-ключ для текущей платформы.
+  static String get apiKey {
+    if (kIsWeb) {
+      throw UnsupportedError('RevenueCat is not supported on Web in this app.');
+    }
+
+    // `Platform` доступен только вне Web.
+    if (Platform.isAndroid) return apiKeyAndroid;
+    if (Platform.isIOS) return apiKeyIos;
+
+    // Фолбэк (например, macOS/Windows/Linux при разработке). По умолчанию берём Android.
+    return apiKeyAndroid;
+  }
+
+  // ВАЖНО:
+  // Это значение должно 1-в-1 совпадать с *Entitlement Identifier* в RevenueCat Dashboard
+  // (а не с отображаемым названием). Часто используют что-то вроде "wisemind_pro".
   static const String entitlementWisemindPro = 'Wisemind Pro';
 
-  // Если будешь использовать конкретный offering
-  static const String mainOfferingId = 'default'; 
-  // можно оставить 'default', если в RC используется стандартный офферинг
+  // Идентификатор offering ("default" подходит, если используешь дефолтный offering).
+  static const String mainOfferingId = 'default';
 }
 
 enum SubscriptionStatus {

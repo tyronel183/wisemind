@@ -10,6 +10,7 @@ import '../analytics/amplitude_service.dart';
 import '../debug/ui_kit_screen.dart';
 import '../theme/app_card_tile.dart';
 import '../theme/app_spacing.dart';
+import '../main.dart' show AppLocaleScope;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,6 +21,57 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _remindersEnabled = true;
+
+  Locale? _selectedLocale;
+
+  String _localeLabel(Locale? selectedLocale, Locale currentLocale) {
+    final effectiveCode = selectedLocale?.languageCode ??
+        (currentLocale.languageCode == 'ru' ? 'ru' : 'en');
+    if (effectiveCode == 'ru') return 'Русский';
+    return 'English';
+  }
+
+  Future<void> _pickLanguage() async {
+    final currentLocale = Localizations.localeOf(context);
+
+    final chosen = await showModalBottomSheet<Locale>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) {
+        final effectiveCode = _selectedLocale?.languageCode ??
+            (currentLocale.languageCode == 'ru' ? 'ru' : 'en');
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.language_outlined),
+                title: const Text('Русский'),
+                trailing: effectiveCode == 'ru' ? const Icon(Icons.check) : null,
+                onTap: () => Navigator.of(ctx).pop(const Locale('ru')),
+              ),
+              ListTile(
+                leading: const Icon(Icons.language_outlined),
+                title: const Text('English'),
+                trailing: effectiveCode == 'en' ? const Icon(Icons.check) : null,
+                onTap: () => Navigator.of(ctx).pop(const Locale('en')),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _selectedLocale = chosen;
+    });
+
+    // Применяем локаль через scope (см. main.dart).
+    await AppLocaleScope.setLocale(context, chosen);
+  }
 
   @override
   void initState() {
@@ -83,6 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currentLocale = Localizations.localeOf(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.settingsAppBarTitle),
@@ -99,6 +152,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: Text(l10n.settingsReminderSubtitle),
             value: _remindersEnabled,
             onChanged: _onReminderToggle,
+          ),
+
+          // Язык приложения
+          AppCardTile(
+            leading: const Icon(Icons.language_outlined),
+            title: currentLocale.languageCode == 'ru' ? 'Язык' : 'Language',
+            subtitle: _localeLabel(_selectedLocale, currentLocale),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _pickLanguage,
           ),
 
           // Как пользоваться приложением
@@ -146,7 +208,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
 
-          /*
           // UI Kit (debug)
           AppCardTile(
             leading: const Icon(Icons.palette_outlined),
@@ -161,7 +222,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
-          */
         ],
       ),
     );
