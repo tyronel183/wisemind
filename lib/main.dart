@@ -174,8 +174,8 @@ class AppLocaleScope extends InheritedWidget {
   const AppLocaleScope({
     super.key,
     required this.localeNotifier,
-    required Widget child,
-  }) : super(child: child);
+    required super.child,
+  });
 
   static ValueNotifier<Locale?> of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AppLocaleScope>();
@@ -188,15 +188,16 @@ class AppLocaleScope extends InheritedWidget {
   /// locale == null: использовать системный язык.
   static Future<void> setLocale(BuildContext context, Locale? locale) async {
     final settingsBox = Hive.box('app_settings');
+    final notifier = AppLocaleScope.of(context);
 
     if (locale == null) {
       await settingsBox.delete('app_locale');
-      AppLocaleScope.of(context).value = null;
+      notifier.value = null;
       return;
     }
 
     await settingsBox.put('app_locale', locale.languageCode);
-    AppLocaleScope.of(context).value = locale;
+    notifier.value = locale;
   }
 
   @override

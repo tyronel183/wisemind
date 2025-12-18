@@ -7,6 +7,7 @@
 ///
 /// The UI layer should render these items as an accordion (e.g., ExpansionTile).
 
+
 class DbtFaqItem {
   /// Stable identifier (useful for analytics / tests / deep links later).
   final String id;

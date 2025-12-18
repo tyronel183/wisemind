@@ -209,19 +209,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
 
           // UI Kit (debug)
-          AppCardTile(
-            leading: const Icon(Icons.palette_outlined),
-            title: 'UI Kit (debug)',
-            subtitle: 'Экран дизайн-системы',
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const UiKitScreen(),
-                ),
-              );
-            },
-          ),
+//          AppCardTile(
+//            leading: const Icon(Icons.palette_outlined),
+//            title: 'UI Kit (debug)',
+//            subtitle: 'Экран дизайн-системы',
+//            trailing: const Icon(Icons.chevron_right),
+//            onTap: () {
+//              Navigator.of(context).push(
+//                MaterialPageRoute(
+//                  builder: (_) => const UiKitScreen(),
+//                ),
+//              );
+//            },
+//          ),
         ],
       ),
     );

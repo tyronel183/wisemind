@@ -77,7 +77,9 @@ int _mindfulnessRank(String name) {
     'onemind',
     'single-tasking',
     'single tasking',
-  ])) return 5;
+  ])) {
+    return 5;
+  }
   if (_containsAny(name, ['эффектив', 'effectively', 'effectiveness'])) return 6;
 
   // 7..8: Additional
