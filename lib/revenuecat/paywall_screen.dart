@@ -1,11 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+
 import '../l10n/app_localizations.dart';
 
-/// Экран-обёртка для показа нативного paywall от RevenueCat.
+/// Экран-обёртка вокруг paywall от RevenueCat.
 ///
-/// Использует RevenueCatUI.presentPaywall, который сам подтягивает
-/// текущий offering и связанный с ним paywall, настроенный в Dashboard.
+/// Важно: НЕ используем `RevenueCatUI.presentPaywall()` — это нативная модалка.
+/// Мы встраиваем paywall как Flutter-виджет (`PaywallView`) внутрь нашего экрана:
+/// - есть стабильная кнопка «назад» (AppBar)
+/// - локаль контролируем сами (через overridePreferredUILocale)
 class WisemindPaywallScreen extends StatefulWidget {
   const WisemindPaywallScreen({super.key});
 
@@ -14,110 +19,86 @@ class WisemindPaywallScreen extends StatefulWidget {
 }
 
 class _WisemindPaywallScreenState extends State<WisemindPaywallScreen> {
-  bool _isPresenting = false;
-  bool _hadError = false;
+  Offering? _offering;
+  Object? _error;
+  bool _loading = true;
 
-  // Временный фолбэк для локализации: если ARB-ключи ещё не сгенерились
-  // в AppLocalizations, берём дефолтные строки по языку устройства.
-  bool _isRu(BuildContext context) {
-    return Localizations.localeOf(context).languageCode.toLowerCase() == 'ru';
+  // Чтобы реально перезагружать offering при смене языка.
+  String? _lastLocaleTag;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final localeTag = Localizations.localeOf(context).toLanguageTag();
+    if (_lastLocaleTag == null || _lastLocaleTag != localeTag) {
+      _lastLocaleTag = localeTag;
+      _loadOfferingForCurrentLocale();
+    }
+  }
+
+  Future<void> _loadOfferingForCurrentLocale() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+      _offering = null;
+    });
+
+    final locale = Localizations.localeOf(context);
+    final lang = locale.languageCode.toLowerCase();
+    final rcLocale = (lang == 'ru') ? 'ru' : 'en';
+
+    try {
+      // КРИТИЧНО: выставляем локаль ДО получения offerings
+      await Purchases.overridePreferredUILocale(rcLocale);
+
+      if (kDebugMode) {
+        debugPrint('[Paywall] locale=${locale.toLanguageTag()} rcLocale=$rcLocale');
+      }
+
+      final offerings = await Purchases.getOfferings();
+      final offering = offerings.current;
+
+      if (offering == null) {
+        throw StateError('No current offering configured in RevenueCat.');
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _offering = offering;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e;
+        _loading = false;
+      });
+    }
   }
 
   String _paywallTitle(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     if (l10n != null) {
-      try {
-        final dynamic d = l10n;
-        final v = d.paywallTitle;
-        if (v is String && v.isNotEmpty) return v;
-      } catch (_) {}
+      return l10n.paywall_title;
     }
     return 'Wisemind Pro';
   }
 
-  String _paywallOpening(BuildContext context) {
+  String _openFailed(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     if (l10n != null) {
-      try {
-        final dynamic d = l10n;
-        final v = d.paywallOpening;
-        if (v is String && v.isNotEmpty) return v;
-      } catch (_) {}
+      return l10n.paywall_open_failed;
     }
-    return _isRu(context) ? 'Открываю экран подписки…' : 'Opening the subscription screen…';
+    return 'Couldn’t open the subscription screen.';
   }
 
-  String _paywallOpenFailed(BuildContext context) {
+  String _retry(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     if (l10n != null) {
-      try {
-        final dynamic d = l10n;
-        final v = d.paywallOpenFailed;
-        if (v is String && v.isNotEmpty) return v;
-      } catch (_) {}
+      return l10n.paywall_retry;
     }
-    return _isRu(context)
-        ? 'Не удалось открыть экран подписки.'
-        : 'Couldn’t open the subscription screen.';
-  }
-
-  String _paywallRetry(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    if (l10n != null) {
-      try {
-        final dynamic d = l10n;
-        final v = d.paywallRetry;
-        if (v is String && v.isNotEmpty) return v;
-      } catch (_) {}
-    }
-    return _isRu(context) ? 'Попробовать ещё раз' : 'Try again';
-  }
-
-  String _paywallOpenFailedWithError(BuildContext context, String error) {
-    final l10n = AppLocalizations.of(context);
-    if (l10n != null) {
-      try {
-        final dynamic d = l10n;
-        final v = d.paywallOpenFailedWithError(error);
-        if (v is String && v.isNotEmpty) return v;
-      } catch (_) {}
-    }
-    return _isRu(context)
-        ? 'Не удалось открыть экран подписки: $error'
-        : 'Couldn’t open the subscription screen: $error';
-  }
-
-  Future<void> _showPaywall() async {
-    setState(() {
-      _isPresenting = true;
-      _hadError = false;
-    });
-
-    try {
-      // Показываем paywall. SDK сам подхватит актуальный offering
-      // и связанный с ним paywall, если он настроен в RevenueCat.
-      final result = await RevenueCatUI.presentPaywall();
-
-      // Если пользователь купил/закрыл paywall — просто возвращаемся назад.
-      if (!mounted) return;
-      Navigator.of(context).pop(result);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _hadError = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_paywallOpenFailedWithError(context, e.toString())),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isPresenting = false;
-        });
-      }
-    }
+    return 'Try again';
   }
 
   @override
@@ -126,31 +107,52 @@ class _WisemindPaywallScreenState extends State<WisemindPaywallScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: _isPresenting ? null : () => Navigator.of(context).maybePop(),
+          onPressed: () => Navigator.of(context).maybePop(),
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
         ),
         title: Text(_paywallTitle(context)),
         centerTitle: true,
       ),
-      body: Center(
-        child: _isPresenting
-            ? const CircularProgressIndicator()
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _hadError
-                        ? _paywallOpenFailed(context)
-                        : _paywallOpening(context),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _showPaywall,
-                    child: Text(_paywallRetry(context)),
-                  ),
-                ],
-              ),
+      body: SafeArea(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : (_error != null)
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(_openFailed(context), textAlign: TextAlign.center),
+                          const SizedBox(height: 12),
+                          Text(_error.toString(), textAlign: TextAlign.center),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: _loadOfferingForCurrentLocale,
+                            child: Text(_retry(context)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : (_offering == null)
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_openFailed(context), textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: _loadOfferingForCurrentLocale,
+                                child: Text(_retry(context)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : PaywallView(offering: _offering!),
       ),
     );
   }

@@ -1,6 +1,5 @@
 // lib/billing/billing_service.dart
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import '../revenuecat/revenuecat_service.dart';
 
 /// Единая обёртка над платёжной логикой.

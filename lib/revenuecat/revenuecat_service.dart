@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 import 'revenuecat_constants.dart';
+import 'paywall_screen.dart';
 
 /// Сервис-обёртка над RevenueCat.
 ///
@@ -34,18 +36,11 @@ class RevenueCatService {
     }
 
     final config = PurchasesConfiguration(RevenueCatConstants.apiKey);
-
-    // Если в будущем захочешь использовать собственный userId,
-    // можно раскомментировать и передавать сюда свой идентификатор.
-    // config.appUserId = yourUserId;
-
     await Purchases.configure(config);
 
-    // Загружаем начальную информацию о клиенте и сохраняем локально.
     final info = await Purchases.getCustomerInfo();
     _updateInfo(info);
 
-    // Подписываемся на обновления от SDK.
     Purchases.addCustomerInfoUpdateListener(_updateInfo);
   }
 
@@ -56,8 +51,8 @@ class RevenueCatService {
 
   /// Синхронная проверка: есть ли активный Wisemind Pro.
   bool get isProSync {
-    final entitlement = _lastInfo?.entitlements
-        .all[RevenueCatConstants.entitlementWisemindPro];
+    final entitlement =
+        _lastInfo?.entitlements.all[RevenueCatConstants.entitlementWisemindPro];
     return entitlement?.isActive == true;
   }
 
@@ -70,41 +65,57 @@ class RevenueCatService {
     return isProSync;
   }
 
+  /// Выставляет предпочтительную локаль для UI-компонентов RevenueCat.
+  ///
+  /// Важно: поддерживаем только RU/EN, поэтому всё, что не `ru`, считаем `en`.
+  Future<void> setPreferredLocale(ui.Locale locale) async {
+    final lang = locale.languageCode.toLowerCase();
+    final String rcLocale = (lang == 'ru') ? 'ru' : 'en';
+
+    if (kDebugMode) {
+      debugPrint(
+        '[RevenueCatService] overridePreferredUILocale=$rcLocale (app locale=${locale.toLanguageTag()})',
+      );
+    }
+
+    await Purchases.overridePreferredUILocale(rcLocale);
+  }
+
   /// Убедиться, что у пользователя есть Pro.
   /// Если нет — показать paywall. Возвращает true, если после этого Pro активен.
   Future<bool> ensureProOrShowPaywall(BuildContext context) async {
-    // Если уже есть Pro — просто возвращаем true.
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final navigator = Navigator.of(context);
+    final appLocale = Localizations.localeOf(context);
+
     if (await isPro) return true;
+    if (!context.mounted) return false;
 
     try {
-      // Показ нативного paywall, привязанного к offering в RevenueCat.
-      await RevenueCatUI.presentPaywall();
+      // ВАЖНО: выставляем локаль ДО загрузки offerings/paywall.
+      await setPreferredLocale(appLocale);
 
-      // После закрытия paywall обновляем информацию о пользователе.
+      // Открываем НАШ экран с AppBar и кнопкой назад.
+      await navigator.push<void>(
+        MaterialPageRoute(
+          builder: (_) => const WisemindPaywallScreen(),
+          fullscreenDialog: true,
+        ),
+      );
+
       final info = await Purchases.getCustomerInfo();
       _updateInfo(info);
 
       return isProSync;
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Не удалось открыть экран подписки: $e'),
-          ),
-        );
-      }
+      messenger?.showSnackBar(
+        SnackBar(content: Text('Не удалось открыть экран подписки: $e')),
+      );
       return false;
     }
   }
 
-  /// Явное получение текущего CustomerInfo (если нужно что-то особенное).
-  Future<CustomerInfo> getCustomerInfo() async {
-    final info = await Purchases.getCustomerInfo();
-    _updateInfo(info);
-    return info;
-  }
-
-  /// Восстановление покупок (для смены устройства, переустановки и т.п.).
+  /// Восстановление покупок.
   Future<void> restorePurchases(BuildContext context) async {
     try {
       final info = await Purchases.restorePurchases();
@@ -128,19 +139,21 @@ class RevenueCatService {
     }
   }
 
-  /// Открыть Customer Center (если он включён в RevenueCat Dashboard).
+  /// Открыть Customer Center.
   Future<void> openCustomerCenter(BuildContext context) async {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final appLocale = Localizations.localeOf(context);
+
     try {
+      await setPreferredLocale(appLocale);
       await RevenueCatUI.presentCustomerCenter();
     } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger?.showSnackBar(
         SnackBar(content: Text('Не удалось открыть управление подпиской: $e')),
       );
     }
   }
 
-  /// Очистка ресурсов (если когда-нибудь понадобится закрывать сервис).
   void dispose() {
     _initialized = false;
     _customerInfoController.close();
