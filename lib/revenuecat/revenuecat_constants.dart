@@ -11,7 +11,7 @@ class RevenueCatConstants {
   // но перед релизом на обе платформы обязательно подставь реальные ключи из RevenueCat Dashboard.
 
   // ВРЕМЕННО (замени на реальный Android public SDK key из RevenueCat)
-  static const String apiKeyAndroid = 'test_hgRrFFizBWwhGxKVyQLRcElkxpV';
+  static const String apiKeyAndroid = 'goog_fUPsCuLwkPdfnNEhRrtHZmfXElg';
 
   // ВРЕМЕННО (замени на реальный iOS public SDK key из RevenueCat)
   static const String apiKeyIos = 'test_hgRrFFizBWwhGxKVyQLRcElkxpV';

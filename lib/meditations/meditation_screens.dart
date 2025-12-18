@@ -252,8 +252,14 @@ class _MeditationCard extends StatelessWidget {
               const Icon(Icons.self_improvement),
         ),
         onTap: () async {
-          // Бесплатные медитации (например, раздел "Осознанность") доступны сразу.
-          if (m.isFree) {
+          // Бесплатный доступ: ВСЯ метасекция "Осознанность".
+          // Данные могут быть на RU/EN, поэтому проверяем оба варианта.
+          final l10n = AppLocalizations.of(context)!;
+          final isMindfulness = m.category == 'Осознанность' ||
+              m.category == 'Mindfulness' ||
+              m.category == l10n.meditationsSectionMindfulness;
+
+          if (isMindfulness) {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => MeditationPlayerScreen(meditation: m),
@@ -262,9 +268,8 @@ class _MeditationCard extends StatelessWidget {
             return;
           }
 
-          // Для остальных медитаций проверяем доступ через общий биллинговый слой.
-          final allowed =
-              await BillingService.ensureProOrShowPaywall(context);
+          // Для всех остальных медитаций — проверяем Pro и при необходимости показываем paywall.
+          final allowed = await BillingService.ensureProOrShowPaywall(context);
           if (!context.mounted || !allowed) return;
 
           Navigator.of(context).push(
@@ -402,6 +407,10 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final meditation = widget.meditation;
+
+    final isMindfulness = meditation.category == 'Осознанность' ||
+        meditation.category == 'Mindfulness' ||
+        meditation.category == l10n.meditationsSectionMindfulness;
 
     return Scaffold(
       appBar: AppBar(title: Text(meditation.title)),
@@ -638,7 +647,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
             ],
           ],
 
-          if (!meditation.isFree) ...[
+          if (!isMindfulness) ...[
             const SizedBox(height: AppSpacing.gapLarge),
             Text(
               l10n.meditationSubscriptionInfo,
