@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
+import '../analytics/amplitude_service.dart'; // ✅ добавили
 import 'revenuecat_constants.dart';
 import 'paywall_screen.dart';
 
@@ -41,6 +42,9 @@ class RevenueCatService {
   void _updateInfo(CustomerInfo info) {
     _lastInfo = info;
     _customerInfoController.add(info);
+
+    // ✅ синхронизируем user property при любом апдейте CustomerInfo
+    _syncSubscriptionStatusUserProperty(info);
   }
 
   bool get isProSync {
@@ -55,6 +59,50 @@ class RevenueCatService {
       _updateInfo(info);
     }
     return isProSync;
+  }
+
+  // ✅ derive subscription_status: free | monthly | yearly | lifetime
+  String _deriveSubscriptionStatus(CustomerInfo info) {
+    final entitlement =
+        info.entitlements.all[RevenueCatConstants.entitlementWisemindPro];
+
+    if (entitlement?.isActive != true) return 'free';
+
+    // activeSubscriptions — самый надёжный источник для текущей активной подписки.
+    final active = info.activeSubscriptions.map((e) => e.toLowerCase()).toSet();
+
+    if (active.contains('wisemind_lifetime')) return 'lifetime';
+    if (active.contains('wisemind_pro:yearly')) return 'yearly';
+    if (active.contains('wisemind_pro:monthly')) return 'monthly';
+
+    // На всякий случай: если entitlement активен, но activeSubscriptions пуст/неожиданен,
+    // смотрим покупки.
+    final purchased =
+        info.allPurchasedProductIdentifiers.map((e) => e.toLowerCase()).toSet();
+
+    if (purchased.contains('wisemind_lifetime')) return 'lifetime';
+    if (purchased.contains('wisemind_pro:yearly')) return 'yearly';
+    if (purchased.contains('wisemind_pro:monthly')) return 'monthly';
+
+    // Детерминированный дефолт при активном entitlement
+    return 'monthly';
+  }
+
+  void _syncSubscriptionStatusUserProperty(CustomerInfo info) {
+    final status = _deriveSubscriptionStatus(info);
+
+    if (kDebugMode) {
+      debugPrint(
+        '[RevenueCatService] subscription_status=$status '
+        '(activeSubs=${info.activeSubscriptions}, allPurchased=${info.allPurchasedProductIdentifiers})',
+      );
+    }
+
+    try {
+      AmplitudeService.instance.setUserProperties({
+        'subscription_status': status,
+      });
+    } catch (_) {}
   }
 
   // RevenueCat UI locale должен быть вида language_COUNTRY, например en_US / ru_RU

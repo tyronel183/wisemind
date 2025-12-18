@@ -32,10 +32,16 @@ Future<void> main() async {
   // Версия приложения из package_info_plus
   final packageInfo = await PackageInfo.fromPlatform();
   final String appVersion = packageInfo.version;
+  final String buildNumber = packageInfo.buildNumber;
+  final String appVersionFull = '$appVersion ($buildNumber)';
 
-  // Язык из системной локали
-  final locale = WidgetsBinding.instance.platformDispatcher.locale;
-  final String languageCode = locale.languageCode;
+  // Для Amplitude: нормализуем язык до ru/en/other
+  String normalizeLanguage(String code) {
+    final c = code.toLowerCase();
+    if (c == 'ru') return 'ru';
+    if (c == 'en') return 'en';
+    return 'other';
+  }
 
   await BillingService.init();
 
@@ -65,13 +71,20 @@ Future<void> main() async {
       ? null
       : Locale(savedLocaleCode);
 
+  // Эффективная локаль приложения: сохранённая (если есть) иначе системная.
+  final Locale effectiveLocale =
+      initialLocale ?? WidgetsBinding.instance.platformDispatcher.locale;
+  final String language = normalizeLanguage(effectiveLocale.languageCode);
+  final String? country = effectiveLocale.countryCode;
+
   // Инициализация Amplitude с базовыми user properties
   await AmplitudeService.instance.init(
     apiKey: '184d3ba87a05255179cc9df84f22236b',
     appVersion: appVersion,
     initialUserProperties: {
       'platform': Platform.isAndroid ? 'android' : 'ios',
-      'language': languageCode,
+      'app_version': appVersionFull,
+      'language': language,
       'notifications_enabled': false, // будет обновляться из настроек
       'onboarding_completed': hasCompletedOnboarding,
       'usage_guide_completed': false,
@@ -79,7 +92,7 @@ Future<void> main() async {
       'has_any_state_entries': box.isNotEmpty,
       'has_any_worksheet_entries':
           Hive.box<ProsConsEntry>(kProsConsBoxName).isNotEmpty,
-      'country': null,
+      'country': country,
     },
   );
 
@@ -327,6 +340,8 @@ class _MainScaffoldState extends State<MainScaffold> {
         builder: (context) => const EntryFormScreen(),
       ),
     );
+
+    if (!mounted) return;
 
     if (newEntry != null) {
       // кладём запись в тот же бокс, который слушает HomeScreen

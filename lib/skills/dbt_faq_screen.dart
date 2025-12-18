@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 
 import '../l10n/app_localizations.dart';
 import 'dbt_faq_data.dart';
+import '../analytics/amplitude_service.dart';
 
 class DbtFaqScreen extends StatefulWidget {
   const DbtFaqScreen({super.key});
@@ -17,6 +18,8 @@ class _DbtFaqScreenState extends State<DbtFaqScreen> {
   @override
   void initState() {
     super.initState();
+    // Screen opened
+    AmplitudeService.instance.logEvent('about_dbt');
     _pageController = PageController(viewportFraction: 0.92);
   }
 

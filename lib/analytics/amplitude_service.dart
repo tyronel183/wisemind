@@ -1,8 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io' show Platform;
+import 'dart:ui' as ui;
+
 import 'package:amplitude_flutter/amplitude.dart';
 import 'package:amplitude_flutter/configuration.dart';
 import 'package:amplitude_flutter/events/base_event.dart';
 import 'package:amplitude_flutter/events/identify.dart';
+import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 /// Централизованный сервис для работы с Amplitude.
 ///
@@ -48,25 +52,31 @@ class AmplitudeService {
       amplitude.setUserId(userId);
     }
 
-    // Устанавливаем стартовые user properties (например, platform, app_version и др.)
-    if (appVersion != null || (initialUserProperties != null && initialUserProperties.isNotEmpty)) {
-      final identify = Identify();
-
-      if (appVersion != null) {
-        identify.set('app_version', appVersion);
-      }
-
-      if (initialUserProperties != null && initialUserProperties.isNotEmpty) {
-        initialUserProperties.forEach((key, value) {
-          identify.set(key, value);
-        });
-      }
-
-      amplitude.identify(identify);
-    }
-
     _amplitude = amplitude;
     _initialized = true;
+
+    // --- Base user properties (platform, app_version, language, country)
+    final resolvedAppVersion = appVersion ?? await _safeGetAppVersionString();
+    final baseProps = <String, dynamic>{
+      'platform': _platformString(),
+      if (resolvedAppVersion != null) 'app_version': resolvedAppVersion,
+      'language': _normalizeLanguage(ui.PlatformDispatcher.instance.locale.languageCode),
+      'country': _countryCodeOrNull(),
+    };
+
+    // --- Merge with initial user properties provided by caller
+    final mergedProps = <String, dynamic>{
+      ...baseProps,
+      if (initialUserProperties != null) ...initialUserProperties,
+    };
+
+    if (mergedProps.isNotEmpty) {
+      final identify = Identify();
+      mergedProps.forEach((key, value) {
+        identify.set(key, value);
+      });
+      amplitude.identify(identify);
+    }
 
     debugPrint('[AmplitudeService] Initialized');
   }
@@ -85,6 +95,138 @@ class AmplitudeService {
     });
 
     amplitude.identify(identify);
+  }
+
+  /// Полный синк user properties (вызывай при старте и после изменений).
+  ///
+  /// Проперти, которые тут поддерживаем:
+  /// - platform: android / ios
+  /// - app_version: например 1.0.0 (3)
+  /// - language: ru / en / other
+  /// - notifications_enabled: true/false
+  /// - onboarding_completed: true/false
+  /// - usage_guide_completed: true/false
+  /// - subscription_status: free, ru_monthly, ru_yearly, ru_lifetime, revcat_monthly, ...
+  /// - has_any_state_entries: true/false
+  /// - has_any_worksheet_entries: true/false
+  /// - country: RU/US/... (ISO 3166-1 alpha-2), если доступно
+  Future<void> syncUserProperties({
+    String? languageCode,
+    bool? notificationsEnabled,
+    bool? onboardingCompleted,
+    bool? usageGuideCompleted,
+    String? subscriptionStatus,
+    bool? hasAnyStateEntries,
+    bool? hasAnyWorksheetEntries,
+    String? countryCode,
+    String? appVersion,
+    String? platform,
+  }) async {
+    final props = <String, dynamic>{
+      // base
+      'platform': platform ?? _platformString(),
+      'app_version': appVersion ?? (await _safeGetAppVersionString()),
+      'language': _normalizeLanguage(languageCode ?? ui.PlatformDispatcher.instance.locale.languageCode),
+      'country': _normalizeCountry(countryCode ?? _countryCodeOrNull()),
+
+      // flags
+      if (notificationsEnabled != null) 'notifications_enabled': notificationsEnabled,
+      if (onboardingCompleted != null) 'onboarding_completed': onboardingCompleted,
+      if (usageGuideCompleted != null) 'usage_guide_completed': usageGuideCompleted,
+      if (subscriptionStatus != null) 'subscription_status': subscriptionStatus,
+      if (hasAnyStateEntries != null) 'has_any_state_entries': hasAnyStateEntries,
+      if (hasAnyWorksheetEntries != null) 'has_any_worksheet_entries': hasAnyWorksheetEntries,
+    };
+
+    // Удаляем null, чтобы не отправлять мусор
+    props.removeWhere((_, v) => v == null);
+
+    await setUserProperties(props);
+  }
+
+  /// Точечные хелперы (удобно дергать из UI/сервисов)
+  Future<void> setLanguage(String languageCode) async {
+    await setUserProperties({'language': _normalizeLanguage(languageCode)});
+  }
+
+  Future<void> setNotificationsEnabled(bool enabled) async {
+    await setUserProperties({'notifications_enabled': enabled});
+  }
+
+  Future<void> setOnboardingCompleted(bool completed) async {
+    await setUserProperties({'onboarding_completed': completed});
+  }
+
+  Future<void> setUsageGuideCompleted(bool completed) async {
+    await setUserProperties({'usage_guide_completed': completed});
+  }
+
+  Future<void> setSubscriptionStatus(String status) async {
+    await setUserProperties({'subscription_status': status});
+  }
+
+  Future<void> setHasAnyStateEntries(bool hasAny) async {
+    await setUserProperties({'has_any_state_entries': hasAny});
+  }
+
+  Future<void> setHasAnyWorksheetEntries(bool hasAny) async {
+    await setUserProperties({'has_any_worksheet_entries': hasAny});
+  }
+
+  Future<void> setCountry(String? countryCode) async {
+    await setUserProperties({'country': _normalizeCountry(countryCode)});
+  }
+
+  // -------------------------
+  // Helpers
+  // -------------------------
+
+  String _platformString() {
+    if (kIsWeb) return 'web';
+    if (Platform.isAndroid) return 'android';
+    if (Platform.isIOS) return 'ios';
+    return 'other';
+  }
+
+  /// Нормализуем язык в формат ru/en/other.
+  String _normalizeLanguage(String? languageCode) {
+    final code = (languageCode ?? '').toLowerCase();
+    if (code == 'ru') return 'ru';
+    if (code == 'en') return 'en';
+    return 'other';
+  }
+
+  String? _countryCodeOrNull() {
+    try {
+      final c = ui.PlatformDispatcher.instance.locale.countryCode;
+      return (c == null || c.isEmpty) ? null : c;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? _normalizeCountry(String? countryCode) {
+    if (countryCode == null) return null;
+    final c = countryCode.trim();
+    if (c.isEmpty) return null;
+    // обычно ISO alpha-2 приходит уже в верхнем регистре, но на всякий случай:
+    return c.toUpperCase();
+  }
+
+  /// Версия приложения в формате `1.0.0 (3)`.
+  Future<String?> _safeGetAppVersionString() async {
+    if (kIsWeb) return null;
+    try {
+      final info = await PackageInfo.fromPlatform();
+      final v = info.version;
+      final b = info.buildNumber;
+      if (v.isEmpty) return null;
+      if (b.isEmpty) return v;
+      return '$v ($b)';
+    } catch (e) {
+      debugPrint('[AmplitudeService] Failed to read app version: $e');
+      return null;
+    }
   }
 
   /// Установить/сменить userId (когда появится авторизация).

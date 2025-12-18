@@ -25,6 +25,12 @@ class _UsageGuideScreenState extends State<UsageGuideScreen> {
   void _completeAndClose() {
     // Логируем завершение минигайда
     AmplitudeService.instance.logHomeGuideCompleted();
+
+    // User property: минигайд пройден
+    AmplitudeService.instance.setUserProperties({
+      'usage_guide_completed': true,
+    });
+
     // Вызываем колбэк, если он передан
     widget.onCompleted?.call();
     // Закрываем экран

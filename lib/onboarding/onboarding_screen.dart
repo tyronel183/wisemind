@@ -24,10 +24,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
     // Логируем начало онбординга один раз, когда экран впервые показан
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!_onboardingStartedLogged) {
         AmplitudeService.instance.logOnboardingStarted();
         _onboardingStartedLogged = true;
+        await _setOnboardingStatusUserProperty('started');
       }
     });
   }
@@ -63,11 +64,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
-  void _onNext() {
+  Future<void> _setOnboardingStatusUserProperty(String status) async {
+    // user property для сегментаций и путей в Amplitude
+    // значения: started | completed | skipped
+    try {
+      await Future.sync(() => AmplitudeService.instance.setUserProperties({
+            'onboarding_completed': status,
+          }));
+    } catch (_) {
+      // не ломаем UX, если аналитика недоступна
+    }
+  }
+
+  Future<void> _onNext() async {
     final isLast = _pages[_currentIndex].isLast;
     if (isLast) {
       // Пользователь прошёл онбординг до конца
       AmplitudeService.instance.logOnboardingCompleted();
+      await _setOnboardingStatusUserProperty('completed');
       widget.onFinished();
       return;
     }
@@ -78,10 +92,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  void _onSkip() {
+  Future<void> _onSkip() async {
     // steps_total = номер текущего экрана (0‑based) + 1
     final stepsTotal = _currentIndex + 1;
     AmplitudeService.instance.logOnboardingSkipped(stepsTotal: stepsTotal);
+    await _setOnboardingStatusUserProperty('skipped');
     widget.onFinished();
   }
 
