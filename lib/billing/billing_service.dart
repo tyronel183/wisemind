@@ -18,8 +18,31 @@ class BillingService {
   }
 
   /// Проверка Pro и показ paywall при необходимости.
-  static Future<bool> ensureProOrShowPaywall(BuildContext context) async {
-    return RevenueCatService.instance.ensureProOrShowPaywall(context);
+  ///
+  /// screen — название раздела/экрана (например: "home", "worksheets", "meditations", "skills").
+  /// source — источник открытия (например: "fab", "locked_item", "meditation_card").
+  static Future<bool> ensureProOrShowPaywall(
+    BuildContext context, {
+    String screen = 'unknown',
+    String source = 'unknown',
+  }) async {
+    final service = RevenueCatService.instance;
+
+    // Поддерживаем 2 варианта сигнатуры RevenueCatService.ensureProOrShowPaywall:
+    // 1) старая: (BuildContext)
+    // 2) новая:  (BuildContext, {screen, source})
+    try {
+      // ignore: avoid_dynamic_calls
+      final result = await (service as dynamic).ensureProOrShowPaywall(
+        context,
+        screen: screen,
+        source: source,
+      ) as bool;
+      return result;
+    } catch (_) {
+      // Фолбэк на старую сигнатуру (пока RevenueCatService не обновлён).
+      return service.ensureProOrShowPaywall(context);
+    }
   }
 
   /// Асинхронная проверка статуса Pro.

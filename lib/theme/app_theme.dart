@@ -38,6 +38,10 @@ class AppColors {
   // Успокаивающие серые / служебные
   static const Color greyLight = Color(0xFFECE8FF);
   static const Color grey = Color(0xFF8B8FA0);
+
+  // Snackbars / status
+  static const Color success = Color(0xFF2E7D32); // green 800
+  static const Color error = Color(0xFFC62828);   // red 800
 }
 
 /// ======== ТИПОГРАФИКА (НОРМАЛИЗОВАННАЯ) ========
@@ -233,6 +237,20 @@ class AppTheme {
       ),
     ),
 
+    snackBarTheme: const SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: AppColors.textPrimary,
+      elevation: 0,
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+      ),
+    ),
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
@@ -262,4 +280,29 @@ class AppTheme {
       ),
     ),
   );
+}
+
+/// Helpers for consistent SnackBars across the app.
+class AppSnackbars {
+  const AppSnackbars._();
+
+  static SnackBar success(String message) {
+    return SnackBar(
+      backgroundColor: AppColors.success,
+      content: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  static SnackBar error(String message) {
+    return SnackBar(
+      backgroundColor: AppColors.error,
+      content: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
+    );
+  }
 }

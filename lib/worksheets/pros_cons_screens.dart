@@ -81,10 +81,10 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.cardPaddingHorizontal,
-                    vertical: AppSpacing.cardPaddingVertical,
+                    vertical: 12,
                   ),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Основная кликабельная область карточки
                       Expanded(
@@ -98,6 +98,7 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
                             );
                           },
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -182,9 +183,7 @@ class _ProsConsListScreenState extends State<ProsConsListScreen> {
                               await entry.delete();
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(l.prosConsDeleteSnack),
-                                  ),
+                                  AppSnackbars.success(l.prosConsDeleteSnack),
                                 );
                               }
                             }
@@ -642,7 +641,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.prosConsSaveSnackNew)),
+          AppSnackbars.success(l.prosConsSaveSnackNew),
         );
       }
     } else {
@@ -667,7 +666,7 @@ class _ProsConsEditScreenState extends State<ProsConsEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.prosConsSaveSnackEdit)),
+          AppSnackbars.success(l.prosConsSaveSnackEdit),
         );
       }
     }

@@ -4,6 +4,8 @@ import 'package:flutter_html/flutter_html.dart';
 import '../l10n/app_localizations.dart';
 import 'dbt_faq_data.dart';
 import '../analytics/amplitude_service.dart';
+import '../theme/app_components.dart';
+import '../theme/app_theme.dart';
 
 class DbtFaqScreen extends StatefulWidget {
   const DbtFaqScreen({super.key});
@@ -153,55 +155,68 @@ class _FaqTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Material(
-      color: theme.colorScheme.surface,
-      elevation: 2,
-      shadowColor: theme.shadowColor.withValues(alpha: 0.12),
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
-      child: Theme(
-        // Removes the default ExpansionTile divider.
-        data: theme.copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          collapsedShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            title,
-            style: theme.textTheme.titleMedium,
-          ),
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Html(
-                // `flutter_html` collapses plain text newlines; convert them to <br>.
-                // This preserves our `\n` formatting from .arb without forcing manual <p> tags.
-                data: body.replaceAll('\n', '<br>'),
-                style: {
-                  // `flutter_html` applies `body` style to all descendants.
-                  'body': Style(
-                    margin: Margins.zero,
-                    padding: HtmlPaddings.zero,
-                    fontSize: FontSize(theme.textTheme.bodyMedium?.fontSize ?? 14),
-                    color: theme.textTheme.bodyMedium?.color,
-                    lineHeight: const LineHeight(1.35),
-                  ),
-                  'strong': Style(fontWeight: FontWeight.w700),
-                  'p': Style(margin: Margins.only(bottom: 10)),
-                  'ul': Style(margin: Margins.only(left: 18, bottom: 10)),
-                  'ol': Style(margin: Margins.only(left: 18, bottom: 10)),
-                  'li': Style(margin: Margins.only(bottom: 6)),
-                  'hr': Style(margin: Margins.symmetric(vertical: 10)),
-                  'br': Style(margin: Margins.only(bottom: 4)),
-                },
+    final bodyTextStyle = AppTypography.bodySecondary;
+    final bodyFontSize = bodyTextStyle.fontSize ?? 14;
+
+    return Container(
+      decoration: AppDecorations.card,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+        child: Material(
+          type: MaterialType.transparency,
+          child: Theme(
+            // Removes the default ExpansionTile divider.
+            data: theme.copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.padding,
+                vertical: 8,
               ),
+              childrenPadding: const EdgeInsets.fromLTRB(
+                AppSizes.padding,
+                0,
+                AppSizes.padding,
+                AppSizes.padding,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+              ),
+              collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+              ),
+              title: Text(
+                title,
+                style: AppTypography.cardTitle,
+              ),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Html(
+                    // `flutter_html` collapses plain text newlines; convert them to <br>.
+                    // This preserves our `\n` formatting from .arb without forcing manual <p> tags.
+                    data: body.replaceAll('\n', '<br>'),
+                    style: {
+                      // `flutter_html` applies `body` style to all descendants.
+                      'body': Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                        fontSize: FontSize(bodyFontSize),
+                        color: bodyTextStyle.color ?? AppColors.textSecondary,
+                        lineHeight: const LineHeight(1.35),
+                      ),
+                      'strong': Style(fontWeight: FontWeight.w700),
+                      'p': Style(margin: Margins.only(bottom: 10)),
+                      'ul': Style(margin: Margins.only(left: 18, bottom: 10)),
+                      'ol': Style(margin: Margins.only(left: 18, bottom: 10)),
+                      'li': Style(margin: Margins.only(bottom: 6)),
+                      'hr': Style(margin: Margins.symmetric(vertical: 10)),
+                      'br': Style(margin: Margins.only(bottom: 4)),
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

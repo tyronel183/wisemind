@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
+import '../analytics/amplitude_service.dart';
 import '../l10n/app_localizations.dart';
 
 class WisemindPaywallScreen extends StatefulWidget {
@@ -79,9 +80,16 @@ class _WisemindPaywallScreenState extends State<WisemindPaywallScreen> {
         _loading = false;
       });
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('[Paywall] loadOffering failed: $e');
-      }
+      try {
+        await AmplitudeService.instance.logEvent(
+          'paywall_error',
+          properties: {
+            'stage': 'load_offering',
+            'error': e.toString(),
+            'rc_locale': rcLocale,
+          },
+        );
+      } catch (_) {}
       if (!mounted) return;
       setState(() {
         _error = e;

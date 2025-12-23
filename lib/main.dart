@@ -335,6 +335,13 @@ class _MainScaffoldState extends State<MainScaffold> {
   }
 
   Future<void> _onNewEntryPressed() async {
+    await AmplitudeService.instance.logEvent(
+      'new_state_form',
+      properties: {
+        'source': 'fab',
+        'screen': 'home',
+      },
+    );
     final newEntry = await Navigator.of(context).push<StateEntry>(
       MaterialPageRoute(
         builder: (context) => const EntryFormScreen(),

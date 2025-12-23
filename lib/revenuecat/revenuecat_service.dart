@@ -127,13 +127,29 @@ class RevenueCatService {
     await Purchases.overridePreferredUILocale(rcLocale);
   }
 
-  Future<bool> ensureProOrShowPaywall(BuildContext context) async {
+  Future<bool> ensureProOrShowPaywall(
+    BuildContext context, {
+    String screen = 'unknown',
+    String source = 'unknown',
+  }) async {
     final messenger = ScaffoldMessenger.maybeOf(context);
     final navigator = Navigator.of(context);
     final appLocale = Localizations.localeOf(context);
 
-    if (await isPro) return true;
+    final wasPro = await isPro;
+    if (wasPro) return true;
     if (!context.mounted) return false;
+
+    // paywall_opened
+    try {
+      await AmplitudeService.instance.logEvent(
+        'paywall_opened',
+        properties: {
+          'screen': screen,
+          'source': source,
+        },
+      );
+    } catch (_) {}
 
     try {
       // ВАЖНО: выставляем локаль ДО экрана paywall (и до getOfferings внутри него).
@@ -149,8 +165,45 @@ class RevenueCatService {
       final info = await Purchases.getCustomerInfo();
       _updateInfo(info);
 
-      return isProSync;
+      final nowPro = isProSync;
+
+      if (nowPro) {
+        final subType = _deriveSubscriptionStatus(info); // monthly/yearly/lifetime
+        try {
+          await AmplitudeService.instance.logEvent(
+            'paywall_succeeded',
+            properties: {
+              'screen': screen,
+              'source': source,
+              'sub_type': subType,
+            },
+          );
+        } catch (_) {}
+      } else {
+        try {
+          await AmplitudeService.instance.logEvent(
+            'paywall_closed',
+            properties: {
+              'screen': screen,
+              'source': source,
+            },
+          );
+        } catch (_) {}
+      }
+
+      return nowPro;
     } catch (e) {
+      try {
+        await AmplitudeService.instance.logEvent(
+          'paywall_error',
+          properties: {
+            'screen': screen,
+            'source': source,
+            'error': e.toString(),
+          },
+        );
+      } catch (_) {}
+
       messenger?.showSnackBar(
         SnackBar(content: Text('Не удалось открыть экран подписки: $e')),
       );

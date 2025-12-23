@@ -247,7 +247,7 @@ class _MeditationCard extends StatelessWidget {
         image: CachedNetworkImage(
           imageUrl: m.imageUrl,
           fit: BoxFit.cover,
-          placeholder: (_, _) => Container(color: Colors.black12),
+          placeholder: (_, _) => _ImageSkeleton(),
           errorWidget: (_, _, _) =>
               const Icon(Icons.self_improvement),
         ),
@@ -269,7 +269,11 @@ class _MeditationCard extends StatelessWidget {
           }
 
           // Для всех остальных медитаций — проверяем Pro и при необходимости показываем paywall.
-          final allowed = await BillingService.ensureProOrShowPaywall(context);
+          final allowed = await BillingService.ensureProOrShowPaywall(
+            context,
+            screen: AppLocalizations.of(context)!.mainNavMeditations,
+            source: 'meditation_card',
+          );
           if (!context.mounted || !allowed) return;
 
           Navigator.of(context).push(
@@ -433,7 +437,7 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
                   child: CachedNetworkImage(
                     imageUrl: meditation.imageUrl,
                     fit: BoxFit.cover,
-                    placeholder: (_, _) => Container(color: Colors.black12),
+                    placeholder: (_, _) => _ImageSkeleton(),
                     errorWidget: (_, _, _) => const Icon(Icons.self_improvement),
                   ),
                 ),
@@ -656,6 +660,54 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Простой «скелетон» для изображений, пока они грузятся.
+/// Лёгкая пульсация (без зависимостей и без тяжёлого shimmer).
+class _ImageSkeleton extends StatefulWidget {
+  const _ImageSkeleton();
+
+  @override
+  State<_ImageSkeleton> createState() => _ImageSkeletonState();
+}
+
+class _ImageSkeletonState extends State<_ImageSkeleton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Color?> _color;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+
+    // Нежная пульсация между двумя близкими оттенками.
+    _color = ColorTween(
+      begin: AppColors.greyLight,
+      end: AppColors.greyLight.withAlpha((0.55 * 255).toInt()),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        return Container(
+          color: _color.value,
+        );
+      },
     );
   }
 }

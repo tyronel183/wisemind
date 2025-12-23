@@ -205,9 +205,12 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                   return Container(
                     decoration: AppDecorations.card,
                     child: ListTile(
+                      dense: true,
+                      visualDensity: VisualDensity.compact,
+                      minVerticalPadding: 0,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.cardPaddingHorizontal,
-                        vertical: AppSpacing.cardPaddingVertical,
+                        vertical: 0,
                       ),
                       title: Text(
                         title,
@@ -284,9 +287,7 @@ class _ChainAnalysisListScreenState extends State<ChainAnalysisListScreen> {
                               await entry.delete();
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(l.chainAnalysisDeleteSnack),
-                                  ),
+                                  AppSnackbars.success(l.chainAnalysisDeleteSnack),
                                 );
                               }
                             }
@@ -432,7 +433,7 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
     if (problematic.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.chainAnalysisProblemRequiredSnack)),
+          AppSnackbars.error(l.chainAnalysisProblemRequiredSnack),
         );
       }
       return;
@@ -504,8 +505,8 @@ class _ChainAnalysisEditScreenState extends State<ChainAnalysisEditScreen> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(isNew ? l.chainAnalysisSaveSnackNew : l.chainAnalysisSaveSnackEdit),
+      AppSnackbars.success(
+        isNew ? l.chainAnalysisSaveSnackNew : l.chainAnalysisSaveSnackEdit,
       ),
     );
 

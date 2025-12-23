@@ -111,134 +111,113 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
 
                   return Container(
                     decoration: AppDecorations.card,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.cardPaddingHorizontal,
-                        vertical: AppSpacing.cardPaddingVertical,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              borderRadius:
-                                  BorderRadius.circular(AppSizes.cardRadius),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        FactCheckDetailScreen(entry: entry),
-                                  ),
-                                );
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _formatDate(entry.date),
-                                    style: AppTypography.cardTitle,
-                                  ),
-                                  const SizedBox(
-                                      height: AppSpacing.gapSmall),
-                                  Text(
-                                    emotionsText,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.bodySecondary,
-                                  ),
-                                ],
-                              ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: ListTile(
+                        dense: true,
+                        visualDensity: VisualDensity.compact,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.cardPaddingHorizontal,
+                          vertical: 0,
+                        ),
+                        title: Text(
+                          _formatDate(entry.date),
+                          style: AppTypography.cardTitle,
+                        ),
+                        subtitle: Text(
+                          emotionsText,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.bodySecondary,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => FactCheckDetailScreen(entry: entry),
                             ),
-                          ),
-                          PopupMenuButton<String>(
-                            onSelected: (value) async {
-                              if (value == 'edit') {
+                          );
+                        },
+                        trailing: PopupMenuButton<String>(
+                          onSelected: (value) async {
+                            if (value == 'edit') {
+                              AmplitudeService.instance.logEvent(
+                                'edit_worksheet_form',
+                                properties: {
+                                  'worksheet': kFactCheckWorksheetName,
+                                },
+                              );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => FactCheckEditScreen(entry: entry),
+                                ),
+                              );
+                            } else if (value == 'delete') {
+                              AmplitudeService.instance.logEvent(
+                                'delete_worksheet',
+                                properties: {
+                                  'worksheet': kFactCheckWorksheetName,
+                                },
+                              );
+
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text(
+                                    l10n.factCheckDeleteDialogTitle,
+                                  ),
+                                  content: Text(
+                                    l10n.factCheckDeleteDialogBody,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(false),
+                                      child: Text(
+                                        l10n.factCheckDeleteDialogCancel,
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                      child: Text(
+                                        l10n.factCheckDeleteDialogConfirm,
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
                                 AmplitudeService.instance.logEvent(
-                                  'edit_worksheet_form',
+                                  'delete_worksheet_confirmed',
                                   properties: {
                                     'worksheet': kFactCheckWorksheetName,
                                   },
                                 );
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        FactCheckEditScreen(entry: entry),
-                                  ),
-                                );
-                              } else if (value == 'delete') {
-                                AmplitudeService.instance.logEvent(
-                                  'delete_worksheet',
-                                  properties: {
-                                    'worksheet': kFactCheckWorksheetName,
-                                  },
-                                );
-
-                                final confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text(
-                                      l10n.factCheckDeleteDialogTitle,
-                                    ),
-                                    content: Text(
-                                      l10n.factCheckDeleteDialogBody,
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: Text(
-                                          l10n.factCheckDeleteDialogCancel,
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
-                                        child: Text(
-                                          l10n.factCheckDeleteDialogConfirm,
-                                          style: const TextStyle(
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-
-                                if (confirm == true) {
-                                  AmplitudeService.instance.logEvent(
-                                    'delete_worksheet_confirmed',
-                                    properties: {
-                                      'worksheet': kFactCheckWorksheetName,
-                                    },
+                                await entry.delete();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    AppSnackbars.success(l10n.factCheckDeleteSnack),
                                   );
-                                  await entry.delete();
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          l10n.factCheckDeleteSnack,
-                                        ),
-                                      ),
-                                    );
-                                  }
                                 }
                               }
-                            },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'edit',
-                                child: Text(l10n.factCheckMenuEdit),
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: Text(l10n.factCheckMenuEdit),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Text(
+                                l10n.factCheckMenuDelete,
+                                style: const TextStyle(color: Colors.red),
                               ),
-                              PopupMenuItem(
-                                value: 'delete',
-                                child: Text(
-                                  l10n.factCheckMenuDelete,
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -265,8 +244,14 @@ class _FactCheckListScreenState extends State<FactCheckListScreen> {
 }
 
 Future<void> _onCreateNewPressed(BuildContext context) async {
+  final l10n = AppLocalizations.of(context)!;
+
   // Проверяем доступ через общий биллинговый слой.
-  final allowed = await BillingService.ensureProOrShowPaywall(context);
+  final allowed = await BillingService.ensureProOrShowPaywall(
+    context,
+    screen: l10n.mainNavWorksheets,
+    source: 'fact_check_fab',
+  );
   if (!context.mounted || !allowed) return;
 
   // Открытие формы нового рабочего листа "Проверка фактов"
@@ -867,7 +852,7 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.factCheckSaveSnackNew)),
+          AppSnackbars.success(l10n.factCheckSaveSnackNew),
         );
       }
     } else {
@@ -898,7 +883,7 @@ class _FactCheckEditScreenState extends State<FactCheckEditScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.factCheckSaveSnackEdit)),
+          AppSnackbars.success(l10n.factCheckSaveSnackEdit),
         );
       }
     }

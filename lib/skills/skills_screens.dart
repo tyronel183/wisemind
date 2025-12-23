@@ -536,9 +536,12 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
                       }
 
                       // Для остальных модулей проверяем доступ через общий биллинговый слой.
-                      final allowed =
-                          await BillingService.ensureProOrShowPaywall(
-                              context);
+                      final l10n = AppLocalizations.of(context)!;
+                      final allowed = await BillingService.ensureProOrShowPaywall(
+                        context,
+                        screen: l10n.mainNavSkills,
+                        source: 'skill_card',
+                      );
                       if (!context.mounted || !allowed) return;
 
                       Navigator.of(context).push(

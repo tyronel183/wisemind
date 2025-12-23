@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:hive/hive.dart';
 
 import '../notifications/notification_service.dart';
 import 'about_screen.dart';
@@ -23,6 +24,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _remindersEnabled = true;
 
   Locale? _selectedLocale;
+
+  void _loadPersistedSettings() {
+    try {
+      final box = Hive.box('app_settings');
+      final saved = box.get('notifications_enabled', defaultValue: true);
+      if (!mounted) return;
+      setState(() {
+        _remindersEnabled = (saved is bool) ? saved : true;
+      });
+    } catch (_) {
+      // If Hive box isn't available for some reason, keep defaults.
+    }
+  }
 
   String _normLang(Locale locale) {
     final code = locale.languageCode.toLowerCase();
@@ -106,6 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    _loadPersistedSettings();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       AmplitudeService.instance.logSettingsOpened();
     });
@@ -134,6 +149,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await AmplitudeService.instance.setUserProperties({
         'notifications_enabled': value,
       });
+
+      // Сохраняем настройку, чтобы она переживала перезапуск.
+      final box = Hive.box('app_settings');
+      await box.put('notifications_enabled', value);
     } catch (_) {
       if (!mounted) return;
 
